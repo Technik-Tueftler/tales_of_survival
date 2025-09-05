@@ -12,6 +12,7 @@ def main() -> None:
     config = src.environ.to_config(src.Configuration)
     src.init_logging(config.watcher)
     src.logger.info(f"Start application in version: {src.__version__}")
+    src.openai_test(config)
 
 
 if __name__ == "__main__":
