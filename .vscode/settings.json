@@ -1,0 +1,5 @@
+{
+    "code-runner.cwd": "${workspaceFolder}/src",
+    "terminal.integrated.cwd": "${workspaceFolder}/src",
+    "code-runner.fileDirectoryAsCwd": true
+}

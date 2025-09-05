@@ -1,0 +1,54 @@
+name: Merge Test
+
+on: [pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Read MODE_DEVELOP and __init__ from package
+      id: vars
+      run: |
+          MODE_DEVELOP=$(grep -E "^MODE_DEVELOP\s*=\s*True" src/__init__.py || true)
+          if [ -n "$MODE_DEVELOP" ]; then
+            echo "MODE_DEVELOP_TRUE=true" >> $GITHUB_ENV
+          else
+            echo "MODE_DEVELOP_TRUE=false" >> $GITHUB_ENV
+          fi
+          VERSION=$(grep -E "^__version__\s*=" src/__init__.py | sed -E "s/__version__\s*=\s*[\"']?([^\"']+)[\"']?/\1/")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+    - name: Check, if VERSION already exists as a release
+      id: version_check
+      run: |
+          # Get all existing release tags
+          RELEASES=$(gh release list --limit 1000 --json tagName --jq '.[].tagName')
+          if echo "$RELEASES" | grep -Fxq "$VERSION"; then
+            echo "VERSION_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "VERSION_EXISTS=false" >> $GITHUB_ENV
+          fi
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Merge blocked if MODE_DEVELOP is True or VERSION already exists as a release
+      if: ${{ env.MODE_DEVELOP_TRUE == 'true' || env.VERSION_EXISTS == 'true' }}
+      run: |
+          if [ "$MODE_DEVELOP_TRUE" = "true" ]; then
+            echo "MODE_DEVELOP is True, merge blocked."
+          fi
+          if [ "$VERSION_EXISTS" = "true" ]; then
+            echo "VERSION $VERSION is already a release, merge is blocked."
+          fi
+          exit 1
