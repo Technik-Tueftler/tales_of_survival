@@ -7,17 +7,23 @@ Context classes
 
 .. mermaid ::
     erDiagram
-        CHARACTER }|--|| PLAYER : "N:1"
-        PLAYER }|--|{ GAME : "N:M"
+        CHARACTER ||--|| PLAYER : "1:1"
+        USER }|--|{ GAME : "N:M"
         GAME ||--|| TALE : "1:1"
         TALE ||--|{ STORY : "1:N"
-        PLAYER }|--||USER : "N:1"
+        USER ||--|{ PLAYER : "1:N"
         TALE ||--|| GENRE : "1:1"
+        InspirationalWords }|--|| GENRE : "N:1"
+        EVENT }|--|| GENRE : "N:1"
+        STORY ||--|| STORYTYPE : "1:1"
         style GENRE fill:#f9f,stroke:#333,stroke-width:4px
+        style CHARACTER fill:#f9f,stroke:#333,stroke-width:4px
+        style InspirationalWords fill:#f9f,stroke:#333,stroke-width:4px
+        style EVENT fill:#f9f,stroke:#333,stroke-width:4px
         CHARACTER {
             string id
             string name
-            int alter
+            int age
             string background
             string description
             string pos_trait
@@ -26,6 +32,7 @@ Context classes
         }
         PLAYER {
             string id
+            boolean alive
         }
         GAME {
             string id
@@ -42,8 +49,8 @@ Context classes
         }
         STORY {
             string id
-            string text
-            string type
+            string request
+            string response
             string summary
         }
         USER {
@@ -56,6 +63,19 @@ Context classes
             string name
             string storytelling_style
             string atmosphere
+        }
+        InspirationalWords {
+            string id
+            string text
+            int chance
+        }
+        EVENT {
+            string id
+            string text
+            int chance
+        }
+        STORYTYPE {
+            string id
         }
 
 .. note::
