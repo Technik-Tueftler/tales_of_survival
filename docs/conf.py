@@ -39,7 +39,7 @@ sphinxmermaid_mermaid_init = {
   'theme': 'base',
   'themeVariables': {
     'primaryColor': '#4CAF50',
-    'primaryTextColor': '#FFFFFF',
+    'primaryTextColor': "#000000",
     'primaryBorderColor': '#757575',
     'lineColor': '#B0BEC5',
     'secondaryColor': '#2196F3',

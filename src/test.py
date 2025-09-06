@@ -9,7 +9,7 @@ def openai_test(config):
 
     response = client.chat.completions.create(
     model=config.model,
-    # reasoning_effort="high",
+    reasoning_effort="high",
     messages=[
         {"role": "system", "content": "Du bist ein Geschichtenerzähler für eine Zombie Apokalypse. Die Antworten nur in deutsch."},
         {"role": "user", "content": "Erzähl mir den start einer geschichte (maximal 200 Wörter) bei der sich 4 Charaktere in einer Stadt namens Louisville treffen und beschließen eine gemeinschaft zu bilden."},
