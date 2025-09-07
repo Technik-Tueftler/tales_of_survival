@@ -13,3 +13,5 @@ pytest-mock==3.14.0
 python-dotenv==1.0.1
 environ-config==24.1.0
 openai==1.106.1
+SQLAlchemy==2.0.43
+aiosqlite==0.21.0
