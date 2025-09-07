@@ -1,19 +1,22 @@
 """
 Main function for starting application
 """
-
+import asyncio
 import src
 
 
-def main() -> None:
+async def main():
     """
     Scheduling function for regular call.
     """
-    config = src.environ.to_config(src.Configuration)
-    src.init_logging(config.watcher)
+    load_config = src.environ.to_config(src.EnvConfiguration)
+    config = src.Configuration(load_config)
+    await src.sync_db(config.engine)
+    src.init_logging(config.env.watcher)
     src.logger.info(f"Start application in version: {src.__version__}")
-    src.openai_test(config)
+    await src.test_db(config)
+    # src.openai_test(config)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
