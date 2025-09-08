@@ -4,6 +4,7 @@ Load environment variables and validation of project configurations from user
 import asyncio
 import environ
 from dotenv import load_dotenv
+import loguru
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
@@ -38,3 +39,4 @@ class Configuration:
         self.engine = create_async_engine(config.db.db_url)
         self.session = async_sessionmaker(bind=self.engine, expire_on_commit=False)
         self.write_lock = asyncio.Lock() # pylint: disable=not-callable
+        self.logger: loguru._logger.Logger = None

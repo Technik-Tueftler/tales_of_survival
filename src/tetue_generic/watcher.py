@@ -15,7 +15,7 @@ class WatcherConfiguration:
     log_level: str = environ.var(logger.level("INFO").name)
 
 
-def init_logging(conf_watcher: WatcherConfiguration) -> None:
+def init_logging(config) -> None:
     """
     Initializes logging configuration for the application..
 
@@ -34,6 +34,7 @@ def init_logging(conf_watcher: WatcherConfiguration) -> None:
     """
     logger.remove()
     logger.add(
-        conf_watcher.log_file_path, rotation="100 MB", level=conf_watcher.log_level
+        config.env.watcher.log_file_path, rotation="100 MB", level=config.env.watcher.log_level
     )
-    logger.add(sys.stdout, colorize=True, level=conf_watcher.log_level)
+    logger.add(sys.stdout, colorize=True, level=config.env.watcher.log_level)
+    config.logger = logger

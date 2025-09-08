@@ -12,9 +12,11 @@ async def main():
     load_config = src.environ.to_config(src.EnvConfiguration)
     config = src.Configuration(load_config)
     await src.sync_db(config.engine)
-    src.init_logging(config.env.watcher)
-    src.logger.info(f"Start application in version: {src.__version__}")
+    src.init_logging(config)
+    config.logger.info(f"Start application in version: {src.__version__}")
     await src.test_db(config)
+    genre = await src.get_genre_f_name(config, "Action")
+    print(f"ID: {genre.id}, words: {genre.inspirational_words}, events: {genre.events}")
     # src.openai_test(config)
 
 
