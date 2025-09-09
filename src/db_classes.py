@@ -2,13 +2,11 @@
 File containing the database classes and general setups.
 """
 
-import asyncio
 from enum import Enum
 from datetime import datetime
 import environ
 from sqlalchemy import Enum as AlchemyEnum
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncEngine
-from sqlalchemy import Table, Column, ForeignKey
+from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import (
     DeclarativeBase,
@@ -50,6 +48,9 @@ class Base(DeclarativeBase):
 
 
 class StoryType(Enum):
+    """
+    Enum to define type of story and map an emoji.
+    """
     EVENT = 0, "📣"
     FICTION = 1, "📕"
 
@@ -59,8 +60,9 @@ class StoryType(Enum):
 
 
 class GameStatus(Enum):
-    """Enum for game status"""
-
+    """
+    Enum to define status of game and map an emoji.
+    """
     CREATED = 0, "🆕"
     RUNNING = 1, "🎮"
     PAUSED = 2, "⏸️"
@@ -70,6 +72,10 @@ class GameStatus(Enum):
 
 
 class INSPIRATIONALWORD(Base):
+    """
+    Class definition for inspirational words. These are used to
+    generate random words for the story for a genre.
+    """
     __tablename__ = "inspirational_words"
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(nullable=False)
@@ -82,6 +88,9 @@ class INSPIRATIONALWORD(Base):
 
 
 class EVENT(Base):
+    """
+    Class definition for fixed events that can occur in a genre.
+    """
     __tablename__ = "events"
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(nullable=False)
@@ -94,6 +103,10 @@ class EVENT(Base):
 
 
 class GENRE(Base):
+    """
+    Class definition for genre for central definition to
+    determine the general story creation.
+    """
     __tablename__ = "genres"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
@@ -110,6 +123,10 @@ class GENRE(Base):
 
 
 class STORY(Base):
+    """
+    Class definition for story in which individual story parts are managed. These are then made
+    available as a history for creating new stories elements.
+    """
     __tablename__ = "storys"
     id: Mapped[int] = mapped_column(primary_key=True)
     request: Mapped[str] = mapped_column(nullable=True)
@@ -127,6 +144,9 @@ class STORY(Base):
 
 
 class TALE(Base):
+    """
+    Class definition for tale in which the complete story is defined.
+    """
     __tablename__ = "tales"
     id: Mapped[int] = mapped_column(primary_key=True)
     language: Mapped[str] = mapped_column(nullable=False)
@@ -139,7 +159,11 @@ class TALE(Base):
         "GAME", back_populates="tale", uselist=False
     )  # 1:1
 
+
 class GAME(Base):
+    """
+    Class definition for game to store general game informations. 
+    """
     __tablename__ = "games"
     id: Mapped[int] = mapped_column(primary_key=True)
     game_name: Mapped[str] = mapped_column(nullable=False)
@@ -159,6 +183,9 @@ class GAME(Base):
 
 
 class USER(Base):
+    """
+    Class definition for user to manage all user based informations.
+    """
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
