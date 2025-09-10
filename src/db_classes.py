@@ -117,6 +117,7 @@ class GENRE(Base):
     name: Mapped[str] = mapped_column(nullable=False)
     storytelling_style: Mapped[str] = mapped_column(nullable=True)
     atmosphere: Mapped[str] = mapped_column(nullable=True)
+    language: Mapped[str] = mapped_column(nullable=False)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
     tale: Mapped["TALE"] = relationship(
@@ -154,7 +155,6 @@ class TALE(Base):
     """
     __tablename__ = "tales"
     id: Mapped[int] = mapped_column(primary_key=True)
-    language: Mapped[str] = mapped_column(nullable=False)
     genre_id: Mapped[int] = mapped_column(
         ForeignKey("genres.id"), nullable=False
     )  # 1:1
@@ -162,7 +162,7 @@ class TALE(Base):
     stories: Mapped[list["STORY"]] = relationship()  # 1:N
     game: Mapped["GAME"] = relationship(
         "GAME", back_populates="tale", uselist=False
-    )  # 1:1
+    )  # 1:1 TODO: Game id noch auflisten, da jedes Tale ein Game zwingend brauch?
 
 association_user_game = Table(
     "association_user_game",

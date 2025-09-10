@@ -44,8 +44,8 @@ async def test_db6(config: Configuration):
     async with config.write_lock:
         async with config.session() as session:
             async with session.begin():
-                genre = GENRE(name="Horror")
-                tale = TALE(language="english", genre=genre)
+                genre = GENRE(name="Horror", language="deutsch")
+                tale = TALE(genre=genre)
                 game = GAME(
                     game_name="Hit and Run with Ice",
                     start_date=datetime.now(timezone.utc),
@@ -72,8 +72,8 @@ async def test_db5(config: Configuration):
         async with config.session() as session:
             async with session.begin():
                 # user = USER()
-                genre = GENRE(name="Romance")
-                tale = TALE(language="deutsch", genre=genre)
+                genre = GENRE(name="Romance", language="english")
+                tale = TALE(genre=genre)
                 game = GAME(
                     game_name="PZ",
                     start_date=datetime.now(timezone.utc),
@@ -109,8 +109,8 @@ async def test_db3(config: Configuration):
     async with config.write_lock:
         async with config.session() as session:
             async with session.begin():
-                genre1 = GENRE(name="Action")
-                tale = TALE(language="deutsch", genre=genre1)
+                genre1 = GENRE(name="Action", language="deutsch")
+                tale = TALE(genre=genre1)
                 story1 = STORY(request="Anfrage", response="Antwort", tale=tale)
                 story2 = STORY(request="Anfrage 2", response="Antwort 2", tale=tale)
                 session.add_all([story1, story2])
@@ -124,7 +124,7 @@ async def test_db2(config: Configuration):
     async with config.write_lock:
         async with config.session() as session:
             async with session.begin():
-                genre1 = GENRE(name="Action")
+                genre1 = GENRE(name="Action", language="deutsch")
                 event1 = EVENT(text="lala blub blub", chance=0.6, genre=genre1)
                 event2 = EVENT(text="lala blub blub 2", chance=0.6, genre=genre1)
                 session.add_all([event1, event2])
@@ -149,8 +149,8 @@ async def test_db1(config: Configuration):
     async with config.write_lock:
         async with config.session() as session:
             async with session.begin():
-                genre1 = GENRE(name="Action")
-                genre2 = GENRE(name="Adventure")
+                genre1 = GENRE(name="Action", language="deutsch")
+                genre2 = GENRE(name="Adventure", language="deutsch")
                 insp_word1 = INSPIRATIONALWORD(text="Courage", chance=0.5)
                 insp_word2 = INSPIRATIONALWORD(text="Wisdom", chance=0.5)
                 insp_word3 = INSPIRATIONALWORD(text="Strength", chance=0.5)
@@ -163,7 +163,7 @@ async def test_db1(config: Configuration):
                 genre2.inspirational_words.append(insp_word4)
                 genre1.events.append(event1)
                 genre2.events.append(event2)
-                tale = TALE(language="deutsch", genre=genre1)
+                tale = TALE(genre=genre1)
                 session.add_all([genre1, genre2])
                 session.add(tale)
 
