@@ -71,6 +71,10 @@ class GameStatus(Enum):
     FINISHED = 4, "🏁"
     FAILURE = 5, "⚠️"
 
+    def __init__(self, value, icon):
+        self._value_ = value
+        self.icon = icon
+
 
 class INSPIRATIONALWORD(Base):
     """
@@ -128,7 +132,7 @@ class STORY(Base):
     Class definition for story in which individual story parts are managed. These are then made
     available as a history for creating new stories elements.
     """
-    __tablename__ = "storys"
+    __tablename__ = "stories"
     id: Mapped[int] = mapped_column(primary_key=True)
     request: Mapped[str] = mapped_column(nullable=True)
     response: Mapped[str] = mapped_column(nullable=True)
@@ -138,7 +142,7 @@ class STORY(Base):
         default=StoryType.FICTION,
     )
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"))  # 1:N
-    tale: Mapped["TALE"] = relationship(back_populates="storys")  # 1:N
+    tale: Mapped["TALE"] = relationship(back_populates="stories")  # 1:N
 
     def __repr__(self) -> str:
         return f"Story(id={self.id}, type={self.story_type})"
@@ -155,7 +159,7 @@ class TALE(Base):
         ForeignKey("genres.id"), nullable=False
     )  # 1:1
     genre: Mapped[GENRE] = relationship("GENRE", back_populates="tale", uselist=False)
-    storys: Mapped[list["STORY"]] = relationship()  # 1:N
+    stories: Mapped[list["STORY"]] = relationship()  # 1:N
     game: Mapped["GAME"] = relationship(
         "GAME", back_populates="tale", uselist=False
     )  # 1:1
@@ -206,3 +210,20 @@ class USER(Base):
     games: Mapped[list["GAME"]] = relationship(
         secondary=association_user_game, back_populates="users"
     )
+    characters: Mapped[list["CHARACTER"]] = relationship(back_populates="user")  # 1:N
+
+
+class CHARACTER(Base):
+    __tablename__ = "characters"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    age: Mapped[int] = mapped_column(nullable=False)
+    background: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
+    pos_trait: Mapped[str] = mapped_column(nullable=True)
+    neg_trait: Mapped[str] = mapped_column(nullable=True)
+    summary: Mapped[str] = mapped_column(nullable=False)
+    alive: Mapped[bool] = mapped_column(default=True)
+    game_date: Mapped[datetime] = mapped_column(nullable=True)
+    user_id: Mapped[int|None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    user: Mapped["USER"] = relationship(back_populates="characters")

@@ -14,8 +14,8 @@ async def main():
     await src.sync_db(config.engine)
     src.init_logging(config)
     config.logger.info(f"Start application in version: {src.__version__}")
-    await src.test_db(config)
-    # src.openai_test(config)
+    # await src.test_db(config)
+    src.openai_test(config)
 
 
 if __name__ == "__main__":

@@ -7,8 +7,9 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
-from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME, USER
+from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME, USER, CHARACTER
 from .configuration import Configuration
+from .testtest import markus_weber
 
 
 async def test_db(config: Configuration):
@@ -17,16 +18,49 @@ async def test_db(config: Configuration):
     await test_db3(config)
     await test_db4(config)
     await test_db5(config)
+    await test_db6(config)
+    await test_db7(config)
 
 
-# async def test_db6(config: Configuration):
-#     """
-#     Test
-#     """
-#     print(20 * "#" + " Start Test 6 " + 20 * "#")
-#     async with config.write_lock:
-#         async with config.session() as session:
-#             async with session.begin():
+async def test_db7(config: Configuration):
+    """
+    Test
+    """
+    print(20 * "#" + " Start Test 7 " + 20 * "#")
+    async with config.write_lock:
+        async with config.session() as session:
+            async with session.begin():
+                user2 = USER(name="Fire", dc_id="123456789")
+                markus_weber.user=user2
+                markus_weber.game_date=datetime.now(timezone.utc)
+                session.add(markus_weber)
+
+
+async def test_db6(config: Configuration):
+    """
+    Test
+    """
+    print(20 * "#" + " Start Test 6 " + 20 * "#")
+    async with config.write_lock:
+        async with config.session() as session:
+            async with session.begin():
+                genre = GENRE(name="Horror")
+                tale = TALE(language="english", genre=genre)
+                game = GAME(
+                    game_name="Hit and Run with Ice",
+                    start_date=datetime.now(timezone.utc),
+                    message_id=23456789,
+                    tale=tale,
+                )
+                user = USER(name="Ice", dc_id="123456789")
+                game2 = GAME(
+                    game_name="Two Hits and Run with Ice",
+                    start_date=datetime.now(timezone.utc),
+                    message_id=3456780,
+                    tale=tale,
+                )
+                user2 = USER(name="Jo", dc_id="12345678", games=[game2])
+                session.add_all([game, user, user2])
 
 
 async def test_db5(config: Configuration):
@@ -60,10 +94,10 @@ async def test_db4(config: Configuration):
                 await session.execute(
                     select(TALE)
                     .where(TALE.id == 2)
-                    .options(selectinload(TALE.storys))
+                    .options(selectinload(TALE.stories))
                 )
             ).scalar_one_or_none()
-    for story in tale.storys:
+    for story in tale.stories:
         print(story.id, story.story_type.icon)
 
 
