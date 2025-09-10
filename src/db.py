@@ -7,8 +7,18 @@ from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
-from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME
+from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME, USER
 from .configuration import Configuration
+
+
+# async def test_db6(config: Configuration):
+#     """
+#     Test
+#     """
+#     print(20 * "#" + " Start Test 6 " + 20 * "#")
+#     async with config.write_lock:
+#         async with config.session() as session:
+#             async with session.begin():
 
 
 async def test_db5(config: Configuration):
@@ -19,6 +29,7 @@ async def test_db5(config: Configuration):
     async with config.write_lock:
         async with config.session() as session:
             async with session.begin():
+                # user = USER()
                 genre = GENRE(name="Romance")
                 tale = TALE(language="deutsch", genre=genre)
                 game = GAME(

@@ -1,10 +1,11 @@
 """
 File containing the database classes and general setups.
 """
-
 from enum import Enum
 from datetime import datetime
 import environ
+from sqlalchemy import Column
+from sqlalchemy import Table
 from sqlalchemy import Enum as AlchemyEnum
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy import ForeignKey
@@ -159,6 +160,13 @@ class TALE(Base):
         "GAME", back_populates="tale", uselist=False
     )  # 1:1
 
+association_user_game = Table(
+    "association_user_game",
+    Base.metadata,
+    Column("game_id", ForeignKey("games.id"), primary_key=True), # left
+    Column("user_id", ForeignKey("users.id"), primary_key=True), # right
+)
+
 
 class GAME(Base):
     """
@@ -180,6 +188,10 @@ class GAME(Base):
         ForeignKey("tales.id"), nullable=False
     )  # 1:1
     tale: Mapped[TALE] = relationship("TALE", back_populates="game", uselist=False)
+    # M:N - Association mit Back_populates
+    users: Mapped[list["USER"]] = relationship(
+        secondary=association_user_game, back_populates="games"
+    )
 
 
 class USER(Base):
@@ -190,3 +202,7 @@ class USER(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     dc_id: Mapped[str] = mapped_column(nullable=False)
+    # M:N - Association mit Back_populates
+    games: Mapped[list["GAME"]] = relationship(
+        secondary=association_user_game, back_populates="users"
+    )
