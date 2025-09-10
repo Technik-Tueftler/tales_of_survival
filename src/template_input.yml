@@ -1,0 +1,15 @@
+- name: Action Adventure
+  storytelling-type: Epistolarer Roman
+  atmosphere: Kein Plan
+  language: english
+  inspirational-words:
+    - chance: 50
+      words: [Text 1, Text 2]
+    - chance: 70
+      words:
+        - Text 3
+        - Wort 4
+  events:
+    - chance: 10
+      event:
+        - Rattenplage, 50% der frischen lebensmittel muss entsorgt werden
