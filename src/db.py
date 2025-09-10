@@ -11,6 +11,14 @@ from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME, USER
 from .configuration import Configuration
 
 
+async def test_db(config: Configuration):
+    await test_db1(config)
+    await test_db2(config)
+    await test_db3(config)
+    await test_db4(config)
+    await test_db5(config)
+
+
 # async def test_db6(config: Configuration):
 #     """
 #     Test
@@ -99,7 +107,7 @@ async def test_db2(config: Configuration):
             print(event, event.genre.id)
 
 
-async def test_db(config: Configuration):
+async def test_db1(config: Configuration):
     """
     Test
     """
