@@ -15,3 +15,4 @@ environ-config==24.1.0
 openai==1.106.1
 SQLAlchemy==2.0.43
 aiosqlite==0.21.0
+aiofiles==24.1.0

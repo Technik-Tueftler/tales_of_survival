@@ -32,3 +32,11 @@
         - Fremder an der Tür, bittet um Hilfe, dass ihr in der nächsten Stadt die Apotheke mit ihm plündert.
         - Zerstörung der Tür durch einen Zombie.
         - Die Gruppe lässt versehentlich das Licht am Auto die ganze Nacht an.
+
+- name: Weltraum Alien Liebesgeschichte
+  storytelling-type:
+  atmosphere: fröhlich
+  language: deutsch
+  inspirational-words:
+    - chance: 50
+      words: [Tentakel, liebe]

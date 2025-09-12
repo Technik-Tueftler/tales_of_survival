@@ -14,8 +14,14 @@ async def main():
     await src.sync_db(config.engine)
     src.init_logging(config)
     config.logger.info(f"Start application in version: {src.__version__}")
-    await src.test_db(config)
-    # src.openai_test(config)
+    ########
+    #data = await src.load_yaml("files/template_genre.yml")
+    #await src.create_genre_from_input(config, data)
+    #data = await src.load_yaml("files/template_character.yml")
+    #await src.create_character_from_input(config, data)
+    ########
+    # await src.test_db8(config)
+    await src.openai_test(config)
 
 
 if __name__ == "__main__":

@@ -230,3 +230,6 @@ class CHARACTER(Base):
     game_date: Mapped[datetime] = mapped_column(nullable=True)
     user_id: Mapped[int|None] = mapped_column(ForeignKey("users.id"), nullable=True)
     user: Mapped["USER"] = relationship(back_populates="characters")
+    
+    def __repr__(self) -> str:
+        return f"Character(id={self.id}, name={self.name})"

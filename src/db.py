@@ -6,8 +6,17 @@ general database related functions.
 from datetime import datetime, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import SQLAlchemyError
-from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME, USER, CHARACTER
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from .db_classes import (
+    INSPIRATIONALWORD,
+    GENRE,
+    EVENT,
+    TALE,
+    STORY,
+    GAME,
+    USER,
+    CHARACTER,
+)
 from .configuration import Configuration
 
 
@@ -37,7 +46,7 @@ async def test_db8(config: Configuration):
                     description="nein nein",
                     pos_trait="sehr gut",
                     neg_trait="schnlecht",
-                    summary="Sagt zu viel nein"
+                    summary="Sagt zu viel nein",
                 )
                 session.add(test_char)
 
@@ -58,7 +67,7 @@ async def test_db7(config: Configuration):
                     description="Markus ist ein praktischer, bodenständiger Mann, dessen Hände vom Arbeiten mit Holz und Werkzeugen gezeichnet sind. Schon vor dem Ausbruch war er jemand, der lieber etwas reparierte, anstatt es neu zu kaufen. Sein handwerkliches Geschick macht ihn in einer Welt des Zerfalls zu einem wertvollen Überlebenden – er kann schnell improvisieren und aus begrenzten Ressourcen funktionale Werkzeuge oder Barrikaden bauen. Doch so nützlich diese Fähigkeiten auch sind, Markus trägt auch eine schwer wiegende Schwäche in sich. Er ist ungeschickt im Umgang mit anderen Menschen, denn seit jeher fällt es ihm schwer, Vertrauen zu schenken und im Team zu arbeiten. In Gefahrensituationen neigt er dazu, eigensinnig Entscheidungen zu treffen, manchmal auf Kosten der Gruppe.",
                     pos_trait="Handy (geschickt mit Werkzeugen, kann Reparaturen schneller und effizienter durchführen)",
                     neg_trait="Cowardly / Ängstlich (gerät in Panik, wenn die Situation brenzlig wird, was seine Handlungen unzuverlässig machen kann)",
-                    summary="Markus ist ein Überlebender, der zwischen seinem praktischen Talent und seinen inneren Ängsten steht. Seine größte Stärke – sein Können mit den Händen – könnte die Gruppe retten. Doch wenn der Druck zu groß wird, könnten gerade seine Unsicherheiten alles ins Wanken bringen."
+                    summary="Markus ist ein Überlebender, der zwischen seinem praktischen Talent und seinen inneren Ängsten steht. Seine größte Stärke – sein Können mit den Händen – könnte die Gruppe retten. Doch wenn der Druck zu groß wird, könnten gerade seine Unsicherheiten alles ins Wanken bringen.",
                 )
                 markus_weber.user = user2
                 markus_weber.game_date = datetime.now(timezone.utc)
@@ -230,3 +239,64 @@ async def get_genre_f_name(config: Configuration, genre_name: str) -> GENRE | No
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
         return None
+
+
+async def create_genre_from_input(config: Configuration, data: dict) -> None:
+    try:
+        final_genre = []
+        for genre in data:
+            temp_genre = GENRE(
+                name=genre["name"],
+                storytelling_style=genre["storytelling-type"],
+                atmosphere=genre["atmosphere"],
+                language=genre["language"],
+            )
+            for insp_word in genre.get("inspirational-words", []):
+                temp_genre.inspirational_words.extend(
+                    INSPIRATIONALWORD(text=word, chance=insp_word["chance"])
+                    for word in insp_word["words"]
+                )
+            for events in genre.get("events", []):
+                temp_genre.events.extend(
+                    EVENT(text=event, chance=events["chance"])
+                    for event in events["event"]
+                )
+            final_genre.append(temp_genre)
+        async with config.write_lock:
+            async with config.session() as session:
+                async with session.begin():
+                    session.add_all(final_genre)
+    except KeyError as err:
+        print(err)
+    except IntegrityError as err:
+        print(err)
+
+
+async def create_character_from_input(config: Configuration, data: dict) -> None:
+    try:
+        async with config.write_lock, config.session() as session, session.begin():
+            session.add_all(
+                [
+                    CHARACTER(
+                        name=character["name"],
+                        age=character["age"],
+                        background=character["background"],
+                        description=character["description"],
+                        pos_trait=character["pos_trait"],
+                        neg_trait=character["neg_trait"],
+                        summary=character["summary"],
+                    )
+                    for character in data
+                ]
+            )
+    except IntegrityError as err:
+        print(err)
+
+
+async def get_characters_from_ids(config: Configuration, ids: list[int]) -> None:
+    async with config.session() as session, session.begin():
+        return (
+            (await session.execute(select(CHARACTER).where(CHARACTER.id.in_(ids))))
+            .scalars()
+            .all()
+        )
