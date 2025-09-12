@@ -214,6 +214,9 @@ class USER(Base):
 
 
 class CHARACTER(Base):
+    """
+    Class definition for playable characters. 
+    """
     __tablename__ = "characters"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)

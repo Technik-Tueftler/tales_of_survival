@@ -1,0 +1,34 @@
+- name: Zombie Apokalypse
+  storytelling-type: Epistolarer Roman
+  atmosphere: düster
+  language: deutsch
+  inspirational-words:
+    - chance: 50
+      words: [Barrikade, Taschenlampe, Regen, Flucht, Verzweiflung, Hoffnung, Holzbrett, Blutspur, Schreie, Misstrauen, Gemeinschaft, Verbündete, Rucksack, Schmerz, Karte, Fluss, Wälder, Dachboden, Benzin, Dunkelheit, Rauch, Panik, Mut, Hunger, Durst, Nachtwache, Zuflucht, Angst, Eisenstange, Nägel, Vertrauen, Zweifel, Schlafsack, Keller, Fenster, Türrahmen, Axt, Zäune, Dornen, Geruch, Stille, Knurren, Taschenmesser, Vorräte, Konserve, Regenwasser, Schlamm, Ruinen, Brücke, Lagerfeuer, Wacheschieben, Schweiß, Schrotflinte, Patronen, Geräusch, Schatten, Geröll, Zusammenhalt, Entscheidung, Hoffnungslosigkeit, Neuanfang, Brief, Erinnerung, Foto, Versteck, Kälte, Medizin, Verband, Werkzeugkasten, Funkgerät, Kerzen, Tisch, Schlafmangel, Albträume, Schrecken, Mutprobe, Aufbruch, Handschuhe, Helm, Funke, Angstschrei, Ohnmacht, Signal, Zufall, Rettung, Säge, Holzsplitter, Erschöpfung, Morgengrauen, Schrecken, Hoffnung, Risiko]
+    - chance: 10
+      words:
+        - Streit
+        - Krankheit
+    - chance: 1
+      words:
+        - Verletzung
+        - Generator
+        - Feuer
+        - Verletzte
+        - Krankenstation
+  events:
+    - chance: 50
+      event:
+        - Zerstörung eines Fensters durch einen Zombie.
+        - Beim plündern erschreckt sich ein Gruppenmitglied und schreit.
+    - chance: 20
+      event:
+        - Ein Gruppenmitglied (entscheide selbst welches), verfällt in trauer und bleibt 2 Tage in seinem Zimmer alleine.
+        - Ein Gruppenmitglied (entscheide selbst welches), trinkt beim nächsten plündern zwei gefundene Biere.
+        - Ein Gruppenmitglied (entscheide selbst welches), bringt einen Fremden mit, der über Nacht ein Brecheisen und 5 Gerichte klaut.
+    - chance: 10
+      event:
+        - Rattenplage/Ungeziefer, vernichte 50% aller frischen Lebensmittel.
+        - Fremder an der Tür, bittet um Hilfe, dass ihr in der nächsten Stadt die Apotheke mit ihm plündert.
+        - Zerstörung der Tür durch einen Zombie.
+        - Die Gruppe lässt versehentlich das Licht am Auto die ganze Nacht an.

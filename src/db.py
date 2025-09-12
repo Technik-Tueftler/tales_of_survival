@@ -9,7 +9,6 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError
 from .db_classes import INSPIRATIONALWORD, GENRE, EVENT, TALE, STORY, GAME, USER, CHARACTER
 from .configuration import Configuration
-from .testtest import markus_weber
 
 
 async def test_db(config: Configuration):
@@ -20,6 +19,27 @@ async def test_db(config: Configuration):
     await test_db5(config)
     await test_db6(config)
     await test_db7(config)
+    await test_db8(config)
+
+
+async def test_db8(config: Configuration):
+    """
+    Test
+    """
+    print(20 * "#" + " Start Test 8 " + 20 * "#")
+    async with config.write_lock:
+        async with config.session() as session:
+            async with session.begin():
+                test_char = CHARACTER(
+                    name="Name",
+                    age=34,
+                    background="jaja",
+                    description="nein nein",
+                    pos_trait="sehr gut",
+                    neg_trait="schnlecht",
+                    summary="Sagt zu viel nein"
+                )
+                session.add(test_char)
 
 
 async def test_db7(config: Configuration):
@@ -31,8 +51,17 @@ async def test_db7(config: Configuration):
         async with config.session() as session:
             async with session.begin():
                 user2 = USER(name="Fire", dc_id="123456789")
-                markus_weber.user=user2
-                markus_weber.game_date=datetime.now(timezone.utc)
+                markus_weber = CHARACTER(
+                    name="Markus Weber",
+                    age=34,
+                    background="Gelernter Schreiner, aufgewachsen in einer Kleinstadt in Kentucky.",
+                    description="Markus ist ein praktischer, bodenständiger Mann, dessen Hände vom Arbeiten mit Holz und Werkzeugen gezeichnet sind. Schon vor dem Ausbruch war er jemand, der lieber etwas reparierte, anstatt es neu zu kaufen. Sein handwerkliches Geschick macht ihn in einer Welt des Zerfalls zu einem wertvollen Überlebenden – er kann schnell improvisieren und aus begrenzten Ressourcen funktionale Werkzeuge oder Barrikaden bauen. Doch so nützlich diese Fähigkeiten auch sind, Markus trägt auch eine schwer wiegende Schwäche in sich. Er ist ungeschickt im Umgang mit anderen Menschen, denn seit jeher fällt es ihm schwer, Vertrauen zu schenken und im Team zu arbeiten. In Gefahrensituationen neigt er dazu, eigensinnig Entscheidungen zu treffen, manchmal auf Kosten der Gruppe.",
+                    pos_trait="Handy (geschickt mit Werkzeugen, kann Reparaturen schneller und effizienter durchführen)",
+                    neg_trait="Cowardly / Ängstlich (gerät in Panik, wenn die Situation brenzlig wird, was seine Handlungen unzuverlässig machen kann)",
+                    summary="Markus ist ein Überlebender, der zwischen seinem praktischen Talent und seinen inneren Ängsten steht. Seine größte Stärke – sein Können mit den Händen – könnte die Gruppe retten. Doch wenn der Druck zu groß wird, könnten gerade seine Unsicherheiten alles ins Wanken bringen."
+                )
+                markus_weber.user = user2
+                markus_weber.game_date = datetime.now(timezone.utc)
                 session.add(markus_weber)
 
 
@@ -92,9 +121,7 @@ async def test_db4(config: Configuration):
         async with session.begin():
             tale = (
                 await session.execute(
-                    select(TALE)
-                    .where(TALE.id == 2)
-                    .options(selectinload(TALE.stories))
+                    select(TALE).where(TALE.id == 2).options(selectinload(TALE.stories))
                 )
             ).scalar_one_or_none()
     for story in tale.stories:
@@ -157,9 +184,7 @@ async def test_db1(config: Configuration):
                 insp_word4 = INSPIRATIONALWORD(text="Honor", chance=0.5)
                 event1 = EVENT(text="A wild beast appears!", chance=0.7)
                 event2 = EVENT(text="You find a hidden treasure!", chance=0.3)
-                genre1.inspirational_words.extend(
-                    [insp_word1, insp_word2, insp_word3]
-                )
+                genre1.inspirational_words.extend([insp_word1, insp_word2, insp_word3])
                 genre2.inspirational_words.append(insp_word4)
                 genre1.events.append(event1)
                 genre2.events.append(event2)

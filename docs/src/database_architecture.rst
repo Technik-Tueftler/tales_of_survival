@@ -80,3 +80,33 @@ Context classes
 
 .. note::
     Die tabellen in rosa können durch imports angepasst, verändert oder erweitert werden. So kann eine individuelle Anpassung der Geschichten an die Bedürfnisse der Spieler vorgenommen werden und so immer neue und spannende Geschichten entstehen.
+
+
+Discord command workflow
+------------------------
+
+.. mermaid ::
+    flowchart TD
+        A[Recognized command] --> | Create object:
+        story-input | B[(Database)]
+        
+        B --> | fetch ID | C[[Game
+        select-view]]
+
+        C --> | Game selected | D[[Story type
+        button-view]]
+        
+        D --> | Event | E[Select random
+        event]
+        
+        E --> F[Update object:
+        story-input]
+        
+        D --> | Story | G[[input
+        text-view]]
+        
+        G --> | input empty | H[Select random
+        inspi word]
+        
+        H --> F
+        G --> | text input | F
