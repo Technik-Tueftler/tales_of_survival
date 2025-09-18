@@ -1,3 +1,6 @@
+"""
+This file contains all functions and definitions required for document handling.
+"""
 import yaml
 import aiofiles
 

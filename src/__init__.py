@@ -11,6 +11,7 @@ from .db_classes import *
 from .db import *
 from .test import * # TODO: löschen
 from .file_utils import *
+from .discord_bot import *
 from .tetue_generic import __gen_version__
 from .tetue_generic.generic_requests import *
 from .tetue_generic.watcher import *

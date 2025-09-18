@@ -15,6 +15,14 @@ load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
 
 
+@environ.config(prefix="DC")
+class DcConfiguration:
+    """
+    Configuration model for the discord
+    """
+    bot_token: str = environ.var(converter=str)
+
+
 @environ.config(prefix="TT")
 class EnvConfiguration:
     """
@@ -22,11 +30,12 @@ class EnvConfiguration:
     """
 
     api_key = environ.var("ollama", converter=str)
-    base_url = environ.var("http://192.168.178.6:11434/v1", converter=str)
+    base_url = environ.var("localhost:11434/v1", converter=str)
     model = environ.var("llama3.2:3b", converter=str)
     gen_req = environ.group(GenReqConfiguration)
     watcher = environ.group(WatcherConfiguration)
     db = environ.group(DbConfiguration)
+    dc = environ.group(DcConfiguration)
 
 
 class Configuration:
