@@ -31,7 +31,7 @@
         }
     ],
     // "todohighlight.keywordsPattern": "config\\.watcher\\.logger\\.debug\\(\\s*([\\s\\S]*?)\\s*\\)", 
-    "todohighlight.keywordsPattern": "config\\.watcher\\.logger\\.[a-zA-Z_][a-zA-Z0-9_]*\\(\\s*([\\s\\S]*?)\\s*\\)", 
+    "todohighlight.keywordsPattern": "config\\.logger\\.[a-zA-Z_][a-zA-Z0-9_]*\\(\\s*([\\s\\S]*?)\\s*\\)", 
     "todohighlight.defaultStyle": {
         "color": "#444444",
         "backgroundColor": "#222222",
