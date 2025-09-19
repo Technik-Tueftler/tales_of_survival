@@ -300,3 +300,11 @@ async def get_characters_from_ids(config: Configuration, ids: list[int]) -> None
             .scalars()
             .all()
         )
+
+async def get_all_genre(config: Configuration) -> list[GENRE]:
+    async with config.session() as session, session.begin():
+        return (
+            (await session.execute(select(GENRE)))
+            .scalars()
+            .all()
+        )

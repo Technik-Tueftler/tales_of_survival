@@ -21,7 +21,7 @@ class DiscordBot:
         intents = discord.Intents.default()
         intents.members = True
         intents.message_content = True
-        intents.reactions = True
+        # intents.reactions = True
         self.bot = commands.Bot(command_prefix="!", intents=intents)
 
         @self.bot.event
