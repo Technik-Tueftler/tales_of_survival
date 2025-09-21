@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 from .configuration import Configuration
 from .game import create_game, keep_telling
+from .file_utils import import_data
 
 
 class DiscordBot:
@@ -66,12 +67,20 @@ class DiscordBot:
         async def wrapped_keep_telling(interaction: discord.Interaction):
             await keep_telling(interaction, self.config)
 
+        async def wrapped_import_data(interaction: discord.Interaction):
+            await import_data(interaction, self.config)
+
         self.bot.tree.command(
             name="create_game",
-            description=("Create a new game and set the parameters."),
+            description="Create a new game and set the parameters.",
         )(wrapped_create_game)
 
         self.bot.tree.command(
             name="keep_telling",
-            description=("Continue the story of a game."),
+            description="Continue the story of a game.",
         )(wrapped_keep_telling)
+
+        self.bot.tree.command(
+            name="import_data",
+            description="Import game data",
+        )(wrapped_import_data)
