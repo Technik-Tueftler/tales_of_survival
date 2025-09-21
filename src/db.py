@@ -4,6 +4,7 @@ general database related functions.
 """
 
 from datetime import datetime, timezone
+import discord
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
@@ -202,7 +203,9 @@ async def test_db1(config: Configuration):
                 session.add(tale)
 
 
-async def get_genre_f_name(config: Configuration, genre_name: str) -> GENRE | None:
+async def get_genre_double_cond(
+    config: Configuration, genre_id: int, genre_name: str = None
+) -> GENRE | None:
     """
     This function retrieves the last GENRE object from the database based on the
     provided genre name. The reason for returning the last entry is to manage
@@ -217,25 +220,28 @@ async def get_genre_f_name(config: Configuration, genre_name: str) -> GENRE | No
         GENRE | None: Found last genre with loaded inspirational words and events or None
     """
     try:
-        config.logger.trace(f"Entering function with argument: {genre_name}")
-        async with config.session() as session:
-            async with session.begin():
-                genres = (
-                    (
-                        await session.execute(
-                            select(GENRE)
-                            .where(GENRE.name == genre_name)
-                            .options(selectinload(GENRE.inspirational_words))
-                            .options(selectinload(GENRE.events))
-                        )
+        config.logger.trace(f"Entering function with argument: {genre_id, genre_name}")
+        async with config.session() as session, session.begin():
+            if genre_name:
+                filter_stmt = GENRE.name == genre_name
+            else:
+                filter_stmt = GENRE.id == genre_id
+            genres = (
+                (
+                    await session.execute(
+                        select(GENRE)
+                        .where(filter_stmt)
+                        .options(selectinload(GENRE.inspirational_words))
+                        .options(selectinload(GENRE.events))
                     )
-                    .scalars()
-                    .all()
                 )
-                if not genres:
-                    config.logger.debug("No genre found and return None")
-                    return None
-                return genres[-1]
+                .scalars()
+                .all()
+            )
+            if not genres:
+                config.logger.debug("No genre found and return None")
+                return None
+            return genres[-1]
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
         return None
@@ -301,10 +307,54 @@ async def get_characters_from_ids(config: Configuration, ids: list[int]) -> None
             .all()
         )
 
+
 async def get_all_genre(config: Configuration) -> list[GENRE]:
     async with config.session() as session, session.begin():
-        return (
-            (await session.execute(select(GENRE)))
-            .scalars()
-            .all()
-        )
+        return (await session.execute(select(GENRE))).scalars().all()
+
+
+async def process_player(
+    config: Configuration, user_list: list[discord.member.Member]
+) -> list[USER]:
+    """
+    Function to process a user list and add them to the database if they are not already there.
+
+    Args:
+        config (Configuration): App configuration
+        user_list (list[discord.member.Member]): List of users to process
+
+    Returns:
+        list[User]: processed user list
+    """
+    processed_user_list = []
+    async with config.write_lock, config.session() as session, session.begin():
+        for user in user_list:
+            temp_user = (
+                await session.execute(select(USER).filter(USER.dc_id == user.id))
+            ).scalar_one_or_none()
+            if temp_user is None:
+                temp_user = USER(name=user.name, dc_id=user.id)
+                session.add(temp_user)
+                config.logger.debug(f"User {temp_user.name} added to the database.")
+            processed_user_list.append(temp_user)
+    return processed_user_list
+
+
+async def update_db_objs(
+    config: Configuration,
+    objs: list[GAME | USER | TALE | GENRE],
+) -> None:
+    """
+    Function to update a game or player object in the database
+
+    Args:
+        config (Configuration): App configuration
+        obj (GAME | USER | TALE | GENRE): Object to update in the database
+    """
+    async with config.write_lock, config.session() as session, session.begin():
+        session.add_all(objs)
+        await session.flush()
+        for obj in objs:
+            config.logger.trace(
+                f"Updated object in database: {obj.__class__.__name__} with ID: {obj.id}"
+            )
