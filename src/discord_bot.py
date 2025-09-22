@@ -42,18 +42,15 @@ class DiscordBot:
         """
         Event function to print a message when the bot is online.
         """
-        try:
-            self.config.logger.info(f"{self.bot.user} ist online")
-            synced = await self.bot.tree.sync()
-            self.config.logger.info(f"Slash Commands synchronisiert: {len(synced)}")
-            await self.bot.change_presence(
-                status=discord.Status.online,
-                activity=discord.Activity(
-                    type=discord.ActivityType.listening, name="storyteller"
-                ),
-            )
-        except Exception as err:
-            print(err)
+        self.config.logger.info(f"{self.bot.user} ist online")
+        synced = await self.bot.tree.sync()
+        self.config.logger.info(f"Slash Commands synchronisiert: {len(synced)}")
+        await self.bot.change_presence(
+            status=discord.Status.online,
+            activity=discord.Activity(
+                type=discord.ActivityType.listening, name="storyteller"
+            ),
+        )
 
     def register_commands(self):
         """

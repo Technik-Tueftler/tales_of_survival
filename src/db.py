@@ -3,22 +3,25 @@ This File contains the database setup, initialization functions and
 general database related functions.
 """
 
+from dataclasses import dataclass
 from datetime import datetime, timezone
+
 import discord
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import selectinload
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from .db_classes import (
-    INSPIRATIONALWORD,
-    GENRE,
-    EVENT,
-    TALE,
-    STORY,
-    GAME,
-    USER,
-    CHARACTER,
-)
+
 from .configuration import Configuration
+from .db_classes import (CHARACTER, EVENT, GAME, GENRE, INSPIRATIONALWORD,
+                         STORY, TALE, USER)
+
+
+@dataclass
+class ImportResult:
+    file_path: str
+    data: dict
+    success: bool = False
+    import_number: int = 0
 
 
 async def test_db(config: Configuration):
@@ -80,26 +83,24 @@ async def test_db6(config: Configuration):
     Test
     """
     print(20 * "#" + " Start Test 6 " + 20 * "#")
-    async with config.write_lock:
-        async with config.session() as session:
-            async with session.begin():
-                genre = GENRE(name="Horror", language="deutsch")
-                tale = TALE(genre=genre)
-                game = GAME(
-                    game_name="Hit and Run with Ice",
-                    start_date=datetime.now(timezone.utc),
-                    message_id=23456789,
-                    tale=tale,
-                )
-                user = USER(name="Ice", dc_id="123456789")
-                game2 = GAME(
-                    game_name="Two Hits and Run with Ice",
-                    start_date=datetime.now(timezone.utc),
-                    message_id=3456780,
-                    tale=tale,
-                )
-                user2 = USER(name="Jo", dc_id="12345678", games=[game2])
-                session.add_all([game, user, user2])
+    async with config.write_lock, config.session() as session, session.begin():
+        genre = GENRE(name="Horror", language="deutsch")
+        tale = TALE(genre=genre)
+        game = GAME(
+            game_name="Hit and Run with Ice",
+            start_date=datetime.now(timezone.utc),
+            message_id=23456789,
+            tale=tale,
+        )
+        user = USER(name="Ice", dc_id="123456789")
+        game2 = GAME(
+            game_name="Two Hits and Run with Ice",
+            start_date=datetime.now(timezone.utc),
+            message_id=3456780,
+            tale=tale,
+        )
+        user2 = USER(name="Jo", dc_id="12345678", games=[game2])
+        session.add_all([game, user, user2])
 
 
 async def test_db5(config: Configuration):
@@ -247,10 +248,10 @@ async def get_genre_double_cond(
         return None
 
 
-async def create_genre_from_input(config: Configuration, data: dict) -> None:
+async def create_genre_from_input(config: Configuration, result: ImportResult):
     try:
         final_genre = []
-        for genre in data:
+        for genre in result.data:
             temp_genre = GENRE(
                 name=genre["name"],
                 storytelling_style=genre["storytelling-type"],
@@ -268,35 +269,34 @@ async def create_genre_from_input(config: Configuration, data: dict) -> None:
                     for event in events["event"]
                 )
             final_genre.append(temp_genre)
-        async with config.write_lock:
-            async with config.session() as session:
-                async with session.begin():
-                    session.add_all(final_genre)
-    except KeyError as err:
-        print(err)
-    except IntegrityError as err:
-        print(err)
+        async with config.write_lock, config.session() as session, session.begin():
+            session.add_all(final_genre)
+        result.import_number = len(final_genre)
+        result.success = True
+    except (KeyError, IntegrityError) as err:
+        config.logger.error(f"Error while import genre file: {err}")
 
 
-async def create_character_from_input(config: Configuration, data: dict) -> None:
+async def create_character_from_input(config: Configuration, result: ImportResult):
     try:
         async with config.write_lock, config.session() as session, session.begin():
-            session.add_all(
-                [
-                    CHARACTER(
-                        name=character["name"],
-                        age=character["age"],
-                        background=character["background"],
-                        description=character["description"],
-                        pos_trait=character["pos_trait"],
-                        neg_trait=character["neg_trait"],
-                        summary=character["summary"],
-                    )
-                    for character in data
-                ]
-            )
-    except IntegrityError as err:
-        print(err)
+            final_character = [
+                CHARACTER(
+                    name=character["name"],
+                    age=character["age"],
+                    background=character["background"],
+                    description=character["description"],
+                    pos_trait=character["pos_trait"],
+                    neg_trait=character["neg_trait"],
+                    summary=character["summary"],
+                )
+                for character in result.data
+            ]
+            session.add_all(final_character)
+        result.import_number = len(final_character)
+        result.success = True
+    except (KeyError, IntegrityError) as err:
+        config.logger.error(f"Error while import character file: {err}")
 
 
 async def get_characters_from_ids(config: Configuration, ids: list[int]) -> None:
