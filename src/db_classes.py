@@ -178,15 +178,14 @@ class GAME(Base):
     """
     __tablename__ = "games"
     id: Mapped[int] = mapped_column(primary_key=True)
-    game_name: Mapped[str] = mapped_column(nullable=False)
-    name: Mapped[str] = mapped_column(nullable=True)
+    name: Mapped[str] = mapped_column(nullable=False)
     status = mapped_column(
         AlchemyEnum(GameStatus, native_enum=False, validate_strings=True),
         default=GameStatus.CREATED,
     )
     start_date: Mapped[datetime] = mapped_column(nullable=False)
     end_date: Mapped[datetime] = mapped_column(nullable=True)
-    message_id: Mapped[int] = mapped_column(nullable=False)
+    message_id: Mapped[int] = mapped_column(nullable=True)
     channel_id: Mapped[int] = mapped_column(nullable=True)
     tale_id: Mapped[int] = mapped_column(
         ForeignKey("tales.id"), nullable=False

@@ -12,8 +12,16 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import selectinload
 
 from .configuration import Configuration
-from .db_classes import (CHARACTER, EVENT, GAME, GENRE, INSPIRATIONALWORD,
-                         STORY, TALE, USER)
+from .db_classes import (
+    CHARACTER,
+    EVENT,
+    GAME,
+    GENRE,
+    INSPIRATIONALWORD,
+    STORY,
+    TALE,
+    USER,
+)
 
 
 @dataclass
@@ -242,6 +250,7 @@ async def get_genre_double_cond(
             if not genres:
                 config.logger.debug("No genre found and return None")
                 return None
+            config.logger.debug(f"Found genre with ID {genres[-1].id} annd name {genres[-1].name}")
             return genres[-1]
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
