@@ -4,7 +4,7 @@ import discord
 from discord import Interaction
 
 from .configuration import Configuration
-from .db import GAME, GENRE, TALE
+from .db import GAME, GENRE, TALE, USER
 from .db import get_all_genre, get_genre_double_cond, process_player, update_db_objs
 
 
@@ -81,7 +81,9 @@ class GameInfoModal(discord.ui.Modal, title="Enter the playing hours for each pl
         )
 
 
-async def collect_all_game_contexts(interaction: Interaction, config: Configuration) -> dict:
+async def collect_all_game_contexts(
+    interaction: Interaction, config: Configuration
+) -> dict:
     try:
 
         game_data = {}
@@ -107,6 +109,56 @@ async def collect_all_game_contexts(interaction: Interaction, config: Configurat
         print(err)
 
 
+async def send_game_information(
+    interaction: Interaction,
+    config: Configuration,
+    game: GAME,
+    genre: GENRE,
+    users: list[USER],
+) -> discord.Message:
+    try:
+        embed = discord.Embed(
+            title=game.name,
+            description=f"A new story is being told! (ID: {game.id})",
+            color=discord.Color.green(),
+        )
+        embed.add_field(name="Genre", value=genre.name, inline=False)
+        embed.add_field(name="Language", value=genre.language, inline=True)
+        embed.add_field(name="Style", value=genre.storytelling_style, inline=True)
+        embed.add_field(name="Atmosphere", value=genre.atmosphere, inline=True)
+        embed.add_field(
+            name="The Players:",
+            value=", ".join([f"<@{user.dc_id}>" for user in users]),
+            inline=False,
+        )
+
+        message = await interaction.followup.send(embed=embed)
+        return message
+    except Exception as err:
+        print(err, type(err))
+        # TODO: Error handling?
+
+
+async def inform_players(
+    config: Configuration, users: list[discord.member.Member], message_link: str
+):
+    try:
+        message = f"Hello #USERNAME, you have been invited to participate in **Tales of Survival**. Check: {message_link}"
+        for user in users:
+            temp_message = message.replace("#USERNAME", user.name)
+            await user.send(temp_message)
+    except Exception as err:
+        print(err, type(err))
+
+
+async def create_dc_message_link(
+    config: Configuration, message: discord.Message, interaction: Interaction
+) -> str:
+    message_link = f"https://discord.com/channels/{interaction.guild.id}/{message.channel.id}/{message.id}"
+    config.logger.debug(f"Create message link: {message_link}")
+    return message_link
+
+
 async def create_game(interaction: Interaction, config: Configuration):
     try:
         game_data = await collect_all_game_contexts(interaction, config)
@@ -116,16 +168,24 @@ async def create_game(interaction: Interaction, config: Configuration):
         game = GAME(
             name=game_data["game_name"],
             start_date=datetime.now(timezone.utc),
-            message_id=12345678, # TODO: Muss später auf Nullable True gesetzt werden, da erst die Nachricht erst am Ende aller Einstellungen geschrieben wird.
             tale=tale,
-            users=processed_user_list
+            users=processed_user_list,
         )
         await update_db_objs(config, [game])
+        message = await send_game_information(
+            interaction, config, game, genre, processed_user_list
+        )
+        game.message_id = message.id
+        game.channel_id = message.channel.id
+        config.logger.debug(
+            f"Update game informations: message id {game.message_id}, channel id {game.channel_id}"
+        )
+        await update_db_objs(config, [game])
+        message_link = await create_dc_message_link(config, message, interaction)
+        await inform_players(config, game_data["user"], message_link)
 
-        # 5. Jedem User eine private Nachricht schreiben und einladen
     except Exception as err:
         print(err, type(err))
 
 
-async def keep_telling(interaction: Interaction, config: Configuration):
-    print("Keep telling")
+async def keep_telling(interaction: Interaction, config: Configuration): ...
