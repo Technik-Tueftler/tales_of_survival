@@ -1,5 +1,9 @@
-from datetime import datetime, timezone
+"""
+Module to handle game creation and management
+"""
 
+from datetime import datetime, timezone
+import asyncio
 import discord
 from discord import Interaction
 
@@ -9,6 +13,9 @@ from .db import get_all_genre, get_genre_double_cond, process_player, update_db_
 
 
 class GenreSelect(discord.ui.Select):
+    """
+    Select class to select a genre for a new game.
+    """
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         self.config = config
         self.game_data = game_data
@@ -36,12 +43,18 @@ class GenreSelect(discord.ui.Select):
 
 
 class GenreSelectView(discord.ui.View):
+    """
+    View class to select a genre for a new game.
+    """
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         super().__init__()
         self.add_item(GenreSelect(config, game_data, genres))
 
 
 class UserSelectView(discord.ui.View):
+    """
+    View class to select user for a new game.
+    """
     def __init__(self, config, game_data: dict):
         super().__init__()
         self.config = config
@@ -56,6 +69,9 @@ class UserSelectView(discord.ui.View):
     async def user_select(
         self, interaction: discord.Interaction, select: discord.ui.UserSelect
     ):
+        """
+        Callback function when a user is selected.
+        """
         self.game_data["user"] = select.values
         await interaction.response.edit_message(
             content="You have chosen the player for the new game.",
@@ -63,7 +79,10 @@ class UserSelectView(discord.ui.View):
         self.stop()
 
 
-class GameInfoModal(discord.ui.Modal, title="Enter the playing hours for each player"):
+class GameInfoModal(discord.ui.Modal, title="Please enter the last game information"):
+    """
+    Modal class to enter general game information.
+    """
     def __init__(self, game_data: dict):
         super().__init__()
         self.game_data = game_data
@@ -75,6 +94,9 @@ class GameInfoModal(discord.ui.Modal, title="Enter the playing hours for each pl
     async def on_submit(
         self, interaction: discord.Interaction
     ):  # pylint: disable=arguments-differ
+        """
+        Callback function when the modal is submitted.
+        """
         self.game_data["game_name"] = self.game_name_input.value
         await interaction.response.edit_message(
             content="All other game information has been entered.",
@@ -84,9 +106,18 @@ class GameInfoModal(discord.ui.Modal, title="Enter the playing hours for each pl
 async def collect_all_game_contexts(
     interaction: Interaction, config: Configuration
 ) -> dict:
-    try:
+    """
+    Function to collect all necessary game contexts from user interactions.
 
-        game_data = {}
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+
+    Returns:
+        dict: game data collected from user interactions
+    """
+    try:
+        game_data = {"Valid": False}
         user_view = UserSelectView(config, game_data)
         await interaction.response.send_message(
             "Please select all players for the new story.",
@@ -103,10 +134,20 @@ async def collect_all_game_contexts(
             ephemeral=True,
         )
         await genre_view.wait()
-        print(game_data)
+        game_data["Valid"] = True
         return game_data
-    except Exception as err:
-        print(err)
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+        return game_data
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message: {err}")
+        return game_data
+    except (TypeError, ValueError) as err:
+        config.logger.error(f"General error occurred: {err}")
+        return game_data
+    except asyncio.TimeoutError as err:
+        config.logger.error(f"Timeout error occurred: {err}")
+        return game_data
 
 
 async def send_game_information(
@@ -116,6 +157,19 @@ async def send_game_information(
     genre: GENRE,
     users: list[USER],
 ) -> discord.Message:
+    """
+    Functions create and send a Discord message with game information to a channel.
+
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+        game (GAME): Game object
+        genre (GENRE): Genre object from game
+        users (list[USER]): All player of the game
+
+    Returns:
+        discord.Message: Discord message object
+    """
     try:
         embed = discord.Embed(
             title=game.name,
@@ -134,32 +188,69 @@ async def send_game_information(
 
         message = await interaction.followup.send(embed=embed)
         return message
-    except Exception as err:
-        print(err, type(err))
-        # TODO: Error handling?
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message: {err}")
+    except (TypeError, ValueError) as err:
+        config.logger.error(f"General error occurred: {err}")
 
 
 async def inform_players(
     config: Configuration, users: list[discord.member.Member], message_link: str
 ):
+    """
+    Send a DM to each player to inform them about the new game.
+
+    Args:
+        config (Configuration): App configuration
+        users (list[discord.member.Member]): All player of the game
+        message_link (str): Link to the game information message
+    """
     try:
-        message = f"Hello #USERNAME, you have been invited to participate in **Tales of Survival**. Check: {message_link}"
+        message = (
+            "Hello #USERNAME, you have been invited to participate in "
+            f"**Tales of Survival**. Check: {message_link}"
+        )
         for user in users:
             temp_message = message.replace("#USERNAME", user.name)
             await user.send(temp_message)
-    except Exception as err:
-        print(err, type(err))
+    except discord.Forbidden:
+        config.logger.error(f"Cannot send message to {user.name}, permission denied.")
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message to {user.name}: {err}")
 
 
 async def create_dc_message_link(
     config: Configuration, message: discord.Message, interaction: Interaction
 ) -> str:
-    message_link = f"https://discord.com/channels/{interaction.guild.id}/{message.channel.id}/{message.id}"
+    """
+    Function to create a link to a specific Discord message.
+
+    Args:
+        config (Configuration): App configuration
+        message (discord.Message): General message object to collect ids
+        interaction (Interaction): Last interaction to collect guild id
+
+    Returns:
+        str: Message link in the format
+    """
+    message_link = (
+        f"https://discord.com/channels/{interaction.guild.id}"
+        f"/{message.channel.id}/{message.id}"
+    )
     config.logger.debug(f"Create message link: {message_link}")
     return message_link
 
 
 async def create_game(interaction: Interaction, config: Configuration):
+    """
+    Create a new game based on user inputs from Discord interactions.
+
+    Args:
+        interaction (Interaction): Intgeraction object from Discord
+        config (Configuration): App configuration
+    """
     try:
         game_data = await collect_all_game_contexts(interaction, config)
         genre = await get_genre_double_cond(config, game_data["genre_id"])
@@ -184,8 +275,14 @@ async def create_game(interaction: Interaction, config: Configuration):
         message_link = await create_dc_message_link(config, message, interaction)
         await inform_players(config, game_data["user"], message_link)
 
-    except Exception as err:
-        print(err, type(err))
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message: {err}")
+    except (TypeError, ValueError) as err:
+        config.logger.error(f"General error occurred: {err}")
+    except asyncio.TimeoutError as err:
+        config.logger.error(f"Timeout error occurred: {err}")
 
 
 async def keep_telling(interaction: Interaction, config: Configuration): ...

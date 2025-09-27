@@ -26,6 +26,9 @@ from .db_classes import (
 
 @dataclass
 class ImportResult:
+    """
+    Result class from importing a file.
+    """
     file_path: str
     data: dict
     success: bool = False
@@ -258,6 +261,13 @@ async def get_genre_double_cond(
 
 
 async def create_genre_from_input(config: Configuration, result: ImportResult):
+    """
+    Function to create genre from imported file.
+
+    Args:
+        config (Configuration): App configuration
+        result (ImportResult): Result class from importing a file
+    """
     try:
         final_genre = []
         for genre in result.data:
@@ -287,6 +297,13 @@ async def create_genre_from_input(config: Configuration, result: ImportResult):
 
 
 async def create_character_from_input(config: Configuration, result: ImportResult):
+    """
+    Function to create character from imported file.
+
+    Args:
+        config (Configuration): App configuration
+        result (ImportResult): Result class from importing a file
+    """
     try:
         async with config.write_lock, config.session() as session, session.begin():
             final_character = [
@@ -308,7 +325,17 @@ async def create_character_from_input(config: Configuration, result: ImportResul
         config.logger.error(f"Error while import character file: {err}")
 
 
-async def get_characters_from_ids(config: Configuration, ids: list[int]) -> None:
+async def get_characters_from_ids(config: Configuration, ids: list[int]) -> list[CHARACTER]:
+    """
+    Function to get characters from a list of ids.
+
+    Args:
+        config (Configuration): App configuration
+        ids (list[int]): List with all character ids
+
+    Returns:
+        list[CHARACTER]: List of characters
+    """
     async with config.session() as session, session.begin():
         return (
             (await session.execute(select(CHARACTER).where(CHARACTER.id.in_(ids))))
@@ -318,6 +345,15 @@ async def get_characters_from_ids(config: Configuration, ids: list[int]) -> None
 
 
 async def get_all_genre(config: Configuration) -> list[GENRE]:
+    """
+    Function to get all genres from the database.
+
+    Args:
+        config (Configuration): App configuration
+
+    Returns:
+        list[GENRE]: List of all genres in the database
+    """
     async with config.session() as session, session.begin():
         return (await session.execute(select(GENRE))).scalars().all()
 
