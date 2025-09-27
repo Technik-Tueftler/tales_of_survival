@@ -120,9 +120,10 @@ class GENRE(Base):
     language: Mapped[str] = mapped_column(nullable=False)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
-    tale: Mapped["TALE"] = relationship(
-        "TALE", back_populates="genre", uselist=False
-    )  # 1:1
+    # tale: Mapped["TALE"] = relationship(
+    #     "TALE", back_populates="genre", uselist=False
+    # )  # 1:1
+    tales: Mapped[list["TALE"]] = relationship("TALE", back_populates="genre")
 
     def __repr__(self) -> str:
         return f"Genre(id={self.id}, name={self.name})"
@@ -157,12 +158,14 @@ class TALE(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     genre_id: Mapped[int] = mapped_column(
         ForeignKey("genres.id"), nullable=False
-    )  # 1:1
-    genre: Mapped[GENRE] = relationship("GENRE", back_populates="tale", uselist=False)
+    )
+    # genre: Mapped[GENRE] = relationship("GENRE", back_populates="tale", uselist=False) # 1:1
+    genre: Mapped[GENRE] = relationship("GENRE", back_populates="tales")
+
     stories: Mapped[list["STORY"]] = relationship()  # 1:N
     game: Mapped["GAME"] = relationship(
         "GAME", back_populates="tale", uselist=False
-    )  # 1:1 TODO: Game id noch auflisten, da jedes Tale ein Game zwingend brauch?
+    )
 
 association_user_game = Table(
     "association_user_game",
