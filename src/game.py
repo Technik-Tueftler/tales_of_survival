@@ -9,7 +9,46 @@ from discord import Interaction
 
 from .configuration import Configuration
 from .db import GAME, GENRE, TALE, USER
-from .db import get_all_genre, get_genre_double_cond, process_player, update_db_objs
+from .db import get_all_genre, get_genre_double_cond, process_player, update_db_objs, get_user_with_games
+
+
+class GameSelect(discord.ui.Select):
+    """
+    Select class to select a genre for a new game.
+    """
+    def __init__(self, config, game_data: dict, genres: list[GENRE]):
+        self.config = config
+        self.game_data = game_data
+        options = [
+            discord.SelectOption(
+                label=f"{genre.id}: {genre.name}",
+                value=str(genre.id),
+                description=f"Style: {genre.storytelling_style}, atmosphere: {genre.atmosphere}",
+            )
+            for genre in genres
+        ]
+        super().__init__(
+            placeholder="Select a genre...",
+            min_values=1,
+            max_values=1,
+            options=options,
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        self.game_data["genre_id"] = self.values[0]
+        game_info_view = GameInfoModal(self.game_data)
+        await interaction.response.send_modal(game_info_view)
+        await game_info_view.wait()
+        self.view.stop()
+
+
+class GameSelectView(discord.ui.View):
+    """
+    View class to select a genre for a new game.
+    """
+    def __init__(self, config, game_data: dict, genres: list[GENRE]):
+        super().__init__()
+        self.add_item(GameSelect(config, game_data, genres))
 
 
 class GenreSelect(discord.ui.Select):
@@ -286,4 +325,22 @@ async def create_game(interaction: Interaction, config: Configuration):
 
 
 async def keep_telling(interaction: Interaction, config: Configuration): ...
-async def select_character(interaction: Interaction, config: Configuration): ...
+
+
+async def select_character(interaction: Interaction, config: Configuration):
+    config.logger.trace(f"User {interaction.user.id} request all games for character selection.")
+    request_data  = {"Valid": True, "user_dc_id": str(interaction.user.id)}
+    await get_user_with_games(config, request_data)
+    if not request_data["Valid"]:
+        await interaction.response.send_message(
+            "An error occurred while retrieving your games. Please try again later.",
+            ephemeral=True,
+        )
+        return
+    game_view = GameSelectView(config, request_data)
+    await interaction.response.send_message(
+        "Please select the game to select your character.",
+        view=game_view,
+        ephemeral=True,
+    )
+    await game_view.wait()
