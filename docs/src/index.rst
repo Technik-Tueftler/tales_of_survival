@@ -6,3 +6,4 @@ App
    :caption: Contents:
 
    database_architecture
+   command_workflow

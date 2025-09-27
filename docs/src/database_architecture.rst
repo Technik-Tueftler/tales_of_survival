@@ -1,21 +1,19 @@
 Database architecture
 ==========================
-
+This document provides an overview of the database architecture used in the project, including the main entities, their relationships, and the workflow for handling Discord commands.
 
 Context classes
 ----------------------
 
 .. mermaid ::
     erDiagram
-        CHARACTER ||--|| PLAYER : "1:1"
+        CHARACTER }|--|| USER : "N:1"
         USER }|--|{ GAME : "N:M"
         GAME ||--|| TALE : "1:1"
         TALE ||--|{ STORY : "1:N"
-        USER ||--|{ PLAYER : "1:N"
         TALE ||--|| GENRE : "1:1"
         InspirationalWords }|--|| GENRE : "N:1"
         EVENT }|--|| GENRE : "N:1"
-        STORY ||--|| STORYTYPE : "1:1"
         style GENRE fill:#f9f,stroke:#333,stroke-width:4px
         style CHARACTER fill:#f9f,stroke:#333,stroke-width:4px
         style InspirationalWords fill:#f9f,stroke:#333,stroke-width:4px
@@ -29,9 +27,6 @@ Context classes
             string pos_trait
             string neg_trait
             string summary
-        }
-        PLAYER {
-            string id
             boolean alive
         }
         GAME {
@@ -52,6 +47,7 @@ Context classes
             string request
             string response
             string summary
+            StoryType story_type
         }
         USER {
             string id
@@ -74,39 +70,6 @@ Context classes
             string text
             int chance
         }
-        STORYTYPE {
-            string id
-        }
 
 .. note::
-    Die tabellen in rosa können durch imports angepasst, verändert oder erweitert werden. So kann eine individuelle Anpassung der Geschichten an die Bedürfnisse der Spieler vorgenommen werden und so immer neue und spannende Geschichten entstehen.
-
-
-Discord command workflow
-------------------------
-
-.. mermaid ::
-    flowchart TD
-        A[Recognized command] --> | Create object:
-        story-input | B[(Database)]
-        
-        B --> | fetch ID | C[[Game
-        select-view]]
-
-        C --> | Game selected | D[[Story type
-        button-view]]
-        
-        D --> | Event | E[Select random
-        event]
-        
-        E --> F[Update object:
-        story-input]
-        
-        D --> | Story | G[[input
-        text-view]]
-        
-        G --> | input empty | H[Select random
-        inspi word]
-        
-        H --> F
-        G --> | text input | F
+    The tables in pink can be customized, modified, or expanded through imports. This allows the stories to be individually tailored to the needs of the players, creating new and exciting stories every time.
