@@ -288,10 +288,13 @@ async def update_db_objs(
         config (Configuration): App configuration
         obj (GAME | USER | TALE | GENRE): Object to update in the database
     """
-    async with config.write_lock, config.session() as session, session.begin():
-        session.add_all(objs)
-        await session.flush()
-        for obj in objs:
-            config.logger.trace(
-                f"Updated object in database: {obj.__class__.__name__} with ID: {obj.id}"
-            )
+    try:
+        async with config.write_lock, config.session() as session, session.begin():
+            session.add_all(objs)
+            await session.flush()
+            for obj in objs:
+                config.logger.trace(
+                    f"Updated object in database: {obj.__class__.__name__} with ID: {obj.id}"
+                )
+    except Exception as err:
+        print(err, type(err))

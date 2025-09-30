@@ -2,7 +2,7 @@
 File containing the database classes and general setups.
 """
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timezone
 import environ
 from sqlalchemy import Column
 from sqlalchemy import Table
@@ -167,12 +167,23 @@ class TALE(Base):
         "GAME", back_populates="tale", uselist=False
     )
 
-association_user_game = Table(
-    "association_user_game",
-    Base.metadata,
-    Column("game_id", ForeignKey("games.id"), primary_key=True), # left
-    Column("user_id", ForeignKey("users.id"), primary_key=True), # right
-)
+
+class UserGameCharacterAssociation(Base):
+    """
+    Association table to link users, games, and characters in a many-to-many relationship.
+    One User can participate in many Games with many Characters
+    One Game can have many Users participating with many Characters
+    """
+    __tablename__ = "association_user_game_character"
+    game_id: Mapped[int] = mapped_column(ForeignKey("games.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=True)
+    begin_date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now(timezone.utc))
+    end_date: Mapped[datetime] = mapped_column(nullable=True)
+
+    game: Mapped["GAME"] = relationship("GAME", back_populates="user_participations")
+    user: Mapped["USER"] = relationship("USER", back_populates="game_participations")
+    character: Mapped["CHARACTER"] = relationship("CHARACTER", back_populates="game_assignments")
 
 
 class GAME(Base):
@@ -195,8 +206,11 @@ class GAME(Base):
     )  # 1:1
     tale: Mapped[TALE] = relationship("TALE", back_populates="game", uselist=False)
     # M:N - Association mit Back_populates
-    users: Mapped[list["USER"]] = relationship(
-        secondary=association_user_game, back_populates="games"
+        # users: Mapped[list["USER"]] = relationship(
+        #     secondary=association_user_game, back_populates="games"
+        # )
+    user_participations: Mapped[list["UserGameCharacterAssociation"]] = relationship(
+        back_populates="game"
     )
 
 
@@ -208,11 +222,12 @@ class USER(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     dc_id: Mapped[str] = mapped_column(nullable=False)
-    # M:N - Association mit Back_populates
-    games: Mapped[list["GAME"]] = relationship(
-        secondary=association_user_game, back_populates="users"
+    characters: Mapped[list["CHARACTER"]] = relationship(
+        back_populates="user"
     )
-    characters: Mapped[list["CHARACTER"]] = relationship(back_populates="user")  # 1:N
+    game_participations: Mapped[list["UserGameCharacterAssociation"]] = relationship(
+        back_populates="user"
+    )
 
 
 class CHARACTER(Base):
@@ -232,6 +247,10 @@ class CHARACTER(Base):
     game_date: Mapped[datetime] = mapped_column(nullable=True)
     user_id: Mapped[int|None] = mapped_column(ForeignKey("users.id"), nullable=True)
     user: Mapped["USER"] = relationship(back_populates="characters")
+
+    game_assignments: Mapped[list["UserGameCharacterAssociation"]] = relationship(
+        back_populates="character"
+    )
 
     def __repr__(self) -> str:
         return f"Character(id={self.id}, name={self.name})"

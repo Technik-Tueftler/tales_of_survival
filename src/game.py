@@ -299,8 +299,8 @@ async def create_game(interaction: Interaction, config: Configuration):
             name=game_data["game_name"],
             start_date=datetime.now(timezone.utc),
             tale=tale,
-            users=processed_user_list,
         )
+        # TODO: GameUserCharacterAssociation erstellen
         await update_db_objs(config, [game])
         message = await send_game_information(
             interaction, config, game, genre, processed_user_list
@@ -322,6 +322,10 @@ async def create_game(interaction: Interaction, config: Configuration):
         config.logger.error(f"General error occurred: {err}")
     except asyncio.TimeoutError as err:
         config.logger.error(f"Timeout error occurred: {err}")
+    except KeyError as err:
+        config.logger.error(f"Missing key in game data or for DB object: {err}")
+    except Exception as err:
+        print(err, type(err))
 
 
 async def keep_telling(interaction: Interaction, config: Configuration): ...
