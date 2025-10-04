@@ -175,8 +175,9 @@ class UserGameCharacterAssociation(Base):
     One Game can have many Users participating with many Characters
     """
     __tablename__ = "association_user_game_character"
-    game_id: Mapped[int] = mapped_column(ForeignKey("games.id"), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    game_id: Mapped[int] = mapped_column(ForeignKey("games.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=True)
     begin_date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now(timezone.utc))
     end_date: Mapped[datetime] = mapped_column(nullable=True)

@@ -8,14 +8,21 @@ import discord
 from discord import Interaction
 
 from .configuration import Configuration
-from .db import GAME, GENRE, TALE, USER
-from .db import get_all_genre, get_genre_double_cond, process_player, update_db_objs, get_user_with_games
+from .db import GAME, GENRE, TALE, USER, UserGameCharacterAssociation
+from .db import (
+    get_all_genre,
+    get_genre_double_cond,
+    process_player,
+    update_db_objs,
+    get_user_with_games,
+)
 
 
 class GameSelect(discord.ui.Select):
     """
     Select class to select a genre for a new game.
     """
+
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         self.config = config
         self.game_data = game_data
@@ -46,6 +53,7 @@ class GameSelectView(discord.ui.View):
     """
     View class to select a genre for a new game.
     """
+
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         super().__init__()
         self.add_item(GameSelect(config, game_data, genres))
@@ -55,6 +63,7 @@ class GenreSelect(discord.ui.Select):
     """
     Select class to select a genre for a new game.
     """
+
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         self.config = config
         self.game_data = game_data
@@ -85,6 +94,7 @@ class GenreSelectView(discord.ui.View):
     """
     View class to select a genre for a new game.
     """
+
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         super().__init__()
         self.add_item(GenreSelect(config, game_data, genres))
@@ -94,6 +104,7 @@ class UserSelectView(discord.ui.View):
     """
     View class to select user for a new game.
     """
+
     def __init__(self, config, game_data: dict):
         super().__init__()
         self.config = config
@@ -122,6 +133,7 @@ class GameInfoModal(discord.ui.Modal, title="Please enter the last game informat
     """
     Modal class to enter general game information.
     """
+
     def __init__(self, game_data: dict):
         super().__init__()
         self.game_data = game_data
@@ -300,8 +312,12 @@ async def create_game(interaction: Interaction, config: Configuration):
             start_date=datetime.now(timezone.utc),
             tale=tale,
         )
-        # TODO: GameUserCharacterAssociation erstellen
         await update_db_objs(config, [game])
+        associations = [
+            UserGameCharacterAssociation(game_id=game.id, user_id=user.id)
+            for user in processed_user_list
+        ]
+        await update_db_objs(config, associations)
         message = await send_game_information(
             interaction, config, game, genre, processed_user_list
         )
@@ -332,8 +348,10 @@ async def keep_telling(interaction: Interaction, config: Configuration): ...
 
 
 async def select_character(interaction: Interaction, config: Configuration):
-    config.logger.trace(f"User {interaction.user.id} request all games for character selection.")
-    request_data  = {"Valid": True, "user_dc_id": str(interaction.user.id)}
+    config.logger.trace(
+        f"User {interaction.user.id} request all games for character selection."
+    )
+    request_data = {"Valid": True, "user_dc_id": str(interaction.user.id)}
     await get_user_with_games(config, request_data)
     if not request_data["Valid"]:
         await interaction.response.send_message(
