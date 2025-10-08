@@ -15,37 +15,82 @@ from .db import (
     process_player,
     update_db_objs,
     get_user_with_games,
+    get_available_characters,
 )
 
 
-class GameSelect(discord.ui.Select):
+class CharacterSelectView(discord.ui.View):
     """
-    Select class to select a genre for a new game.
+    View class to select a character for a game.
     """
 
-    def __init__(self, config, game_data: dict, genres: list[GENRE]):
+    def __init__(self, config, game_data: dict):
+        super().__init__()
+        self.add_item(CharacterSelect(config, game_data))
+
+
+class CharacterSelect(discord.ui.Select):
+    """
+    Select class to select a character for a game.
+    """
+    def __init__(self, config, game_data: dict):
         self.config = config
         self.game_data = game_data
         options = [
             discord.SelectOption(
-                label=f"{genre.id}: {genre.name}",
-                value=str(genre.id),
-                description=f"Style: {genre.storytelling_style}, atmosphere: {genre.atmosphere}",
+                label=f"{char.id}: {char.name}",
+                value=f"{char.id}",
+                description=f"{char.background[:100]}", # TODO: kürzen aber drei Punkte am Ende
             )
-            for genre in genres
+            for char in game_data["available_character"]
         ]
+
         super().__init__(
-            placeholder="Select a genre...",
+            placeholder="Select a character...",
             min_values=1,
             max_values=1,
             options=options,
         )
 
     async def callback(self, interaction: discord.Interaction):
-        self.game_data["genre_id"] = self.values[0]
-        game_info_view = GameInfoModal(self.game_data)
-        await interaction.response.send_modal(game_info_view)
-        await game_info_view.wait()
+        self.config.logger.debug(f"Selected character id: {self.values[0]}")
+        self.game_data["selected_character"] = self.values[0]
+        # TODO: name aus db holen und anzeigen oder aus den optionen?
+        await interaction.response.edit_message(
+            content=f"You have chosen the character with ID: {self.values[0]}",
+        )
+        self.view.stop()
+
+class GameSelect(discord.ui.Select):
+    """
+    Select class to select a game to set new character.
+    """
+
+    def __init__(self, config, game_data: dict):
+        self.config = config
+        self.game_data = game_data
+        options = [
+            discord.SelectOption(
+                label=f"{assoc.game.id}: {assoc.game.name}",
+                value=f"{assoc.game.id}",
+                description=f"Creation date: {assoc.game.start_date}",
+            )
+            for assoc in game_data["game_association"]
+        ]
+
+        super().__init__(
+            placeholder="Select a game...",
+            min_values=1,
+            max_values=1,
+            options=options,
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        self.config.logger.debug(f"Selected game id: {self.values[0]}")
+        self.game_data["game_id"] = self.values[0]
+        await interaction.response.edit_message(
+            content=f"You have chosen the game with ID: {self.values[0]}",
+        )
         self.view.stop()
 
 
@@ -54,9 +99,9 @@ class GameSelectView(discord.ui.View):
     View class to select a genre for a new game.
     """
 
-    def __init__(self, config, game_data: dict, genres: list[GENRE]):
+    def __init__(self, config, game_data: dict):
         super().__init__()
-        self.add_item(GameSelect(config, game_data, genres))
+        self.add_item(GameSelect(config, game_data))
 
 
 class GenreSelect(discord.ui.Select):
@@ -348,21 +393,37 @@ async def keep_telling(interaction: Interaction, config: Configuration): ...
 
 
 async def select_character(interaction: Interaction, config: Configuration):
-    config.logger.trace(
-        f"User {interaction.user.id} request all games for character selection."
-    )
-    request_data = {"Valid": True, "user_dc_id": str(interaction.user.id)}
-    await get_user_with_games(config, request_data)
-    if not request_data["Valid"]:
+    try:
+        config.logger.trace(
+            f"User {interaction.user.id} request all games for character selection."
+        )
+        request_data = {"Valid": True, "user_dc_id": str(interaction.user.id)}
+        await get_user_with_games(config, request_data)
+        # for assoc in request_data["game_association"]:
+        #     print(f"Game: {assoc.game.id}, {assoc.game.name}")
+        if not request_data["Valid"]:
+            await interaction.response.send_message(
+                "An error occurred while retrieving your games. Please try again later.",
+                ephemeral=True,
+            )
+            return
+        game_view = GameSelectView(config, request_data)
         await interaction.response.send_message(
-            "An error occurred while retrieving your games. Please try again later.",
+            "Please select the game to select your character.",
+            view=game_view,
             ephemeral=True,
         )
-        return
-    game_view = GameSelectView(config, request_data)
-    await interaction.response.send_message(
-        "Please select the game to select your character.",
-        view=game_view,
-        ephemeral=True,
-    )
-    await game_view.wait()
+        await game_view.wait()
+        # TODO: prüfe ob die daten valide sind, wenn nicht nachricht und beenden
+        await get_available_characters(config, request_data)
+        character_view = CharacterSelectView(config, request_data)
+        await interaction.followup.send(
+                "Please select now the character for the game.",
+                view=character_view,
+                ephemeral=True,
+            )
+        await character_view.wait()
+        print(request_data.get("selected_character")) # TODO: valid key kann weg, immer so machen
+        # if request_data.get("selected_character") is None
+    except Exception as err:
+        print(err, type(err))

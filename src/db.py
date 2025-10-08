@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import discord
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 
 from .configuration import Configuration
 from .db_classes import (
@@ -20,6 +20,7 @@ from .db_classes import (
     INSPIRATIONALWORD,
     TALE,
     USER,
+    UserGameCharacterAssociation,
 )
 
 
@@ -231,20 +232,25 @@ async def get_user_with_games(config: Configuration, request_data: dict) -> None
     """
     try:
         async with config.write_lock, config.session() as session, session.begin():
-            user = (
-                await session.execute(
-                    select(USER)
-                    .filter(USER.dc_id == request_data["user_dc_id"])
-                    .options(selectinload(USER.games))
+            statement = (
+                select(UserGameCharacterAssociation)
+                .join(UserGameCharacterAssociation.user)
+                .options(joinedload(UserGameCharacterAssociation.game))
+                .where(
+                    USER.dc_id == request_data["user_dc_id"],
+                    UserGameCharacterAssociation.end_date.is_(None),
                 )
-            ).scalar_one_or_none()
-            if user is None:
+            )
+            result = (await session.execute(statement)).scalars().all()
+
+            if not result:
+                # TODO: was passiert bei leerer Liste?
                 config.logger.debug(
                     f"No user found with dc_id {request_data['user_dc_id']}"
                 )
                 request_data["Valid"] = False
                 return
-            request_data["user"] = user
+            request_data["game_association"] = result
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
         request_data["Valid"] = False
@@ -298,3 +304,27 @@ async def update_db_objs(
                 )
     except Exception as err:
         print(err, type(err))
+
+
+async def get_available_characters(config: Configuration, request_data: dict) -> None:
+    """
+    Function to get all characters from the database which are not assigned to a user.
+
+    Args:
+        config (Configuration): App configuration
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(CHARACTER)
+                .where(CHARACTER.alive.is_(True))
+                .where(CHARACTER.user_id.is_(None))
+            )
+            result = (await session.execute(statement)).scalars().all()
+            if not result:
+                config.logger.debug("No available characters found")
+                request_data["Valid"] = False
+            request_data["available_character"] = result
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        request_data["Valid"] = False
