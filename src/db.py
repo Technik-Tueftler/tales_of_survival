@@ -4,7 +4,6 @@ general database related functions.
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
 
 import discord
 from sqlalchemy import select
@@ -208,6 +207,23 @@ async def get_characters_from_ids(
         )
 
 
+async def get_object_by_id(
+    config: Configuration, obj_type: UserGameCharacterAssociation | CHARACTER, obj_id: int
+) -> UserGameCharacterAssociation | CHARACTER | None:
+    """
+    Function to get a object from the database by its id.
+
+    Args:
+        config (Configuration): App configuration
+        obj_type (UserGameCharacterAssociation): Type of the object to get
+        obj_id (int): Id of the object to get
+    """
+    async with config.session() as session, session.begin():
+        return (
+            await session.execute(select(obj_type).where(obj_type.id == obj_id))
+        ).scalar_one_or_none()
+
+
 async def get_all_genre(config: Configuration) -> list[GENRE]:
     """
     Function to get all genres from the database.
@@ -238,22 +254,21 @@ async def get_user_with_games(config: Configuration, request_data: dict) -> None
                 .options(joinedload(UserGameCharacterAssociation.game))
                 .where(
                     USER.dc_id == request_data["user_dc_id"],
+                    UserGameCharacterAssociation.character_id.is_(None),
                     UserGameCharacterAssociation.end_date.is_(None),
                 )
             )
             result = (await session.execute(statement)).scalars().all()
 
-            if not result:
-                # TODO: was passiert bei leerer Liste?
+            if result is None or len(result) == 0:
                 config.logger.debug(
                     f"No user found with dc_id {request_data['user_dc_id']}"
                 )
-                request_data["Valid"] = False
                 return
             request_data["game_association"] = result
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
-        request_data["Valid"] = False
+        return
 
 
 async def process_player(
@@ -321,10 +336,12 @@ async def get_available_characters(config: Configuration, request_data: dict) ->
                 .where(CHARACTER.user_id.is_(None))
             )
             result = (await session.execute(statement)).scalars().all()
-            if not result:
-                config.logger.debug("No available characters found")
-                request_data["Valid"] = False
+
+            if result is None or len(result) == 0:
+                config.logger.debug("No available characters found in the database")
+                return
             request_data["available_character"] = result
+
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
-        request_data["Valid"] = False
+        return

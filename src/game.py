@@ -8,7 +8,7 @@ import discord
 from discord import Interaction
 
 from .configuration import Configuration
-from .db import GAME, GENRE, TALE, USER, UserGameCharacterAssociation
+from .db import GAME, GENRE, TALE, USER, UserGameCharacterAssociation, CHARACTER
 from .db import (
     get_all_genre,
     get_genre_double_cond,
@@ -16,6 +16,7 @@ from .db import (
     update_db_objs,
     get_user_with_games,
     get_available_characters,
+    get_object_by_id,
 )
 
 
@@ -33,6 +34,7 @@ class CharacterSelect(discord.ui.Select):
     """
     Select class to select a character for a game.
     """
+
     def __init__(self, config, game_data: dict):
         self.config = config
         self.game_data = game_data
@@ -40,7 +42,11 @@ class CharacterSelect(discord.ui.Select):
             discord.SelectOption(
                 label=f"{char.id}: {char.name}",
                 value=f"{char.id}",
-                description=f"{char.background[:100]}", # TODO: kürzen aber drei Punkte am Ende
+                description=(
+                    f"{char.background[:97]}..."
+                    if len(char.background) > 100
+                    else char.background
+                ),
             )
             for char in game_data["available_character"]
         ]
@@ -55,11 +61,11 @@ class CharacterSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected character id: {self.values[0]}")
         self.game_data["selected_character"] = self.values[0]
-        # TODO: name aus db holen und anzeigen oder aus den optionen?
         await interaction.response.edit_message(
             content=f"You have chosen the character with ID: {self.values[0]}",
         )
         self.view.stop()
+
 
 class GameSelect(discord.ui.Select):
     """
@@ -72,7 +78,7 @@ class GameSelect(discord.ui.Select):
         options = [
             discord.SelectOption(
                 label=f"{assoc.game.id}: {assoc.game.name}",
-                value=f"{assoc.game.id}",
+                value=f"{assoc.id}",
                 description=f"Creation date: {assoc.game.start_date}",
             )
             for assoc in game_data["game_association"]
@@ -87,7 +93,7 @@ class GameSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
-        self.game_data["game_id"] = self.values[0]
+        self.game_data["game_association_id"] = self.values[0]
         await interaction.response.edit_message(
             content=f"You have chosen the game with ID: {self.values[0]}",
         )
@@ -392,18 +398,21 @@ async def create_game(interaction: Interaction, config: Configuration):
 async def keep_telling(interaction: Interaction, config: Configuration): ...
 
 
-async def select_character(interaction: Interaction, config: Configuration):
+async def select_character(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function is the entry and schedule point to select and process a character selection.
+
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+    """
     try:
-        config.logger.trace(
-            f"User {interaction.user.id} request all games for character selection."
-        )
-        request_data = {"Valid": True, "user_dc_id": str(interaction.user.id)}
+        request_data = {"user_dc_id": str(interaction.user.id)}
         await get_user_with_games(config, request_data)
-        # for assoc in request_data["game_association"]:
-        #     print(f"Game: {assoc.game.id}, {assoc.game.name}")
-        if not request_data["Valid"]:
+        if request_data.get("game_association") is None:
             await interaction.response.send_message(
-                "An error occurred while retrieving your games. Please try again later.",
+                "An error occurred while retrieving your games. Your not registered "
+                "for any game. Please contact the admin.",
                 ephemeral=True,
             )
             return
@@ -414,16 +423,42 @@ async def select_character(interaction: Interaction, config: Configuration):
             ephemeral=True,
         )
         await game_view.wait()
-        # TODO: prüfe ob die daten valide sind, wenn nicht nachricht und beenden
-        await get_available_characters(config, request_data)
-        character_view = CharacterSelectView(config, request_data)
-        await interaction.followup.send(
-                "Please select now the character for the game.",
-                view=character_view,
+        if request_data.get("game_association_id") is None:
+            await interaction.followup.send(
+                "You did not select a game. Please try again.",
                 ephemeral=True,
             )
+            return
+        await get_available_characters(config, request_data)
+        if request_data.get("available_character") is None:
+            await interaction.followup.send(
+                "No characters are available for selection. Please contact the admin.",
+                ephemeral=True,
+            )
+            return
+        character_view = CharacterSelectView(config, request_data)
+        await interaction.followup.send(
+            "Please select now the character for the game.",
+            view=character_view,
+            ephemeral=True,
+        )
         await character_view.wait()
-        print(request_data.get("selected_character")) # TODO: valid key kann weg, immer so machen
-        # if request_data.get("selected_character") is None
+        if request_data.get("selected_character") is None:
+            await interaction.followup.send(
+                "You did not select a character. Please try again.",
+                ephemeral=True,
+            )
+            return
+        game_association = await get_object_by_id(
+            config, UserGameCharacterAssociation, request_data["game_association_id"]
+        )
+        selected_character = await get_object_by_id(
+            config, CHARACTER, request_data["selected_character"]
+        )
+        selected_character.user_id = game_association.user_id
+        selected_character.start_date = datetime.now(timezone.utc)
+        game_association.character_id = int(request_data["selected_character"])
+        await update_db_objs(config, [game_association, selected_character])
+
     except Exception as err:
         print(err, type(err))
