@@ -59,15 +59,27 @@ class DiscordBot:
         """
 
         async def wrapped_create_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for game creation."
+            )
             await create_game(interaction, self.config)
 
         async def wrapped_keep_telling(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command to continue telling a story."
+            )
             await keep_telling(interaction, self.config)
 
         async def wrapped_import_data(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command import game data."
+            )
             await import_data(interaction, self.config)
 
         async def wrapped_select_char(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for character selection."
+            )
             await select_character(interaction, self.config)
 
         self.bot.tree.command(

@@ -1,11 +1,10 @@
 """
 File containing the database classes and general setups.
 """
+
 from enum import Enum
 from datetime import datetime, timezone
 import environ
-from sqlalchemy import Column
-from sqlalchemy import Table
 from sqlalchemy import Enum as AlchemyEnum
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy import ForeignKey
@@ -52,6 +51,7 @@ class StoryType(Enum):
     """
     Enum to define type of story and map an emoji.
     """
+
     EVENT = 0, "📣"
     FICTION = 1, "📕"
 
@@ -64,6 +64,7 @@ class GameStatus(Enum):
     """
     Enum to define status of game and map an emoji.
     """
+
     CREATED = 0, "🆕"
     RUNNING = 1, "🎮"
     PAUSED = 2, "⏸️"
@@ -81,6 +82,7 @@ class INSPIRATIONALWORD(Base):
     Class definition for inspirational words. These are used to
     generate random words for the story for a genre.
     """
+
     __tablename__ = "inspirational_words"
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(nullable=False)
@@ -96,6 +98,7 @@ class EVENT(Base):
     """
     Class definition for fixed events that can occur in a genre.
     """
+
     __tablename__ = "events"
     id: Mapped[int] = mapped_column(primary_key=True)
     text: Mapped[str] = mapped_column(nullable=False)
@@ -112,6 +115,7 @@ class GENRE(Base):
     Class definition for genre for central definition to
     determine the general story creation.
     """
+
     __tablename__ = "genres"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
@@ -134,6 +138,7 @@ class STORY(Base):
     Class definition for story in which individual story parts are managed. These are then made
     available as a history for creating new stories elements.
     """
+
     __tablename__ = "stories"
     id: Mapped[int] = mapped_column(primary_key=True)
     request: Mapped[str] = mapped_column(nullable=True)
@@ -154,18 +159,15 @@ class TALE(Base):
     """
     Class definition for tale in which the complete story is defined.
     """
+
     __tablename__ = "tales"
     id: Mapped[int] = mapped_column(primary_key=True)
-    genre_id: Mapped[int] = mapped_column(
-        ForeignKey("genres.id"), nullable=False
-    )
+    genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"), nullable=False)
     # genre: Mapped[GENRE] = relationship("GENRE", back_populates="tale", uselist=False) # 1:1
     genre: Mapped[GENRE] = relationship("GENRE", back_populates="tales")
 
     stories: Mapped[list["STORY"]] = relationship()  # 1:N
-    game: Mapped["GAME"] = relationship(
-        "GAME", back_populates="tale", uselist=False
-    )
+    game: Mapped["GAME"] = relationship("GAME", back_populates="tale", uselist=False)
 
 
 class UserGameCharacterAssociation(Base):
@@ -174,23 +176,29 @@ class UserGameCharacterAssociation(Base):
     One User can participate in many Games with many Characters
     One Game can have many Users participating with many Characters
     """
+
     __tablename__ = "association_user_game_character"
     id: Mapped[int] = mapped_column(primary_key=True)
     game_id: Mapped[int] = mapped_column(ForeignKey("games.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=True)
-    begin_date: Mapped[datetime] = mapped_column(nullable=False, default=datetime.now(timezone.utc))
+    character_id: Mapped[int] = mapped_column(
+        ForeignKey("characters.id"), nullable=True
+    )
+    request_date: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
     end_date: Mapped[datetime] = mapped_column(nullable=True)
 
     game: Mapped["GAME"] = relationship("GAME", back_populates="user_participations")
     user: Mapped["USER"] = relationship("USER", back_populates="game_participations")
-    character: Mapped["CHARACTER"] = relationship("CHARACTER", back_populates="game_assignments")
+    character: Mapped["CHARACTER"] = relationship(
+        "CHARACTER", back_populates="game_assignments"
+    )
 
 
 class GAME(Base):
     """
-    Class definition for game to store general game informations. 
+    Class definition for game to store general game informations.
     """
+
     __tablename__ = "games"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
@@ -202,14 +210,12 @@ class GAME(Base):
     end_date: Mapped[datetime] = mapped_column(nullable=True)
     message_id: Mapped[int] = mapped_column(nullable=True)
     channel_id: Mapped[int] = mapped_column(nullable=True)
-    tale_id: Mapped[int] = mapped_column(
-        ForeignKey("tales.id"), nullable=False
-    )  # 1:1
+    tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"), nullable=False)  # 1:1
     tale: Mapped[TALE] = relationship("TALE", back_populates="game", uselist=False)
     # M:N - Association mit Back_populates
-        # users: Mapped[list["USER"]] = relationship(
-        #     secondary=association_user_game, back_populates="games"
-        # )
+    # users: Mapped[list["USER"]] = relationship(
+    #     secondary=association_user_game, back_populates="games"
+    # )
     user_participations: Mapped[list["UserGameCharacterAssociation"]] = relationship(
         back_populates="game"
     )
@@ -219,13 +225,12 @@ class USER(Base):
     """
     Class definition for user to manage all user based informations.
     """
+
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     dc_id: Mapped[str] = mapped_column(nullable=False)
-    characters: Mapped[list["CHARACTER"]] = relationship(
-        back_populates="user"
-    )
+    characters: Mapped[list["CHARACTER"]] = relationship(back_populates="user")
     game_participations: Mapped[list["UserGameCharacterAssociation"]] = relationship(
         back_populates="user"
     )
@@ -233,8 +238,9 @@ class USER(Base):
 
 class CHARACTER(Base):
     """
-    Class definition for playable characters. 
+    Class definition for playable characters.
     """
+
     __tablename__ = "characters"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
@@ -245,8 +251,9 @@ class CHARACTER(Base):
     neg_trait: Mapped[str] = mapped_column(nullable=True)
     summary: Mapped[str] = mapped_column(nullable=False)
     alive: Mapped[bool] = mapped_column(default=True)
-    game_date: Mapped[datetime] = mapped_column(nullable=True)
-    user_id: Mapped[int|None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    start_date: Mapped[datetime] = mapped_column(nullable=True)
+    end_date: Mapped[datetime] = mapped_column(nullable=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     user: Mapped["USER"] = relationship(back_populates="characters")
 
     game_assignments: Mapped[list["UserGameCharacterAssociation"]] = relationship(
