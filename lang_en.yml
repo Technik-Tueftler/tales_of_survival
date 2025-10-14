@@ -10,3 +10,15 @@ create_game: Create a new game and set the parameters.
 keep_telling: Continue the story of a game.
 import_data: Import game data from a YAML file.
 select_character: Select a character for a game.
+# game_views
+gv_select_char: Select a character...
+gv_select_game: Select a game...
+gv_select_genre: Select a genre...
+gv_selected_char: >
+  You have chosen the character: {character_name}
+gv_game_info: Further game information
+gv_creation_date: Creation date
+gv_chosen_game: >
+  You have chosen the game with ID: {game_id}
+gv_finished_info: All other game information has been entered.
+gv_select_user: Select up to 6 user for the game
