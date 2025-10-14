@@ -48,7 +48,7 @@ class DiscordBot:
         await self.bot.change_presence(
             status=discord.Status.online,
             activity=discord.Activity(
-                type=discord.ActivityType.listening, name="storyteller"
+                type=discord.ActivityType.listening, name=self.config.locale["listening"]
             ),
         )
 
@@ -84,20 +84,20 @@ class DiscordBot:
 
         self.bot.tree.command(
             name="create_game",
-            description="Create a new game and set the parameters.",
+            description=self.config.locale["create_game"],
         )(wrapped_create_game)
 
         self.bot.tree.command(
             name="keep_telling",
-            description="Continue the story of a game.",
+            description=self.config.locale["keep_telling"],
         )(wrapped_keep_telling)
 
         self.bot.tree.command(
             name="import_data",
-            description="Import game data",
+            description=self.config.locale["import_data"],
         )(wrapped_import_data)
 
         self.bot.tree.command(
             name="select_character",
-            description="Select a character for a game.",
+            description=self.config.locale["select_character"],
         )(wrapped_select_char)

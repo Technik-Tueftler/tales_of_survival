@@ -1,0 +1,12 @@
+# file_utils
+successful: successful
+unsuccessful: unsuccessful
+import_message: >
+  The import from genre was {genre_status} and {genre_number} records were imported.
+  The import from character was {char_status} and {char_number} records were imported.
+# discord_bot
+listening: storyteller
+create_game: Create a new game and set the parameters.
+keep_telling: Continue the story of a game.
+import_data: Import game data from a YAML file.
+select_character: Select a character for a game.

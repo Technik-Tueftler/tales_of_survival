@@ -9,10 +9,19 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
 from .db_classes import DbConfiguration
+from .language import load_locale
 
 
 load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
+
+
+@environ.config(prefix="LANG")
+class LangConfiguration:
+    """
+    Configuration model for the language
+    """
+    locale: str = environ.var("en", converter=str)
 
 
 @environ.config(prefix="DC")
@@ -36,6 +45,7 @@ class EnvConfiguration:
     watcher = environ.group(WatcherConfiguration)
     db = environ.group(DbConfiguration)
     dc = environ.group(DcConfiguration)
+    lang = environ.group(LangConfiguration)
 
 
 class Configuration:
@@ -49,3 +59,4 @@ class Configuration:
         self.session = async_sessionmaker(bind=self.engine, expire_on_commit=False)
         self.write_lock = asyncio.Lock() # pylint: disable=not-callable
         self.logger: loguru._logger.Logger = None
+        self.locale = load_locale(self.env.lang.locale)

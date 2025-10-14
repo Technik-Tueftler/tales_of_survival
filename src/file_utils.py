@@ -9,11 +9,20 @@ import yaml
 from discord import HTTPException, Interaction
 
 from .configuration import Configuration
-from .db import (ImportResult, create_character_from_input,
-                 create_genre_from_input)
+from .db import ImportResult, create_character_from_input, create_genre_from_input
 
 
 async def load_yaml(config: Configuration, result: ImportResult) -> dict:
+    """
+    Generic function to import yml files and parse them to a dict.
+
+    Args:
+        config (Configuration): App configuration
+        result (ImportResult): Result class to store import information
+
+    Returns:
+        dict: Parsed data from the yml file
+    """
     try:
         if not Path(result.file_path).is_file():
             config.logger.debug(f"During import, file {result.file_path} don't exist")
@@ -26,7 +35,9 @@ async def load_yaml(config: Configuration, result: ImportResult) -> dict:
     except FileNotFoundError:
         config.logger.error(f"File disappeared before opening: {result.file_path}")
     except IsADirectoryError:
-        config.logger.error(f"Expected a file but found a directory: {result.file_path}")
+        config.logger.error(
+            f"Expected a file but found a directory: {result.file_path}"
+        )
     except IOError as err:
         config.logger.error(f"I/O error reading file {result.file_path}: {err}")
     except UnicodeDecodeError:
@@ -45,12 +56,22 @@ async def import_data(interaction: Interaction, config: Configuration):
         await load_yaml(config, result_character)
         if result_character.data:
             await create_character_from_input(config, result_character)
-        await interaction.response.send_message(
-            f"The import from genre was {'successful' if result_genre.success else 'unsuccessful'}"
-            f" and {result_genre.import_number} records were imported. The import from character"
-            f" was {'successful' if result_character.success else 'unsuccessful'}"
-            f" and {result_character.import_number} records were imported."
-        )
+        context = {
+            "genre_status": (
+                config.locale["successful"]
+                if result_genre.success
+                else config.locale["unsuccessful"]
+            ),
+            "genre_number": result_genre.import_number,
+            "char_status": (
+                config.locale["successful"]
+                if result_character.success
+                else config.locale["unsuccessful"]
+            ),
+            "char_number": result_character.import_number,
+        }
+        message = config.locale["import_message"].format(**context)
+        await interaction.response.send_message(message)
     except FileNotFoundError as err:
         config.logger.error(f"File not found: {err}")
         await interaction.response.send_message("A required file was not found.")
