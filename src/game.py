@@ -22,7 +22,8 @@ from .game_views import (
     CharacterSelectView,
     GameSelectView,
     GenreSelectView,
-    UserSelectView
+    UserSelectView,
+    KeepTellingButtonView,
 )
 
 
@@ -217,7 +218,12 @@ async def create_game(interaction: Interaction, config: Configuration):
 
 
 async def keep_telling(interaction: Interaction, config: Configuration):
-    ...
+    response_data = {}
+    telling_view = KeepTellingButtonView(response_data, config)
+    await interaction.response.send_message(view=telling_view, ephemeral=True)
+    await telling_view.wait()
+    config.logger.debug("Finish keep telling input interaction.")
+    print(response_data)
 
 
 async def select_character(interaction: Interaction, config: Configuration) -> None:

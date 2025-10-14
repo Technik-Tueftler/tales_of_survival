@@ -4,7 +4,8 @@ This module contains all view for game creation and general game handling.
 
 import discord
 
-from .db_classes import GENRE
+from .db_classes import GENRE, StoryType
+from .configuration import Configuration
 
 
 class CharacterSelectView(discord.ui.View):
@@ -188,5 +189,70 @@ class UserSelectView(discord.ui.View):
         self.game_data["user"] = select.values
         await interaction.response.edit_message(
             content="You have chosen the player for the new game.",
+        )
+        self.stop()
+
+
+class StoryEventModal(discord.ui.Modal, title="Additional text to expand the story"):
+    """
+    Modal class to enter additional text for the story.
+    """
+
+    def __init__(
+        self, game_data: dict, parent_view: discord.ui.View, config: Configuration
+    ):
+        super().__init__()
+        self.game_data = game_data
+        self.parent_view = parent_view
+        self.config = config
+        self.story_text_input = discord.ui.TextInput(
+            label="Additional text", required=True, style=discord.TextStyle.paragraph
+        )
+        self.add_item(self.story_text_input)
+
+    async def on_submit(
+        self, interaction: discord.Interaction
+    ):  # pylint: disable=arguments-differ
+        """
+        Callback function when the modal is submitted.
+        """
+        self.game_data["story_text"] = self.story_text_input.value
+        self.config.logger.trace(
+            f"Additional text for event story type entered: {self.story_text_input.value}"
+        )
+        await interaction.response.edit_message(
+            content="Input completed",
+        )
+        self.parent_view.stop()
+
+
+class KeepTellingButtonView(discord.ui.View):
+    def __init__(self, game_data: dict, config: Configuration):
+        super().__init__()
+        self.game_data = game_data
+        self.config = config
+
+    @discord.ui.button(
+        label=StoryType.EVENT.text,
+        style=discord.ButtonStyle.green,
+        emoji=StoryType.EVENT.icon,
+    )
+    async def button_callback_e(self, button, interaction):
+        self.game_data["story_type"] = StoryType.EVENT
+        self.config.logger.trace(f"Story type selected: {StoryType.EVENT}")
+        event_view = StoryEventModal(self.game_data, self, self.config)
+        await button.response.send_modal(event_view)
+        await event_view.wait()
+
+    @discord.ui.button(
+        label=StoryType.FICTION.text,
+        style=discord.ButtonStyle.green,
+        emoji=StoryType.FICTION.icon,
+    )
+    async def button_callback_f(self, button, interaction):
+        self.game_data["story_type"] = StoryType.FICTION
+        self.config.logger.trace(f"Story type selected: {StoryType.FICTION}")
+        await button.response.edit_message(
+            content="Input completed",
         )
         self.stop()
