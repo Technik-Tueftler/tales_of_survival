@@ -170,6 +170,9 @@ class TALE(Base):
     stories: Mapped[list["STORY"]] = relationship()  # 1:N
     game: Mapped["GAME"] = relationship("GAME", back_populates="tale", uselist=False)
 
+    def __repr__(self) -> str:
+        return f"Tale(id={self.id}, genre_id={self.genre_id}, game={self.game.name})"
+
 
 class UserGameCharacterAssociation(Base):
     """

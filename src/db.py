@@ -208,7 +208,9 @@ async def get_characters_from_ids(
 
 
 async def get_object_by_id(
-    config: Configuration, obj_type: UserGameCharacterAssociation | CHARACTER, obj_id: int
+    config: Configuration,
+    obj_type: UserGameCharacterAssociation | CHARACTER,
+    obj_id: int,
 ) -> UserGameCharacterAssociation | CHARACTER | None:
     """
     Function to get a object from the database by its id.
@@ -345,3 +347,45 @@ async def get_available_characters(config: Configuration, request_data: dict) ->
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
         return
+
+
+async def get_all_games(config: Configuration, request_data: dict) -> None:
+    """
+    Function to get all available games from the database which are not finished.
+
+    Args:
+        config (Configuration): App configuration
+        request_data (dict):
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GAME).where(GAME.end_date.is_(None))
+            result = (await session.execute(statement)).scalars().all()
+
+            if result is None or len(result) == 0:
+                config.logger.debug("No available games found in the database")
+                return
+            request_data["available_games"] = result
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return
+
+
+async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(TALE)
+                .join(TALE.game)
+                .options(joinedload(TALE.genre), joinedload(TALE.game))
+                .where(GAME.id == game_id)
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return
+
+
+async def get_events(config: Configuration): ...

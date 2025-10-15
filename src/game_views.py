@@ -55,7 +55,7 @@ class CharacterSelect(discord.ui.Select):
         self.view.stop()
 
 
-class GameSelect(discord.ui.Select):
+class GameSelectAssoc(discord.ui.Select):
     """
     Select class to select a game to set new character.
     """
@@ -82,6 +82,49 @@ class GameSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
         self.game_data["game_association_id"] = self.values[0]
+        await interaction.response.edit_message(
+            content=f"You have chosen the game with ID: {self.values[0]}",
+        )
+        self.view.stop()
+
+
+class GameSelectViewAssoc(discord.ui.View):
+    """
+    View class to select a genre for a new game.
+    """
+
+    def __init__(self, config, game_data: dict):
+        super().__init__()
+        self.add_item(GameSelectAssoc(config, game_data))
+
+
+class GameSelect(discord.ui.Select):
+    """
+    Select class to select a game to set new character.
+    """
+
+    def __init__(self, config, game_data: dict):
+        self.config = config
+        self.game_data = game_data
+        options = [
+            discord.SelectOption(
+                label=f"{game.id}: {game.name}",
+                value=f"{game.id}",
+                description=f"Creation date: {game.start_date}",
+            )
+            for game in game_data["available_games"]
+        ]
+
+        super().__init__(
+            placeholder="Select a game...",
+            min_values=1,
+            max_values=1,
+            options=options,
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        self.config.logger.debug(f"Selected game id: {self.values[0]}")
+        self.game_data["selected_game"] = self.values[0]
         await interaction.response.edit_message(
             content=f"You have chosen the game with ID: {self.values[0]}",
         )
@@ -193,7 +236,7 @@ class UserSelectView(discord.ui.View):
         self.stop()
 
 
-class StoryEventModal(discord.ui.Modal, title="Additional text to expand the story"):
+class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the story"):
     """
     Modal class to enter additional text for the story.
     """
@@ -227,22 +270,10 @@ class StoryEventModal(discord.ui.Modal, title="Additional text to expand the sto
 
 
 class KeepTellingButtonView(discord.ui.View):
-    def __init__(self, game_data: dict, config: Configuration):
+    def __init__(self, config: Configuration, game_data: dict):
         super().__init__()
         self.game_data = game_data
         self.config = config
-
-    @discord.ui.button(
-        label=StoryType.EVENT.text,
-        style=discord.ButtonStyle.green,
-        emoji=StoryType.EVENT.icon,
-    )
-    async def button_callback_e(self, button, interaction):
-        self.game_data["story_type"] = StoryType.EVENT
-        self.config.logger.trace(f"Story type selected: {StoryType.EVENT}")
-        event_view = StoryEventModal(self.game_data, self, self.config)
-        await button.response.send_modal(event_view)
-        await event_view.wait()
 
     @discord.ui.button(
         label=StoryType.FICTION.text,
@@ -252,6 +283,18 @@ class KeepTellingButtonView(discord.ui.View):
     async def button_callback_f(self, button, interaction):
         self.game_data["story_type"] = StoryType.FICTION
         self.config.logger.trace(f"Story type selected: {StoryType.FICTION}")
+        event_view = StoryFictionModal(self.game_data, self, self.config)
+        await button.response.send_modal(event_view)
+        await event_view.wait()
+
+    @discord.ui.button(
+        label=StoryType.EVENT.text,
+        style=discord.ButtonStyle.green,
+        emoji=StoryType.EVENT.icon,
+    )
+    async def button_callback_e(self, button, interaction):
+        self.game_data["story_type"] = StoryType.EVENT
+        self.config.logger.trace(f"Story type selected: {StoryType.EVENT}")
         await button.response.edit_message(
             content="Input completed",
         )

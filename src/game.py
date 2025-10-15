@@ -8,6 +8,7 @@ import discord
 from discord import Interaction
 
 from .configuration import Configuration
+from .db_classes import StoryType
 from .db import GAME, GENRE, TALE, USER, UserGameCharacterAssociation, CHARACTER
 from .db import (
     get_all_genre,
@@ -17,10 +18,13 @@ from .db import (
     get_user_with_games,
     get_available_characters,
     get_object_by_id,
+    get_all_games,
+    get_tale_from_game_id,
 )
 from .game_views import (
     CharacterSelectView,
     GameSelectView,
+    GameSelectViewAssoc,
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
@@ -219,10 +223,34 @@ async def create_game(interaction: Interaction, config: Configuration):
 
 async def keep_telling(interaction: Interaction, config: Configuration):
     response_data = {}
-    telling_view = KeepTellingButtonView(response_data, config)
+
+    await get_all_games(config, response_data)
+    if response_data.get("available_games") is None:
+        return
+    game_view = GameSelectView(config, response_data)
+    await interaction.response.send_message(
+        "Please select the game for keep telling",
+        view=game_view,
+        ephemeral=True,
+    )
+    await game_view.wait()
+
+    tale = await get_tale_from_game_id(config, response_data["selected_game"])
+    # TODO: Hat das Genre im Tale events hat
+    # TODO: Die Info ob Events vorhanden sind, wird in die KeepTellingButtonView gegeben
+    # TODO: KeepTellingButtonView, Button für Event wird ausgegraut, wenn keine Events vorhanden sind
+
+    telling_view = KeepTellingButtonView(config, response_data)
     await interaction.response.send_message(view=telling_view, ephemeral=True)
     await telling_view.wait()
     config.logger.debug("Finish keep telling input interaction.")
+    if response_data["story_type"] is StoryType.EVENT:
+        ...
+    elif response_data["story_type"] is StoryType.FICTION:
+        ...
+    else:
+        config.logger.error(f"Story type: {response_data.get("story_type")} is not defined.")
+        return
     print(response_data)
 
 
@@ -244,7 +272,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
                 ephemeral=True,
             )
             return
-        game_view = GameSelectView(config, request_data)
+        game_view = GameSelectViewAssoc(config, request_data)
         await interaction.response.send_message(
             "Please select the game to select your character.",
             view=game_view,
