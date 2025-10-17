@@ -10,7 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import selectinload, joinedload
 
-from .configuration import Configuration
+from .configuration import Configuration, ProcessInput
 from .db_classes import (
     CHARACTER,
     EVENT,
@@ -20,6 +20,7 @@ from .db_classes import (
     TALE,
     USER,
     UserGameCharacterAssociation,
+    GameStatus
 )
 
 
@@ -349,7 +350,7 @@ async def get_available_characters(config: Configuration, request_data: dict) ->
         return
 
 
-async def get_all_games(config: Configuration, request_data: dict) -> None:
+async def get_all_games(config: Configuration, process_data: ProcessInput) -> None:
     """
     Function to get all available games from the database which are not finished.
 
@@ -365,7 +366,7 @@ async def get_all_games(config: Configuration, request_data: dict) -> None:
             if result is None or len(result) == 0:
                 config.logger.debug("No available games found in the database")
                 return
-            request_data["available_games"] = result
+            process_data.available_games = result
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
@@ -378,7 +379,10 @@ async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | N
             statement = (
                 select(TALE)
                 .join(TALE.game)
-                .options(joinedload(TALE.genre), joinedload(TALE.game))
+                .options(
+                    joinedload(TALE.genre).options(selectinload(GENRE.events)),
+                    joinedload(TALE.game),
+                )
                 .where(GAME.id == game_id)
             )
             return (await session.execute(statement)).scalar_one_or_none()
@@ -388,4 +392,24 @@ async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | N
         return
 
 
-async def get_events(config: Configuration): ...
+async def get_games_w_status(
+    config: Configuration, status: list[GameStatus]
+) -> list[GAME]:
+    """
+    This function get all changeable games back. Games that have the status
+    CREATED, RUNNING or PAUSED can be changed.
+
+    Args:
+        config (Configuration): App configuration
+
+    Returns:
+        list[Game]: The list if changeable games
+    """
+    config.logger.trace(f"Called with status: {status}")
+    async with config.session() as session, session.begin():
+        games = (
+            (await session.execute(select(GAME).where(GAME.status.in_(status))))
+            .scalars()
+            .all()
+        )
+    return games

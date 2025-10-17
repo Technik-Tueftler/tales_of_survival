@@ -10,6 +10,7 @@ create_game: Erstelle ein neues Spiel und lege die Parameter fest.
 keep_telling: Setze die Geschichte eines Spiels fort.
 import_data: Importiere Spieldaten aus einer YAML-Datei.
 select_character: Wähle einen Charakter für ein Spiel aus.
+setup_game: Wechseln den Spielstatus zu pause, läuft usw.
 # game_views
 gv_select_char: Wähle einen Charakter...
 gv_select_game: Wähle ein Spiel...

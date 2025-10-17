@@ -5,7 +5,7 @@ This module contains all view for game creation and general game handling.
 import discord
 
 from .db_classes import GENRE, StoryType
-from .configuration import Configuration
+from .configuration import Configuration, ProcessInput
 
 
 class CharacterSelectView(discord.ui.View):
@@ -103,18 +103,18 @@ class GameSelect(discord.ui.Select):
     Select class to select a game to set new character.
     """
 
-    def __init__(self, config, game_data: dict):
+    def __init__(self, config, process_data: ProcessInput):
         self.config = config
-        self.game_data = game_data
+        self.process_data = process_data
         options = [
             discord.SelectOption(
                 label=f"{game.id}: {game.name}",
                 value=f"{game.id}",
-                description=f"Creation date: {game.start_date}",
+                emoji=game.status.icon,
+                description=f"{game.status.name}, created: {game.start_date.strftime("%y:%m:%d")}",
             )
-            for game in game_data["available_games"]
+            for game in self.process_data.available_games
         ]
-
         super().__init__(
             placeholder="Select a game...",
             min_values=1,
@@ -124,7 +124,7 @@ class GameSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
-        self.game_data["selected_game"] = self.values[0]
+        self.process_data.selected_game = int(self.values[0])
         await interaction.response.edit_message(
             content=f"You have chosen the game with ID: {self.values[0]}",
         )
@@ -136,9 +136,9 @@ class GameSelectView(discord.ui.View):
     View class to select a genre for a new game.
     """
 
-    def __init__(self, config, game_data: dict):
+    def __init__(self, config, process_data: ProcessInput):
         super().__init__()
-        self.add_item(GameSelect(config, game_data))
+        self.add_item(GameSelect(config, process_data))
 
 
 class GenreSelect(discord.ui.Select):
@@ -242,10 +242,13 @@ class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the s
     """
 
     def __init__(
-        self, game_data: dict, parent_view: discord.ui.View, config: Configuration
+        self,
+        parent_view: discord.ui.View,
+        process_data: ProcessInput,
+        config: Configuration,
     ):
         super().__init__()
-        self.game_data = game_data
+        self.process_data = process_data
         self.parent_view = parent_view
         self.config = config
         self.story_text_input = discord.ui.TextInput(
@@ -259,7 +262,7 @@ class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the s
         """
         Callback function when the modal is submitted.
         """
-        self.game_data["story_text"] = self.story_text_input.value
+        self.process_data.fiction_prompt = self.story_text_input.value
         self.config.logger.trace(
             f"Additional text for event story type entered: {self.story_text_input.value}"
         )
@@ -270,20 +273,27 @@ class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the s
 
 
 class KeepTellingButtonView(discord.ui.View):
-    def __init__(self, config: Configuration, game_data: dict):
+    def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
-        self.game_data = game_data
+        self.process_data = process_data
         self.config = config
+
+        for item in self.children:
+            if isinstance(item, discord.ui.Button):
+                if item.label == StoryType.EVENT.text:
+                    item.disabled = not self.process_data.events_available()
 
     @discord.ui.button(
         label=StoryType.FICTION.text,
         style=discord.ButtonStyle.green,
         emoji=StoryType.FICTION.icon,
     )
-    async def button_callback_f(self, button, interaction):
-        self.game_data["story_type"] = StoryType.FICTION
+    async def button_callback_f(
+        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+    ):
+        self.process_data.story_type = StoryType.FICTION
         self.config.logger.trace(f"Story type selected: {StoryType.FICTION}")
-        event_view = StoryFictionModal(self.game_data, self, self.config)
+        event_view = StoryFictionModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
 
@@ -292,8 +302,10 @@ class KeepTellingButtonView(discord.ui.View):
         style=discord.ButtonStyle.green,
         emoji=StoryType.EVENT.icon,
     )
-    async def button_callback_e(self, button, interaction):
-        self.game_data["story_type"] = StoryType.EVENT
+    async def button_callback_e(
+        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+    ):
+        self.process_data.story_type = StoryType.EVENT
         self.config.logger.trace(f"Story type selected: {StoryType.EVENT}")
         await button.response.edit_message(
             content="Input completed",

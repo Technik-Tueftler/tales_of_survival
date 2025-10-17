@@ -7,8 +7,8 @@ import asyncio
 import discord
 from discord import Interaction
 
-from .configuration import Configuration
-from .db_classes import StoryType
+from .configuration import Configuration, ProcessInput
+from .db_classes import StoryType, GameStatus
 from .db import GAME, GENRE, TALE, USER, UserGameCharacterAssociation, CHARACTER
 from .db import (
     get_all_genre,
@@ -20,6 +20,7 @@ from .db import (
     get_object_by_id,
     get_all_games,
     get_tale_from_game_id,
+    get_games_w_status,
 )
 from .game_views import (
     CharacterSelectView,
@@ -222,36 +223,43 @@ async def create_game(interaction: Interaction, config: Configuration):
 
 
 async def keep_telling(interaction: Interaction, config: Configuration):
-    response_data = {}
+    try:
+        process_data = ProcessInput()
+        await get_all_games(config, process_data)
+        if not process_data.input_valid:
+            return
+        game_view = GameSelectView(config, process_data)
+        await interaction.response.send_message(
+            "Please select the game for keep telling",
+            view=game_view,
+            ephemeral=True,
+        )
+        await game_view.wait()
 
-    await get_all_games(config, response_data)
-    if response_data.get("available_games") is None:
-        return
-    game_view = GameSelectView(config, response_data)
-    await interaction.response.send_message(
-        "Please select the game for keep telling",
-        view=game_view,
-        ephemeral=True,
-    )
-    await game_view.wait()
+        process_data.tale = await get_tale_from_game_id(
+            config, process_data.selected_game
+        )
+        telling_view = KeepTellingButtonView(config, process_data)
 
-    tale = await get_tale_from_game_id(config, response_data["selected_game"])
-    # TODO: Hat das Genre im Tale events hat
-    # TODO: Die Info ob Events vorhanden sind, wird in die KeepTellingButtonView gegeben
-    # TODO: KeepTellingButtonView, Button für Event wird ausgegraut, wenn keine Events vorhanden sind
+        await interaction.followup.send(view=telling_view, ephemeral=True)
+        await telling_view.wait()
+        config.logger.debug("Finish keep telling input interaction.")
+        if (
+            process_data.story_type is StoryType.EVENT
+            and process_data.events_available()
+        ):
+            process_data.get_random_event_weighted()
+            print(process_data.event)
+        elif process_data.story_type is StoryType.FICTION:
+            print(f"Weitererzählen mit dem Input: {process_data.fiction_prompt}")
+        else:
+            config.logger.error(
+                f"Story type: {process_data.story_type} is not defined."
+            )
+            return
 
-    telling_view = KeepTellingButtonView(config, response_data)
-    await interaction.response.send_message(view=telling_view, ephemeral=True)
-    await telling_view.wait()
-    config.logger.debug("Finish keep telling input interaction.")
-    if response_data["story_type"] is StoryType.EVENT:
-        ...
-    elif response_data["story_type"] is StoryType.FICTION:
-        ...
-    else:
-        config.logger.error(f"Story type: {response_data.get("story_type")} is not defined.")
-        return
-    print(response_data)
+    except Exception as err:
+        print(type(err), err)
 
 
 async def select_character(interaction: Interaction, config: Configuration) -> None:
@@ -318,3 +326,30 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
 
     except Exception as err:
         print(err, type(err))
+
+
+async def setup_game(interaction: Interaction, config: Configuration) -> None:
+    """
+    Function game status with a select menu to choose the game status. The game status can be
+    switched based on the current status of the game.
+
+    Args:
+        config (Configuration): App configuration
+        interaction (Interaction): Interaction object
+    """
+    process_data = ProcessInput()
+    process_data.available_games = await get_games_w_status(
+        config,
+        [
+            GameStatus.CREATED,
+            GameStatus.RUNNING,
+            GameStatus.PAUSED,
+        ],
+    )
+    select_view = GameSelectView(config, process_data)
+    await interaction.response.send_message(
+        "Which game would you like to change the status of?",
+        view=select_view,
+        ephemeral=True,
+    )
+    print(process_data.selected_game)

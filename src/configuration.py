@@ -1,19 +1,46 @@
 """
 Load environment variables and validation of project configurations from user
 """
+import random
 import asyncio
+from typing import List
 import environ
 from dotenv import load_dotenv
 import loguru
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
-from .db_classes import DbConfiguration
+from .db_classes import DbConfiguration, GAME, StoryType, TALE, EVENT, GameStatus
 from .language import load_locale
 
 
 load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
+
+
+class ProcessInput:
+    def __init__(self):
+        self.selected_game: int = 0
+        self.available_games: List[GAME] = []
+        # self.games_status: List[GameStatus] = []
+        self.story_type: StoryType
+        self.fiction_prompt: str
+        self.tale: TALE
+        self.event: EVENT
+
+    async def input_valid(self) -> bool:
+        if len(self.available_games) <= 0:
+            return False
+        return True
+
+    def events_available(self) -> bool:
+        if len(self.tale.genre.events) <= 0:
+            return False
+        return True
+    
+    def get_random_event_weighted(self):
+        weights = [element.chance for element in self.tale.genre.events]
+        self.event = random.choices(self.tale.genre.events, weights=weights, k=1)[0]
 
 
 @environ.config(prefix="LANG")

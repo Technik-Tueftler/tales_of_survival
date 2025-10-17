@@ -6,7 +6,7 @@ The bot is implemented using the discord.py library and provides a simple comman
 import discord
 from discord.ext import commands
 from .configuration import Configuration
-from .game import create_game, keep_telling, select_character
+from .game import create_game, keep_telling, select_character, setup_game
 from .file_utils import import_data
 
 
@@ -82,6 +82,12 @@ class DiscordBot:
             )
             await select_character(interaction, self.config)
 
+        async def wrapped_setup_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for setup game."
+            )
+            await setup_game(interaction, self.config)
+
         self.bot.tree.command(
             name="create_game",
             description=self.config.locale["create_game"],
@@ -101,3 +107,8 @@ class DiscordBot:
             name="select_character",
             description=self.config.locale["select_character"],
         )(wrapped_select_char)
+
+        self.bot.tree.command(
+            name="setup_game",
+            description=self.config.locale["setup_game"],
+        )(wrapped_setup_game)
