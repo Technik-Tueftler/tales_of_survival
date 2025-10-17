@@ -19,6 +19,7 @@ from .db import (
     get_available_characters,
     get_object_by_id,
     get_all_games,
+    get_all_user_games,
     get_tale_from_game_id,
     get_games_w_status,
 )
@@ -261,8 +262,23 @@ async def keep_telling(interaction: Interaction, config: Configuration):
     except Exception as err:
         print(type(err), err)
 
-
 async def select_character(interaction: Interaction, config: Configuration) -> None:
+    process_data = ProcessInput()
+    process_data.user_dc_id = str(interaction.user.id)
+    await get_all_user_games(config, process_data)
+    print(process_data.available_games)
+    if not process_data.input_valid:
+        return
+    game_view = GameSelectView(config, process_data)
+    await interaction.response.send_message(
+            "Please select the game for set character",
+            view=game_view,
+            ephemeral=True,
+        )
+    await game_view.wait()
+
+
+async def select_character2(interaction: Interaction, config: Configuration) -> None:
     """
     This function is the entry and schedule point to select and process a character selection.
 

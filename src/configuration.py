@@ -20,6 +20,7 @@ load_dotenv("files/.env", override=True)
 
 class ProcessInput:
     def __init__(self):
+        self.user_dc_id: str = "0"
         self.selected_game: int = 0
         self.available_games: List[GAME] = []
         # self.games_status: List[GameStatus] = []

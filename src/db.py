@@ -20,7 +20,7 @@ from .db_classes import (
     TALE,
     USER,
     UserGameCharacterAssociation,
-    GameStatus
+    GameStatus,
 )
 
 
@@ -249,6 +249,7 @@ async def get_user_with_games(config: Configuration, request_data: dict) -> None
         config (Configuration): App configuration
         request_data (dict): All necessary data for the request
     """
+    # TODO: Ersetzen und löschen
     try:
         async with config.write_lock, config.session() as session, session.begin():
             statement = (
@@ -344,6 +345,22 @@ async def get_available_characters(config: Configuration, request_data: dict) ->
                 config.logger.debug("No available characters found in the database")
                 return
             request_data["available_character"] = result
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return
+
+
+async def get_all_user_games(config: Configuration, process_data: ProcessInput) -> None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(GAME)
+                .join(GAME.user_participations)
+                .join(UserGameCharacterAssociation.user)
+                .where(USER.dc_id == process_data.user_dc_id)
+            )
+            process_data.available_games = (await session.execute(statement)).scalars().all()
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")

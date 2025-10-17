@@ -224,6 +224,8 @@ class GAME(Base):
         back_populates="game"
     )
 
+    def __repr__(self) -> str:
+        return f"Game(id={self.id}, name={self.name})"
 
 class USER(Base):
     """

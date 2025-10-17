@@ -111,7 +111,7 @@ class GameSelect(discord.ui.Select):
                 label=f"{game.id}: {game.name}",
                 value=f"{game.id}",
                 emoji=game.status.icon,
-                description=f"{game.status.name}, created: {game.start_date.strftime("%y:%m:%d")}",
+                description=f"{game.status.name}, created: {game.start_date.strftime("%d.%m.%Y")}",
             )
             for game in self.process_data.available_games
         ]
