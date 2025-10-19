@@ -30,6 +30,7 @@ from .game_views import (
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
+    NewGameStatusSelectView,
 )
 
 
@@ -330,4 +331,10 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         view=select_view,
         ephemeral=True,
     )
-    print(process_data.selected_game)
+    await select_view.wait()
+    game_select_view = NewGameStatusSelectView(config, process_data)
+    await interaction.followup.send(
+        f"Select now the new status for game with id: {process_data.selected_game}",
+        view=game_select_view,
+        ephemeral=True,
+    )

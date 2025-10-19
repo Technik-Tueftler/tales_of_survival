@@ -4,7 +4,7 @@ This module contains all view for game creation and general game handling.
 
 import discord
 
-from .db_classes import GENRE, StoryType
+from .db_classes import GENRE, StoryType, GameStatus
 from .configuration import Configuration, ProcessInput
 
 
@@ -268,3 +268,76 @@ class KeepTellingButtonView(discord.ui.View):
             content="Input completed",
         )
         self.stop()
+
+
+class NewGameStatusSelectView(discord.ui.View):
+    """
+    StatusSelectView class to create a view for the user to select the
+    target status of the selected game
+    """
+
+    def __init__(self, config: Configuration, process_data: ProcessInput):
+        super().__init__()
+        self.add_item(NewGameStatusSelect(config, process_data))
+
+
+class NewGameStatusSelect(discord.ui.Select):
+    """
+    StatusSelect class to create a input menu to select the target status for the game.
+    Here the input is built dynamically with the possible status of a game based on
+    current status.
+    """
+
+    def __init__(self, config: Configuration, process_data: ProcessInput):
+        self.config = config
+        self.process_data = process_data
+        if game.status == GameStatus.CREATED:
+            options = [
+                discord.SelectOption(label="RUNNING", value="1"),
+                discord.SelectOption(label="PAUSE", value="2"),
+            ]
+        elif game.status == GameStatus.RUNNING:
+            options = [
+                discord.SelectOption(label="PAUSE", value="2"),
+            ]
+        elif game.status == GameStatus.PAUSED:
+            options = [
+                discord.SelectOption(label="RUNNING", value="1"),
+                discord.SelectOption(label="STOPPED", value="3"),
+            ]
+        else:
+            options = []
+            config.watcher.logger.error(
+                f"Game with ID {game.id} is in status {game.status.name}, "
+                + "no status change possible."
+            )
+        super().__init__(
+            placeholder="Select the destination status...",
+            min_values=1,
+            max_values=1,
+            options=options,
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        try:
+            old_status_name = self.game.status.name
+            self.game.status = GameStatus(int(self.values[0]))
+            new_status_name = self.game.status.name
+            await update_db_obj(self.config, self.game)
+            await interaction.response.edit_message(
+                content=(
+                    f"You have changed the status of game {self.game.id} from {old_status_name} "
+                    f"to {new_status_name}"
+                ),
+                view=None,
+            )
+            await interaction.followup.send(
+                f"The status of game with ID: {self.game.id} has been set to: {new_status_name}",
+                ephemeral=False,
+            )
+        except (IndexError, ValueError) as err:
+            self.config.watcher.logger.error(f"Error during callback: {err}")
+        except discord.errors.Forbidden as err:
+            self.config.watcher.logger.error(
+                f"Error during callback with DC permissons: {err}"
+            )
