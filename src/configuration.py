@@ -10,7 +10,7 @@ import loguru
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
-from .db_classes import DbConfiguration, GAME, StoryType, TALE, EVENT, GameStatus, CHARACTER
+from .db_classes import DbConfiguration, GAME, StoryType, TALE, EVENT, CHARACTER
 from .language import load_locale
 
 

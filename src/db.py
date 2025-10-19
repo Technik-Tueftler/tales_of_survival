@@ -241,40 +241,6 @@ async def get_all_genre(config: Configuration) -> list[GENRE]:
         return (await session.execute(select(GENRE))).scalars().all()
 
 
-async def get_user_with_games(config: Configuration, request_data: dict) -> None:
-    """
-    Function to get all games from the database which user is part of it.
-
-    Args:
-        config (Configuration): App configuration
-        request_data (dict): All necessary data for the request
-    """
-    # TODO: Ersetzen und löschen
-    try:
-        async with config.write_lock, config.session() as session, session.begin():
-            statement = (
-                select(UserGameCharacterAssociation)
-                .join(UserGameCharacterAssociation.user)
-                .options(joinedload(UserGameCharacterAssociation.game))
-                .where(
-                    USER.dc_id == request_data["user_dc_id"],
-                    UserGameCharacterAssociation.character_id.is_(None),
-                    UserGameCharacterAssociation.end_date.is_(None),
-                )
-            )
-            result = (await session.execute(statement)).scalars().all()
-
-            if result is None or len(result) == 0:
-                config.logger.debug(
-                    f"No user found with dc_id {request_data['user_dc_id']}"
-                )
-                return
-            request_data["game_association"] = result
-    except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
-        return
-
-
 async def process_player(
     config: Configuration, user_list: list[discord.member.Member]
 ) -> list[USER]:
@@ -450,7 +416,7 @@ async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER:
         return
 
 
-async def get_mapped_ugc_Association(
+async def get_mapped_ugc_association(
     config: Configuration, game_id: int, user_id
 ) -> UserGameCharacterAssociation:
     try:

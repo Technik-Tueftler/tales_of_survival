@@ -15,7 +15,6 @@ from .db import (
     get_genre_double_cond,
     process_player,
     update_db_objs,
-    get_user_with_games,
     get_available_characters,
     get_object_by_id,
     get_all_games,
@@ -23,12 +22,11 @@ from .db import (
     get_tale_from_game_id,
     get_games_w_status,
     get_user_from_dc_id,
-    get_mapped_ugc_Association
+    get_mapped_ugc_association
 )
 from .game_views import (
     CharacterSelectView,
     GameSelectView,
-    GameSelectViewAssoc,
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
@@ -298,14 +296,14 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     )
     await character_view.wait()
     user = await get_user_from_dc_id(config, process_data.user_dc_id)
-    association = await get_mapped_ugc_Association(config, process_data.selected_game, user.id)
+    association = await get_mapped_ugc_association(config, process_data.selected_game, user.id)
     selected_character = await get_object_by_id(
         config, CHARACTER, process_data.selected_char
     )
     selected_character.user_id = association.user_id
     selected_character.start_date = datetime.now(timezone.utc)
     association.character_id = process_data.selected_char
-    await update_db_objs(config, [association, selected_character]) 
+    await update_db_objs(config, [association, selected_character])
 
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:

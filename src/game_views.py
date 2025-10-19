@@ -55,49 +55,6 @@ class CharacterSelect(discord.ui.Select):
         self.view.stop()
 
 
-class GameSelectAssoc(discord.ui.Select):
-    """
-    Select class to select a game to set new character.
-    """
-
-    def __init__(self, config, game_data: dict):
-        self.config = config
-        self.game_data = game_data
-        options = [
-            discord.SelectOption(
-                label=f"{assoc.game.id}: {assoc.game.name}",
-                value=f"{assoc.id}",
-                description=f"Creation date: {assoc.game.start_date}",
-            )
-            for assoc in game_data["game_association"]
-        ]
-
-        super().__init__(
-            placeholder="Select a game...",
-            min_values=1,
-            max_values=1,
-            options=options,
-        )
-
-    async def callback(self, interaction: discord.Interaction):
-        self.config.logger.debug(f"Selected game id: {self.values[0]}")
-        self.game_data["game_association_id"] = self.values[0]
-        await interaction.response.edit_message(
-            content=f"You have chosen the game with ID: {self.values[0]}",
-        )
-        self.view.stop()
-
-
-class GameSelectViewAssoc(discord.ui.View):
-    """
-    View class to select a genre for a new game.
-    """
-
-    def __init__(self, config, game_data: dict):
-        super().__init__()
-        self.add_item(GameSelectAssoc(config, game_data))
-
-
 class GameSelect(discord.ui.Select):
     """
     Select class to select a game to set new character.
