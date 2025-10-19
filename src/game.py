@@ -22,6 +22,8 @@ from .db import (
     get_all_user_games,
     get_tale_from_game_id,
     get_games_w_status,
+    get_user_from_dc_id,
+    get_mapped_ugc_Association
 )
 from .game_views import (
     CharacterSelectView,
@@ -227,7 +229,7 @@ async def keep_telling(interaction: Interaction, config: Configuration):
     try:
         process_data = ProcessInput()
         await get_all_games(config, process_data)
-        if not process_data.input_valid:
+        if not process_data.input_valid_game:
             return
         game_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
@@ -266,8 +268,12 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     process_data = ProcessInput()
     process_data.user_dc_id = str(interaction.user.id)
     await get_all_user_games(config, process_data)
-    print(process_data.available_games)
-    if not process_data.input_valid:
+    if not await process_data.input_valid_game():
+        await interaction.response.send_message(
+            "An error occurred while retrieving your games. Your not registered "
+            "for any game. Please contact the admin.",
+            ephemeral=True,
+        )
         return
     game_view = GameSelectView(config, process_data)
     await interaction.response.send_message(
@@ -276,72 +282,30 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
             ephemeral=True,
         )
     await game_view.wait()
-
-
-async def select_character2(interaction: Interaction, config: Configuration) -> None:
-    """
-    This function is the entry and schedule point to select and process a character selection.
-
-    Args:
-        interaction (Interaction): Interaction object from Discord
-        config (Configuration): App configuration
-    """
-    try:
-        request_data = {"user_dc_id": str(interaction.user.id)}
-        await get_user_with_games(config, request_data)
-        if request_data.get("game_association") is None:
-            await interaction.response.send_message(
-                "An error occurred while retrieving your games. Your not registered "
-                "for any game. Please contact the admin.",
-                ephemeral=True,
-            )
-            return
-        game_view = GameSelectViewAssoc(config, request_data)
+    process_data.available_chars = await get_available_characters(config)
+    if not await process_data.input_valid_char():
         await interaction.response.send_message(
-            "Please select the game to select your character.",
-            view=game_view,
+            "An error occurred while retrieving character. There are no selectable characters. "
+            "Please contact the admin.",
             ephemeral=True,
         )
-        await game_view.wait()
-        if request_data.get("game_association_id") is None:
-            await interaction.followup.send(
-                "You did not select a game. Please try again.",
-                ephemeral=True,
-            )
-            return
-        await get_available_characters(config, request_data)
-        if request_data.get("available_character") is None:
-            await interaction.followup.send(
-                "No characters are available for selection. Please contact the admin.",
-                ephemeral=True,
-            )
-            return
-        character_view = CharacterSelectView(config, request_data)
-        await interaction.followup.send(
-            "Please select now the character for the game.",
-            view=character_view,
-            ephemeral=True,
-        )
-        await character_view.wait()
-        if request_data.get("selected_character") is None:
-            await interaction.followup.send(
-                "You did not select a character. Please try again.",
-                ephemeral=True,
-            )
-            return
-        game_association = await get_object_by_id(
-            config, UserGameCharacterAssociation, request_data["game_association_id"]
-        )
-        selected_character = await get_object_by_id(
-            config, CHARACTER, request_data["selected_character"]
-        )
-        selected_character.user_id = game_association.user_id
-        selected_character.start_date = datetime.now(timezone.utc)
-        game_association.character_id = int(request_data["selected_character"])
-        await update_db_objs(config, [game_association, selected_character])
-
-    except Exception as err:
-        print(err, type(err))
+        return
+    character_view = CharacterSelectView(config, process_data)
+    await interaction.followup.send(
+        "Please select now the character for the game.",
+        view=character_view,
+        ephemeral=True,
+    )
+    await character_view.wait()
+    user = await get_user_from_dc_id(config, process_data.user_dc_id)
+    association = await get_mapped_ugc_Association(config, process_data.selected_game, user.id)
+    selected_character = await get_object_by_id(
+        config, CHARACTER, process_data.selected_char
+    )
+    selected_character.user_id = association.user_id
+    selected_character.start_date = datetime.now(timezone.utc)
+    association.character_id = process_data.selected_char
+    await update_db_objs(config, [association, selected_character]) 
 
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:

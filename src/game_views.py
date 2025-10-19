@@ -13,9 +13,9 @@ class CharacterSelectView(discord.ui.View):
     View class to select a character for a game.
     """
 
-    def __init__(self, config, game_data: dict):
+    def __init__(self, config, process_data: ProcessInput):
         super().__init__()
-        self.add_item(CharacterSelect(config, game_data))
+        self.add_item(CharacterSelect(config, process_data))
 
 
 class CharacterSelect(discord.ui.Select):
@@ -23,9 +23,9 @@ class CharacterSelect(discord.ui.Select):
     Select class to select a character for a game.
     """
 
-    def __init__(self, config, game_data: dict):
+    def __init__(self, config, process_data: ProcessInput):
         self.config = config
-        self.game_data = game_data
+        self.process_data = process_data
         options = [
             discord.SelectOption(
                 label=f"{char.id}: {char.name}",
@@ -36,7 +36,7 @@ class CharacterSelect(discord.ui.Select):
                     else char.background
                 ),
             )
-            for char in game_data["available_character"]
+            for char in process_data.available_chars
         ]
 
         super().__init__(
@@ -48,7 +48,7 @@ class CharacterSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected character id: {self.values[0]}")
-        self.game_data["selected_character"] = self.values[0]
+        self.process_data.selected_char = int(self.values[0])
         await interaction.response.edit_message(
             content=f"You have chosen the character with ID: {self.values[0]}",
         )

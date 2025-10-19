@@ -10,7 +10,7 @@ import loguru
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
-from .db_classes import DbConfiguration, GAME, StoryType, TALE, EVENT, GameStatus
+from .db_classes import DbConfiguration, GAME, StoryType, TALE, EVENT, GameStatus, CHARACTER
 from .language import load_locale
 
 
@@ -22,15 +22,21 @@ class ProcessInput:
     def __init__(self):
         self.user_dc_id: str = "0"
         self.selected_game: int = 0
+        self.selected_char: int = 0
         self.available_games: List[GAME] = []
-        # self.games_status: List[GameStatus] = []
+        self.available_chars: List[CHARACTER] = []
         self.story_type: StoryType
         self.fiction_prompt: str
         self.tale: TALE
         self.event: EVENT
 
-    async def input_valid(self) -> bool:
+    async def input_valid_game(self) -> bool:
         if len(self.available_games) <= 0:
+            return False
+        return True
+
+    async def input_valid_char(self) -> bool:
+        if len(self.available_chars) <= 0:
             return False
         return True
 

@@ -325,7 +325,7 @@ async def update_db_objs(
         print(err, type(err))
 
 
-async def get_available_characters(config: Configuration, request_data: dict) -> None:
+async def get_available_characters(config: Configuration) -> list[CHARACTER]:
     """
     Function to get all characters from the database which are not assigned to a user.
 
@@ -344,7 +344,7 @@ async def get_available_characters(config: Configuration, request_data: dict) ->
             if result is None or len(result) == 0:
                 config.logger.debug("No available characters found in the database")
                 return
-            request_data["available_character"] = result
+            return result
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
@@ -359,8 +359,12 @@ async def get_all_user_games(config: Configuration, process_data: ProcessInput) 
                 .join(GAME.user_participations)
                 .join(UserGameCharacterAssociation.user)
                 .where(USER.dc_id == process_data.user_dc_id)
+                .where(UserGameCharacterAssociation.character_id.is_(None))
+                .where(UserGameCharacterAssociation.end_date.is_(None))
             )
-            process_data.available_games = (await session.execute(statement)).scalars().all()
+            process_data.available_games = (
+                (await session.execute(statement)).scalars().all()
+            )
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
@@ -430,3 +434,34 @@ async def get_games_w_status(
             .all()
         )
     return games
+
+
+async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(USER)
+                .where(USER.dc_id == dc_id)
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return
+
+
+async def get_mapped_ugc_Association(
+    config: Configuration, game_id: int, user_id
+) -> UserGameCharacterAssociation:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(UserGameCharacterAssociation)
+                .where(UserGameCharacterAssociation.game_id == game_id)
+                .where(UserGameCharacterAssociation.user_id == user_id)
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return
