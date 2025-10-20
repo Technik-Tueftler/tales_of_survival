@@ -210,7 +210,7 @@ async def get_characters_from_ids(
 
 async def get_object_by_id(
     config: Configuration,
-    obj_type: UserGameCharacterAssociation | CHARACTER,
+    obj_type: UserGameCharacterAssociation | CHARACTER | GAME,
     obj_id: int,
 ) -> UserGameCharacterAssociation | CHARACTER | None:
     """

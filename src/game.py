@@ -239,7 +239,7 @@ async def keep_telling(interaction: Interaction, config: Configuration):
         await game_view.wait()
 
         process_data.tale = await get_tale_from_game_id(
-            config, process_data.selected_game
+            config, process_data.selected_game_id
         )
         telling_view = KeepTellingButtonView(config, process_data)
 
@@ -297,7 +297,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     )
     await character_view.wait()
     user = await get_user_from_dc_id(config, process_data.user_dc_id)
-    association = await get_mapped_ugc_association(config, process_data.selected_game, user.id)
+    association = await get_mapped_ugc_association(config, process_data.selected_game_id, user.id)
     selected_character = await get_object_by_id(
         config, CHARACTER, process_data.selected_char
     )
@@ -316,25 +316,34 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         config (Configuration): App configuration
         interaction (Interaction): Interaction object
     """
-    process_data = ProcessInput()
-    process_data.available_games = await get_games_w_status(
-        config,
-        [
-            GameStatus.CREATED,
-            GameStatus.RUNNING,
-            GameStatus.PAUSED,
-        ],
-    )
-    select_view = GameSelectView(config, process_data)
-    await interaction.response.send_message(
-        "Which game would you like to change the status of?",
-        view=select_view,
-        ephemeral=True,
-    )
-    await select_view.wait()
-    game_select_view = NewGameStatusSelectView(config, process_data)
-    await interaction.followup.send(
-        f"Select now the new status for game with id: {process_data.selected_game}",
-        view=game_select_view,
-        ephemeral=True,
-    )
+    try:
+        process_data = ProcessInput()
+        process_data.available_games = await get_games_w_status(
+            config,
+            [
+                GameStatus.CREATED,
+                GameStatus.RUNNING,
+                GameStatus.PAUSED,
+            ],
+        )
+        select_view = GameSelectView(config, process_data)
+        await interaction.response.send_message(
+            "Which game would you like to change the status of?",
+            view=select_view,
+            ephemeral=True,
+        )
+        await select_view.wait()
+        process_data.selected_game = await get_object_by_id(config, GAME, process_data.selected_game_id)
+        game_select_view = NewGameStatusSelectView(config, process_data)
+        await interaction.followup.send(
+            f"Select now the new status for game with id: {process_data.selected_game_id}",
+            view=game_select_view,
+            ephemeral=True,
+        )
+        await game_select_view.wait()
+        print("Test 2")
+        print(f"out new status: {process_data.new_game_status}, {type(process_data.new_game_status)}")
+        process_data.selected_game.status = process_data.new_game_status
+        await update_db_objs(config, [process_data.selected_game])
+    except Exception as err:
+        config.logger.error(err)

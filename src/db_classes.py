@@ -66,16 +66,22 @@ class GameStatus(Enum):
     Enum to define status of game and map an emoji.
     """
 
-    CREATED = 0, "🆕"
-    RUNNING = 1, "🎮"
-    PAUSED = 2, "⏸️"
-    STOPPED = 3, "⏹️"
-    FINISHED = 4, "🏁"
-    FAILURE = 5, "⚠️"
+    CREATED = 0, "🆕", "created"
+    RUNNING = 1, "🎮", "running"
+    PAUSED = 2, "⏸️", "paused"
+    STOPPED = 3, "⏹️", "stopped"
+    FINISHED = 4, "🏁", "finished"
+    FAILURE = 5, "⚠️", "failure"
 
-    def __init__(self, value, icon):
-        self._value_ = value
-        self.icon = icon
+    # def __init__(self, value, icon):
+    #     self._value_ = value
+    #     self.icon = icon
+    def __new__(cls, value, icon="", lable=""):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.icon = icon
+        obj.lable = lable
+        return obj
 
 
 class INSPIRATIONALWORD(Base):

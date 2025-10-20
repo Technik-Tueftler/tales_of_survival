@@ -81,7 +81,7 @@ class GameSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
-        self.process_data.selected_game = int(self.values[0])
+        self.process_data.selected_game_id = int(self.values[0])
         await interaction.response.edit_message(
             content=f"You have chosen the game with ID: {self.values[0]}",
         )
@@ -291,24 +291,25 @@ class NewGameStatusSelect(discord.ui.Select):
     def __init__(self, config: Configuration, process_data: ProcessInput):
         self.config = config
         self.process_data = process_data
-        if game.status == GameStatus.CREATED:
+        if process_data.selected_game.status == GameStatus.CREATED:
             options = [
-                discord.SelectOption(label="RUNNING", value="1"),
-                discord.SelectOption(label="PAUSE", value="2"),
+                discord.SelectOption(label="RUNNING", value=str(GameStatus.RUNNING.value)),
+                discord.SelectOption(label="PAUSED", value=str(GameStatus.PAUSED.value)),
             ]
-        elif game.status == GameStatus.RUNNING:
+        elif process_data.selected_game.status == GameStatus.RUNNING:
             options = [
-                discord.SelectOption(label="PAUSE", value="2"),
+                discord.SelectOption(label="PAUSED", value=str(GameStatus.PAUSED.value)),
             ]
-        elif game.status == GameStatus.PAUSED:
+        elif process_data.selected_game.status == GameStatus.PAUSED:
             options = [
-                discord.SelectOption(label="RUNNING", value="1"),
-                discord.SelectOption(label="STOPPED", value="3"),
+                discord.SelectOption(label="RUNNING", value=str(GameStatus.RUNNING.value)),
+                discord.SelectOption(label="STOPPED", value=str(GameStatus.STOPPED.value)),
             ]
         else:
             options = []
-            config.watcher.logger.error(
-                f"Game with ID {game.id} is in status {game.status.name}, "
+            config.logger.error(
+                f"Game with ID {process_data.selected_game.id} is in status "
+                + f"{process_data.selected_game.status}, "
                 + "no status change possible."
             )
         super().__init__(
@@ -320,24 +321,25 @@ class NewGameStatusSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         try:
-            old_status_name = self.game.status.name
-            self.game.status = GameStatus(int(self.values[0]))
-            new_status_name = self.game.status.name
-            await update_db_obj(self.config, self.game)
+            old_status_name = self.process_data.selected_game.status.lable
+            print(f"lable: {old_status_name}")
+            game_id = self.process_data.selected_game.id
+            new_status = GameStatus(int(self.values[0]))
+            print("test 1")
+            self.process_data.new_game_status = new_status
+            print(f"new status: {self.process_data.new_game_status}")
             await interaction.response.edit_message(
                 content=(
-                    f"You have changed the status of game {self.game.id} from {old_status_name} "
-                    f"to {new_status_name}"
-                ),
-                view=None,
+                    f"You have changed the status of game {game_id} from {old_status_name} "
+                    f"to {new_status.lable}"
+                )
             )
-            await interaction.followup.send(
-                f"The status of game with ID: {self.game.id} has been set to: {new_status_name}",
-                ephemeral=False,
-            )
+            print("Test 3")
         except (IndexError, ValueError) as err:
-            self.config.watcher.logger.error(f"Error during callback: {err}")
+            self.config.logger.error(f"Error during callback: {err}")
         except discord.errors.Forbidden as err:
-            self.config.watcher.logger.error(
+            self.config.logger.error(
                 f"Error during callback with DC permissons: {err}"
             )
+        except Exception as err:
+            print(err, type(err))
