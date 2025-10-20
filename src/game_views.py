@@ -293,17 +293,27 @@ class NewGameStatusSelect(discord.ui.Select):
         self.process_data = process_data
         if process_data.selected_game.status == GameStatus.CREATED:
             options = [
-                discord.SelectOption(label="RUNNING", value=str(GameStatus.RUNNING.value)),
-                discord.SelectOption(label="PAUSED", value=str(GameStatus.PAUSED.value)),
+                discord.SelectOption(
+                    label="RUNNING", value=str(GameStatus.RUNNING.value)
+                ),
+                discord.SelectOption(
+                    label="PAUSED", value=str(GameStatus.PAUSED.value)
+                ),
             ]
         elif process_data.selected_game.status == GameStatus.RUNNING:
             options = [
-                discord.SelectOption(label="PAUSED", value=str(GameStatus.PAUSED.value)),
+                discord.SelectOption(
+                    label="PAUSED", value=str(GameStatus.PAUSED.value)
+                ),
             ]
         elif process_data.selected_game.status == GameStatus.PAUSED:
             options = [
-                discord.SelectOption(label="RUNNING", value=str(GameStatus.RUNNING.value)),
-                discord.SelectOption(label="STOPPED", value=str(GameStatus.STOPPED.value)),
+                discord.SelectOption(
+                    label="RUNNING", value=str(GameStatus.RUNNING.value)
+                ),
+                discord.SelectOption(
+                    label="STOPPED", value=str(GameStatus.STOPPED.value)
+                ),
             ]
         else:
             options = []
@@ -322,24 +332,19 @@ class NewGameStatusSelect(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         try:
             old_status_name = self.process_data.selected_game.status.lable
-            print(f"lable: {old_status_name}")
             game_id = self.process_data.selected_game.id
             new_status = GameStatus(int(self.values[0]))
-            print("test 1")
             self.process_data.new_game_status = new_status
-            print(f"new status: {self.process_data.new_game_status}")
             await interaction.response.edit_message(
                 content=(
                     f"You have changed the status of game {game_id} from {old_status_name} "
                     f"to {new_status.lable}"
                 )
             )
-            print("Test 3")
+            self.view.stop()
         except (IndexError, ValueError) as err:
             self.config.logger.error(f"Error during callback: {err}")
         except discord.errors.Forbidden as err:
-            self.config.logger.error(
-                f"Error during callback with DC permissons: {err}"
-            )
+            self.config.logger.error(f"Error during callback with DC permissons: {err}")
         except Exception as err:
             print(err, type(err))
