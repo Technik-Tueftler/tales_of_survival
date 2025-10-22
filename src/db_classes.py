@@ -51,9 +51,9 @@ class StoryType(Enum):
     """
     Enum to define type of story and map an emoji.
     """
-
-    EVENT = 0, "📣", "event"
-    FICTION = 1, "📕", "fiction"
+    INIT = 0, "🛠️", "init"
+    EVENT = 1, "📣", "event"
+    FICTION = 2, "📕", "fiction"
 
     def __init__(self, value, icon, text):
         self._value_ = value
@@ -73,9 +73,6 @@ class GameStatus(Enum):
     FINISHED = 4, "🏁", "finished"
     FAILURE = 5, "⚠️", "failure"
 
-    # def __init__(self, value, icon):
-    #     self._value_ = value
-    #     self.icon = icon
     def __new__(cls, value, icon="", lable=""):
         obj = object.__new__(cls)
         obj._value_ = value

@@ -21,6 +21,7 @@ from .db_classes import (
     USER,
     UserGameCharacterAssociation,
     GameStatus,
+    STORY
 )
 
 
@@ -270,7 +271,7 @@ async def process_player(
 
 async def update_db_objs(
     config: Configuration,
-    objs: list[GAME | USER | TALE | GENRE],
+    objs: list[GAME | USER | TALE | GENRE, STORY],
 ) -> None:
     """
     Function to update a game or player object in the database

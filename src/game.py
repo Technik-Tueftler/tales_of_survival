@@ -8,8 +8,9 @@ import discord
 from discord import Interaction
 
 from .configuration import Configuration, ProcessInput
+from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
-from .db import GAME, GENRE, TALE, USER, UserGameCharacterAssociation, CHARACTER
+from .db_classes import GAME, GENRE, TALE, USER, UserGameCharacterAssociation, CHARACTER, STORY
 from .db import (
     get_all_genre,
     get_genre_double_cond,
@@ -310,6 +311,31 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     await update_db_objs(config, [association, selected_character])
 
 
+async def start_game(config: Configuration, game_data: ProcessInput):
+    # Game select übergeben, Interaction?
+    # Story element erstellen mit system/content
+    # Beispiel: "Du bist ein Geschichtenerzähler für eine Zombie Apokalypse. Die Antworten nur in deutsch."
+    tale = await get_tale_from_game_id(config, game_data.selected_game.id)
+    # TODO: In die Config packen bzw. constants.py bzw. language.py
+    # TODO: init 1 hinzufügen, dass er mit Absätzen die Geschichte gliedert 
+    system_requ_prompt = f"Du bist ein Geschichtenerzähler für ein/e {tale.genre.name}. Die Antworten nur in {tale.genre.language}."
+    system_requ_prompt += f" Der Erzählstil sollte: {tale.genre.storytelling_style} sein." if tale.genre.storytelling_style is not None else ""
+    system_requ_prompt += f" Die Atmosphäre der Geschichte ist: {tale.genre.atmosphere}." if tale.genre.atmosphere is not None else ""
+    user_requ_prompt = "Beschreibe mir die welt in der die Menschen jetzt leben müssen mit (maximal 200 Wörter)"
+    # Charakter Vorstellung, siehe output_1a als dritter init
+    messages = [
+        {"role": "user", "content": system_requ_prompt},
+        {"role": "user", "content": user_requ_prompt},
+    ]
+    response = await request_openai(config=config, messages=messages)
+    stories = [STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id) for story in messages]
+    stories.append(STORY(response=response, story_type=StoryType.INIT, tale_id=tale.id))
+    await update_db_objs(config=config, objs=stories)
+
+    # Text Model -> Erster input vom user/content
+    # Beispiel: "Erzähl mir den start einer geschichte (maximal 200 Wörter) bei der sich 4 Charaktere in einer Stadt namens Louisville treffen und beschließen eine gemeinschaft zu bilden."
+
+
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
     """
     Function game status with a select menu to choose the game status. The game status can be
@@ -346,6 +372,9 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             ephemeral=True,
         )
         await game_select_view.wait()
+        if await process_data.request_game_start():
+            # Nur starten, wenn mindestens ein spieler im Game ist (über user_participations)
+            await start_game(config, process_data)
         process_data.selected_game.status = process_data.new_game_status
         await update_db_objs(config, [process_data.selected_game])
     except Exception as err:

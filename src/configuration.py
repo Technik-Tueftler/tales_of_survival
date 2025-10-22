@@ -1,6 +1,7 @@
 """
 Load environment variables and validation of project configurations from user
 """
+
 import random
 import asyncio
 from typing import List
@@ -10,7 +11,15 @@ import loguru
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
-from .db_classes import DbConfiguration, GAME, StoryType, TALE, EVENT, CHARACTER, GameStatus
+from .db_classes import (
+    DbConfiguration,
+    GAME,
+    StoryType,
+    TALE,
+    EVENT,
+    CHARACTER,
+    GameStatus,
+)
 from .language import load_locale
 
 
@@ -42,11 +51,17 @@ class ProcessInput:
             return False
         return True
 
+    async def request_game_start(self) -> bool:
+        return (
+            self.selected_game.status is GameStatus.CREATED
+            and self.new_game_status is GameStatus.RUNNING
+        )
+
     def events_available(self) -> bool:
         if len(self.tale.genre.events) <= 0:
             return False
         return True
-    
+
     def get_random_event_weighted(self):
         weights = [element.chance for element in self.tale.genre.events]
         self.event = random.choices(self.tale.genre.events, weights=weights, k=1)[0]
@@ -57,6 +72,7 @@ class LangConfiguration:
     """
     Configuration model for the language
     """
+
     locale: str = environ.var("en", converter=str)
 
 
@@ -65,6 +81,7 @@ class DcConfiguration:
     """
     Configuration model for the discord
     """
+
     bot_token: str = environ.var(converter=str)
 
 
@@ -89,10 +106,11 @@ class Configuration:
     Genral configuration class for the entire application.
     Combines all sub-configurations and initializes the database engine and session.
     """
+
     def __init__(self, config: EnvConfiguration):
         self.env = config
         self.engine = create_async_engine(config.db.db_url)
         self.session = async_sessionmaker(bind=self.engine, expire_on_commit=False)
-        self.write_lock = asyncio.Lock() # pylint: disable=not-callable
+        self.write_lock = asyncio.Lock()  # pylint: disable=not-callable
         self.logger: loguru._logger.Logger = None
         self.locale = load_locale(self.env.lang.locale)
