@@ -36,7 +36,7 @@ class CharacterSelect(discord.ui.Select):
                     else char.background
                 ),
             )
-            for char in process_data.available_chars
+            for char in process_data.user_context.available_chars
         ]
 
         super().__init__(
@@ -48,7 +48,7 @@ class CharacterSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected character id: {self.values[0]}")
-        self.process_data.selected_char = int(self.values[0])
+        self.process_data.user_context.selected_char = int(self.values[0])
         await interaction.response.edit_message(
             content=f"You have chosen the character with ID: {self.values[0]}",
         )
@@ -70,7 +70,7 @@ class GameSelect(discord.ui.Select):
                 emoji=game.status.icon,
                 description=f"{game.status.name}, created: {game.start_date.strftime("%d.%m.%Y")}",
             )
-            for game in self.process_data.available_games
+            for game in self.process_data.game_context.available_games
         ]
         super().__init__(
             placeholder="Select a game...",
@@ -81,7 +81,7 @@ class GameSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
-        self.process_data.selected_game_id = int(self.values[0])
+        self.process_data.game_context.selected_game_id = int(self.values[0])
         await interaction.response.edit_message(
             content=f"You have chosen the game with ID: {self.values[0]}",
         )
@@ -219,7 +219,7 @@ class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the s
         """
         Callback function when the modal is submitted.
         """
-        self.process_data.fiction_prompt = self.story_text_input.value
+        self.process_data.story_context.fiction_prompt = self.story_text_input.value
         self.config.logger.trace(
             f"Additional text for event story type entered: {self.story_text_input.value}"
         )
@@ -238,7 +238,7 @@ class KeepTellingButtonView(discord.ui.View):
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 if item.label == StoryType.EVENT.text:
-                    item.disabled = not self.process_data.events_available()
+                    item.disabled = not self.process_data.story_context.events_available()
 
     @discord.ui.button(
         label=StoryType.FICTION.text,
@@ -248,7 +248,7 @@ class KeepTellingButtonView(discord.ui.View):
     async def button_callback_f(
         self, button: discord.ui.button, interaction: discord.interactions.Interaction
     ):
-        self.process_data.story_type = StoryType.FICTION
+        self.process_data.story_context.story_type = StoryType.FICTION
         self.config.logger.trace(f"Story type selected: {StoryType.FICTION}")
         event_view = StoryFictionModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
@@ -262,7 +262,7 @@ class KeepTellingButtonView(discord.ui.View):
     async def button_callback_e(
         self, button: discord.ui.button, interaction: discord.interactions.Interaction
     ):
-        self.process_data.story_type = StoryType.EVENT
+        self.process_data.story_context.story_type = StoryType.EVENT
         self.config.logger.trace(f"Story type selected: {StoryType.EVENT}")
         await button.response.edit_message(
             content="Input completed",
@@ -291,7 +291,7 @@ class NewGameStatusSelect(discord.ui.Select):
     def __init__(self, config: Configuration, process_data: ProcessInput):
         self.config = config
         self.process_data = process_data
-        if process_data.selected_game.status == GameStatus.CREATED:
+        if process_data.game_context.selected_game.status == GameStatus.CREATED:
             options = [
                 discord.SelectOption(
                     label="RUNNING", value=str(GameStatus.RUNNING.value)
@@ -300,13 +300,13 @@ class NewGameStatusSelect(discord.ui.Select):
                     label="PAUSED", value=str(GameStatus.PAUSED.value)
                 ),
             ]
-        elif process_data.selected_game.status == GameStatus.RUNNING:
+        elif process_data.game_context.selected_game.status == GameStatus.RUNNING:
             options = [
                 discord.SelectOption(
                     label="PAUSED", value=str(GameStatus.PAUSED.value)
                 ),
             ]
-        elif process_data.selected_game.status == GameStatus.PAUSED:
+        elif process_data.game_context.selected_game.status == GameStatus.PAUSED:
             options = [
                 discord.SelectOption(
                     label="RUNNING", value=str(GameStatus.RUNNING.value)
@@ -318,8 +318,8 @@ class NewGameStatusSelect(discord.ui.Select):
         else:
             options = []
             config.logger.error(
-                f"Game with ID {process_data.selected_game.id} is in status "
-                + f"{process_data.selected_game.status}, "
+                f"Game with ID {process_data.game_context.selected_game.id} is in status "
+                + f"{process_data.game_context.selected_game.status}, "
                 + "no status change possible."
             )
         super().__init__(
@@ -331,10 +331,10 @@ class NewGameStatusSelect(discord.ui.Select):
 
     async def callback(self, interaction: discord.Interaction):
         try:
-            old_status_name = self.process_data.selected_game.status.lable
-            game_id = self.process_data.selected_game.id
+            old_status_name = self.process_data.game_context.selected_game.status.lable
+            game_id = self.process_data.game_context.selected_game.id
             new_status = GameStatus(int(self.values[0]))
-            self.process_data.new_game_status = new_status
+            self.process_data.game_context.new_game_status = new_status
             await interaction.response.edit_message(
                 content=(
                     f"You have changed the status of game {game_id} from {old_status_name} "

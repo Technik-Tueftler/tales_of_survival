@@ -10,7 +10,15 @@ from discord import Interaction
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
-from .db_classes import GAME, GENRE, TALE, USER, UserGameCharacterAssociation, CHARACTER, STORY
+from .db_classes import (
+    GAME,
+    GENRE,
+    TALE,
+    USER,
+    UserGameCharacterAssociation,
+    CHARACTER,
+    STORY,
+)
 from .db import (
     get_all_genre,
     get_genre_double_cond,
@@ -229,7 +237,7 @@ async def keep_telling(interaction: Interaction, config: Configuration):
     try:
         process_data = ProcessInput()
         await get_all_games(config, process_data)
-        if not process_data.input_valid_game:
+        if not await process_data.game_context.input_valid_game:
             return
         game_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
@@ -239,8 +247,8 @@ async def keep_telling(interaction: Interaction, config: Configuration):
         )
         await game_view.wait()
 
-        process_data.tale = await get_tale_from_game_id(
-            config, process_data.selected_game_id
+        process_data.story_context.tale = await get_tale_from_game_id(
+            config, process_data.game_context.selected_game_id
         )
         telling_view = KeepTellingButtonView(config, process_data)
 
@@ -248,16 +256,18 @@ async def keep_telling(interaction: Interaction, config: Configuration):
         await telling_view.wait()
         config.logger.debug("Finish keep telling input interaction.")
         if (
-            process_data.story_type is StoryType.EVENT
-            and process_data.events_available()
+            process_data.story_context.story_type is StoryType.EVENT
+            and await process_data.story_context.events_available()
         ):
-            process_data.get_random_event_weighted()
-            print(process_data.event)
-        elif process_data.story_type is StoryType.FICTION:
-            print(f"Weitererzählen mit dem Input: {process_data.fiction_prompt}")
+            await process_data.story_context.get_random_event_weighted()
+            print(process_data.story_context.event)
+        elif process_data.story_context.story_type is StoryType.FICTION:
+            print(
+                f"Weitererzählen mit dem Input: {process_data.story_context.fiction_prompt}"
+            )
         else:
             config.logger.error(
-                f"Story type: {process_data.story_type} is not defined."
+                f"Story type: {process_data.story_context.story_type} is not defined."
             )
             return
 
@@ -269,7 +279,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     process_data = ProcessInput()
     process_data.user_dc_id = str(interaction.user.id)
     await get_all_user_games(config, process_data)
-    if not await process_data.input_valid_game():
+    if not await process_data.game_context.input_valid_game():
         await interaction.response.send_message(
             "An error occurred while retrieving your games. Your not registered "
             "for any game. Please contact the admin.",
@@ -283,8 +293,8 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
         ephemeral=True,
     )
     await game_view.wait()
-    process_data.available_chars = await get_available_characters(config)
-    if not await process_data.input_valid_char():
+    process_data.user_context.available_chars = await get_available_characters(config)
+    if not await process_data.user_context.input_valid_char():
         await interaction.response.send_message(
             "An error occurred while retrieving character. There are no selectable characters. "
             "Please contact the admin.",
@@ -300,27 +310,43 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     await character_view.wait()
     user = await get_user_from_dc_id(config, process_data.user_dc_id)
     association = await get_mapped_ugc_association(
-        config, process_data.selected_game_id, user.id
+        config, process_data.game_context.selected_game_id, user.id
     )
     selected_character = await get_object_by_id(
-        config, CHARACTER, process_data.selected_char
+        config, CHARACTER, process_data.user_context.selected_char
     )
     selected_character.user_id = association.user_id
     selected_character.start_date = datetime.now(timezone.utc)
-    association.character_id = process_data.selected_char
+    association.character_id = process_data.user_context.selected_char
     await update_db_objs(config, [association, selected_character])
 
 
-async def start_game(config: Configuration, game_data: ProcessInput):
+async def start_game(
+    interaction: Interaction, config: Configuration, game_data: ProcessInput
+):
     # Game select übergeben, Interaction?
     # Story element erstellen mit system/content
     # Beispiel: "Du bist ein Geschichtenerzähler für eine Zombie Apokalypse. Die Antworten nur in deutsch."
-    tale = await get_tale_from_game_id(config, game_data.selected_game.id)
+    tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
+    game_data.story_context.event = tale
+    print(tale.game.user_participations)
+    for user in tale.game.user_participations:
+        print(user.user_id)
+        print(user.character_id)
+    return
     # TODO: In die Config packen bzw. constants.py bzw. language.py
-    # TODO: init 1 hinzufügen, dass er mit Absätzen die Geschichte gliedert 
+    # TODO: init 1 hinzufügen, dass er mit Absätzen die Geschichte gliedert
     system_requ_prompt = f"Du bist ein Geschichtenerzähler für ein/e {tale.genre.name}. Die Antworten nur in {tale.genre.language}."
-    system_requ_prompt += f" Der Erzählstil sollte: {tale.genre.storytelling_style} sein." if tale.genre.storytelling_style is not None else ""
-    system_requ_prompt += f" Die Atmosphäre der Geschichte ist: {tale.genre.atmosphere}." if tale.genre.atmosphere is not None else ""
+    system_requ_prompt += (
+        f" Der Erzählstil sollte: {tale.genre.storytelling_style} sein."
+        if tale.genre.storytelling_style is not None
+        else ""
+    )
+    system_requ_prompt += (
+        f" Die Atmosphäre der Geschichte ist: {tale.genre.atmosphere}."
+        if tale.genre.atmosphere is not None
+        else ""
+    )
     user_requ_prompt = "Beschreibe mir die welt in der die Menschen jetzt leben müssen mit (maximal 200 Wörter)"
     # Charakter Vorstellung, siehe output_1a als dritter init
     messages = [
@@ -328,7 +354,10 @@ async def start_game(config: Configuration, game_data: ProcessInput):
         {"role": "user", "content": user_requ_prompt},
     ]
     response = await request_openai(config=config, messages=messages)
-    stories = [STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id) for story in messages]
+    stories = [
+        STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
+        for story in messages
+    ]
     stories.append(STORY(response=response, story_type=StoryType.INIT, tale_id=tale.id))
     await update_db_objs(config=config, objs=stories)
 
@@ -347,7 +376,7 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
     """
     try:
         process_data = ProcessInput()
-        process_data.available_games = await get_games_w_status(
+        process_data.game_context.available_games = await get_games_w_status(
             config,
             [
                 GameStatus.CREATED,
@@ -362,20 +391,28 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             ephemeral=True,
         )
         await select_view.wait()
-        process_data.selected_game = await get_object_by_id(
-            config, GAME, process_data.selected_game_id
+        process_data.game_context.selected_game = await get_object_by_id(
+            config, GAME, process_data.game_context.selected_game_id
         )
         game_select_view = NewGameStatusSelectView(config, process_data)
         await interaction.followup.send(
-            f"Select now the new status for game with id: {process_data.selected_game_id}",
+            f"Select now the new status for game with id: {process_data.game_context.selected_game_id}",
             view=game_select_view,
             ephemeral=True,
         )
         await game_select_view.wait()
-        if await process_data.request_game_start():
+        if await process_data.game_context.request_game_start():
             # Nur starten, wenn mindestens ein spieler im Game ist (über user_participations)
-            await start_game(config, process_data)
-        process_data.selected_game.status = process_data.new_game_status
-        await update_db_objs(config, [process_data.selected_game])
+            await interaction.followup.send(
+                f"You have selected that the game with the ID: {process_data.game_context.selected_game_id} "
+                + "will be started.",
+                view=game_select_view,
+                ephemeral=True,
+            )
+            await start_game(interaction, config, process_data)
+        process_data.game_context.selected_game.status = (
+            process_data.game_context.new_game_status
+        )
+        await update_db_objs(config, [process_data.game_context.selected_game])
     except Exception as err:
         config.logger.error(err)

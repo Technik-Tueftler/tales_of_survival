@@ -21,7 +21,7 @@ from .db_classes import (
     USER,
     UserGameCharacterAssociation,
     GameStatus,
-    STORY
+    STORY,
 )
 
 
@@ -319,17 +319,24 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
 
 
 async def get_all_user_games(config: Configuration, process_data: ProcessInput) -> None:
+    """
+    Function get all games loaded with user participations from the database from a user.
+
+    Args:
+        config (Configuration): App configuration
+        process_data (ProcessInput): Process input data structure
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (
                 select(GAME)
                 .join(GAME.user_participations)
                 .join(UserGameCharacterAssociation.user)
-                .where(USER.dc_id == process_data.user_dc_id)
+                .where(USER.dc_id == process_data.user_context.user_dc_id)
                 .where(UserGameCharacterAssociation.character_id.is_(None))
                 .where(UserGameCharacterAssociation.end_date.is_(None))
             )
-            process_data.available_games = (
+            process_data.game_context.available_games = (
                 (await session.execute(statement)).scalars().all()
             )
 
@@ -354,7 +361,7 @@ async def get_all_games(config: Configuration, process_data: ProcessInput) -> No
             if result is None or len(result) == 0:
                 config.logger.debug("No available games found in the database")
                 return
-            process_data.available_games = result
+            process_data.game_context.available_games = result
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
@@ -369,7 +376,9 @@ async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | N
                 .join(TALE.game)
                 .options(
                     joinedload(TALE.genre).options(selectinload(GENRE.events)),
-                    joinedload(TALE.game),
+                    joinedload(TALE.game).options(
+                        selectinload(GAME.user_participations)
+                    ),
                 )
                 .where(GAME.id == game_id)
             )
@@ -406,10 +415,7 @@ async def get_games_w_status(
 async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER:
     try:
         async with config.session() as session, session.begin():
-            statement = (
-                select(USER)
-                .where(USER.dc_id == dc_id)
-            )
+            statement = select(USER).where(USER.dc_id == dc_id)
             return (await session.execute(statement)).scalar_one_or_none()
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:

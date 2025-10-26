@@ -27,27 +27,27 @@ load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
 
 
-class ProcessInput:
+class UserContext:
     def __init__(self):
         self.user_dc_id: str = "0"
-        self.selected_game_id: int = 0
-        self.selected_char: int = 0
-        self.available_games: List[GAME] = []
         self.available_chars: List[CHARACTER] = []
-        self.selected_game: GAME
-        self.new_game_status: GameStatus
-        self.story_type: StoryType
-        self.fiction_prompt: str
-        self.tale: TALE
-        self.event: EVENT
-
-    async def input_valid_game(self) -> bool:
-        if len(self.available_games) <= 0:
-            return False
-        return True
+        self.selected_char: int = 0
 
     async def input_valid_char(self) -> bool:
         if len(self.available_chars) <= 0:
+            return False
+        return True
+
+
+class GameContext:
+    def __init__(self):
+        self.available_games: List[GAME] = []
+        self.selected_game_id: int = 0
+        self.selected_game: GAME = None
+        self.new_game_status: GameStatus = None
+
+    async def input_valid_game(self) -> bool:
+        if len(self.available_games) <= 0:
             return False
         return True
 
@@ -56,15 +56,34 @@ class ProcessInput:
             self.selected_game.status is GameStatus.CREATED
             and self.new_game_status is GameStatus.RUNNING
         )
+    # async def request_game_allowed(self) -> bool:
+    #     return sd
 
-    def events_available(self) -> bool:
+
+class StoryContext:
+    def __init__(self):
+        self.story_type: StoryType = None
+        self.fiction_prompt: str = ""
+        self.tale: TALE = None
+        self.event: EVENT = None
+
+    async def events_available(self) -> bool:
         if len(self.tale.genre.events) <= 0:
             return False
         return True
 
-    def get_random_event_weighted(self):
+    async def get_random_event_weighted(self):
         weights = [element.chance for element in self.tale.genre.events]
-        self.event = random.choices(self.tale.genre.events, weights=weights, k=1)[0]
+        self.event = random.choices(  # pylint: disable=no-member
+            self.tale.genre.events, weights=weights, k=1
+        )[0]
+
+
+class ProcessInput:
+    def __init__(self):
+        self.user_context = UserContext()
+        self.game_context = GameContext()
+        self.story_context = StoryContext()
 
 
 @environ.config(prefix="LANG")
