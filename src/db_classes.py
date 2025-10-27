@@ -61,6 +61,20 @@ class StoryType(Enum):
         self.text = text
 
 
+class StartCondition(Enum):
+    """
+    Enum to define type of start condition and map an emoji.
+    """
+    S_ZOMBIE_X = 0, "🧟‍♀️", "Standard zombie tale X Player"
+    S_ZOMBIE_1 = 1, "🧟‍♂️", "Standard zombie tale 1 Player"
+    OWN = 2, "✍️", "Your own prompt"
+
+    def __init__(self, value, icon, text):
+        self._value_ = value
+        self.icon = icon
+        self.text = text
+
+
 class GameStatus(Enum):
     """
     Enum to define status of game and map an emoji.

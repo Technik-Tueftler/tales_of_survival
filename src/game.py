@@ -32,6 +32,9 @@ from .db import (
     get_games_w_status,
     get_user_from_dc_id,
     get_mapped_ugc_association,
+    count_regist_char_from_game,
+    get_character_from_game_id,
+    get_stories_messages_for_ai
 )
 from .game_views import (
     CharacterSelectView,
@@ -40,6 +43,7 @@ from .game_views import (
     UserSelectView,
     KeepTellingButtonView,
     NewGameStatusSelectView,
+    StartTaleButtonView
 )
 
 
@@ -277,7 +281,7 @@ async def keep_telling(interaction: Interaction, config: Configuration):
 
 async def select_character(interaction: Interaction, config: Configuration) -> None:
     process_data = ProcessInput()
-    process_data.user_dc_id = str(interaction.user.id)
+    process_data.user_context.user_dc_id = str(interaction.user.id)
     await get_all_user_games(config, process_data)
     if not await process_data.game_context.input_valid_game():
         await interaction.response.send_message(
@@ -308,7 +312,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
         ephemeral=True,
     )
     await character_view.wait()
-    user = await get_user_from_dc_id(config, process_data.user_dc_id)
+    user = await get_user_from_dc_id(config, process_data.user_context.user_dc_id)
     association = await get_mapped_ugc_association(
         config, process_data.game_context.selected_game_id, user.id
     )
@@ -327,15 +331,23 @@ async def start_game(
     # Game select übergeben, Interaction?
     # Story element erstellen mit system/content
     # Beispiel: "Du bist ein Geschichtenerzähler für eine Zombie Apokalypse. Die Antworten nur in deutsch."
+    telling_view = StartTaleButtonView(config, game_data)
+    await interaction.followup.send(view=telling_view, ephemeral=True)
+    await telling_view.wait()
+
+    print(game_data.story_context.start_condition)
+    print(game_data.story_context.start_city)
+    print(game_data.story_context.start_prompt)
+
     tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
+    game_character = await get_character_from_game_id(config, game_data.game_context.selected_game.id)
     game_data.story_context.event = tale
-    print(tale.game.user_participations)
-    for user in tale.game.user_participations:
-        print(user.user_id)
-        print(user.character_id)
-    return
+    game_data.story_context.character = game_character
+
     # TODO: In die Config packen bzw. constants.py bzw. language.py
     # TODO: init 1 hinzufügen, dass er mit Absätzen die Geschichte gliedert
+    # TODO: Hier jetzt den Input des erstellungs-Modal verknüpfen und in die prompts einfügen
+    # TODO: Alles in seperate Funktionen aufteilen und in eigenes File auslagern.
     system_requ_prompt = f"Du bist ein Geschichtenerzähler für ein/e {tale.genre.name}. Die Antworten nur in {tale.genre.language}."
     system_requ_prompt += (
         f" Der Erzählstil sollte: {tale.genre.storytelling_style} sein."
@@ -347,20 +359,39 @@ async def start_game(
         if tale.genre.atmosphere is not None
         else ""
     )
-    user_requ_prompt = "Beschreibe mir die welt in der die Menschen jetzt leben müssen mit (maximal 200 Wörter)"
-    # Charakter Vorstellung, siehe output_1a als dritter init
+    user_requ_prompt = "Beschreibe mir die Welt in der die Menschen jetzt leben müssen mit (maximal 200 Wörter)"
+
     messages = [
         {"role": "user", "content": system_requ_prompt},
         {"role": "user", "content": user_requ_prompt},
     ]
-    response = await request_openai(config=config, messages=messages)
+    response_world = await request_openai(config=config, messages=messages)
     stories = [
         STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
         for story in messages
     ]
-    stories.append(STORY(response=response, story_type=StoryType.INIT, tale_id=tale.id))
+    stories.append(STORY(response=response_world, story_type=StoryType.INIT, tale_id=tale.id))
     await update_db_objs(config=config, objs=stories)
 
+    # Charakter Vorstellung, siehe output_1a als dritter init
+    messages = await get_stories_messages_for_ai(config, tale.id)
+    stories = []
+    char_requ_prompt = f"Es sind die folgenden Charaktere (Anzahl: {len(game_character)}) in der Geschichte:"
+    messages.append({"role": "user", "content": char_requ_prompt})
+    stories.append(STORY(request=char_requ_prompt, story_type=StoryType.INIT, tale_id=tale.id))
+    for character in game_character:
+        messages.append({"role": "user", "content": character.summary})
+        stories.append(STORY(request=character.summary, story_type=StoryType.INIT, tale_id=tale.id))
+    if game_data.story_context.start_prompt == "":
+        start_requ_prompt = f"Erzähl mir den Start der Geschichte (maximal 600 Wörter) bei der sich die Charaktere in einer Stadt namens {game_data.story_context.start_city} treffen und beschließen eine Gemeinschaft zu bilden."
+        print("jop wir sind hier")
+    else:
+        start_requ_prompt = game_data.story_context.start_prompt
+    messages.append({"role": "user", "content": start_requ_prompt})
+    stories.append(STORY(request=start_requ_prompt, story_type=StoryType.INIT, tale_id=tale.id))
+    response_start = await request_openai(config=config, messages=messages)
+    stories.append(STORY(response=response_start, story_type=StoryType.INIT, tale_id=tale.id))
+    await update_db_objs(config=config, objs=stories)
     # Text Model -> Erster input vom user/content
     # Beispiel: "Erzähl mir den start einer geschichte (maximal 200 Wörter) bei der sich 4 Charaktere in einer Stadt namens Louisville treffen und beschließen eine gemeinschaft zu bilden."
 
@@ -396,17 +427,28 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         )
         game_select_view = NewGameStatusSelectView(config, process_data)
         await interaction.followup.send(
-            f"Select now the new status for game with id: {process_data.game_context.selected_game_id}",
+            "Select now the new status for game with id: "
+            + f"{process_data.game_context.selected_game_id}",
             view=game_select_view,
             ephemeral=True,
         )
         await game_select_view.wait()
         if await process_data.game_context.request_game_start():
-            # Nur starten, wenn mindestens ein spieler im Game ist (über user_participations)
+            counted_participants = await count_regist_char_from_game(
+                config, process_data.game_context.selected_game.id
+            )
+            if counted_participants == 0:
+                await interaction.followup.send(
+                    "You have selected that the game with the ID: "
+                    + f"{process_data.game_context.selected_game_id}. "
+                    + "However, no character has been registered for the game by a user yet.",
+                    ephemeral=True,
+                )
+                return
             await interaction.followup.send(
-                f"You have selected that the game with the ID: {process_data.game_context.selected_game_id} "
+                "You have selected that the game with the ID: "
+                + f"{process_data.game_context.selected_game_id} "
                 + "will be started.",
-                view=game_select_view,
                 ephemeral=True,
             )
             await start_game(interaction, config, process_data)

@@ -6,7 +6,7 @@ general database related functions.
 from dataclasses import dataclass
 
 import discord
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import selectinload, joinedload
 
@@ -22,6 +22,7 @@ from .db_classes import (
     UserGameCharacterAssociation,
     GameStatus,
     STORY,
+    StoryType
 )
 
 
@@ -424,7 +425,7 @@ async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER:
 
 
 async def get_mapped_ugc_association(
-    config: Configuration, game_id: int, user_id
+    config: Configuration, game_id: int, user_id: int
 ) -> UserGameCharacterAssociation:
     try:
         async with config.session() as session, session.begin():
@@ -438,3 +439,67 @@ async def get_mapped_ugc_association(
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")
         return
+
+
+async def count_regist_char_from_game(config: Configuration, game_id: int) -> int:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(
+                    func.count(  # pylint: disable=not-callable
+                        UserGameCharacterAssociation.id
+                    )
+                )
+                .where(UserGameCharacterAssociation.game_id == game_id)
+                .where(UserGameCharacterAssociation.character_id.isnot(None))
+                .where(UserGameCharacterAssociation.end_date.is_(None))
+            )
+            temp_return = (await session.execute(statement)).scalar_one_or_none()
+            config.logger.trace(f"Counted registered character: {temp_return}")
+            return temp_return
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return 0
+
+
+async def get_character_from_game_id(
+    config: Configuration, game_id: int
+) -> list[CHARACTER] | None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(CHARACTER)
+                .join(
+                    UserGameCharacterAssociation,
+                    UserGameCharacterAssociation.character_id == CHARACTER.id,
+                )
+                .where(UserGameCharacterAssociation.game_id == game_id)
+            )
+            return (await session.execute(statement)).scalars().all()
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+
+
+async def get_stories_messages_for_ai(
+    config: Configuration, tale_id: int
+) -> list[dict]:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (select(STORY).where(STORY.tale_id == tale_id).order_by(STORY.id))
+            stories = (await session.execute(statement)).scalars().all()
+        if stories is None or len(stories) == 0:
+            config.logger.debug(f"No stories found for tale id: {tale_id}")
+            return []
+        messages = []
+        for story in stories:
+            if story.request is not None and story.request != "":
+                messages.append({"role": "user", "content": story.request})
+            elif story.response is not None and story.response != "":
+                messages.append({"role": "assistant", "content": story.response})
+            else:
+                config.logger.warning(f"Story with id {story.id} has no request or response.")
+        return messages
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {err}")
+        return []

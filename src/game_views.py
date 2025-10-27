@@ -4,7 +4,7 @@ This module contains all view for game creation and general game handling.
 
 import discord
 
-from .db_classes import GENRE, StoryType, GameStatus
+from .db_classes import GENRE, StoryType, GameStatus, StartCondition
 from .configuration import Configuration, ProcessInput
 
 
@@ -348,3 +348,166 @@ class NewGameStatusSelect(discord.ui.Select):
             self.config.logger.error(f"Error during callback with DC permissons: {err}")
         except Exception as err:
             print(err, type(err))
+
+
+class StartTaleButtonView(discord.ui.View):
+    def __init__(self, config: Configuration, process_data: ProcessInput):
+        super().__init__()
+        self.process_data = process_data
+        self.config = config
+
+    @discord.ui.button(
+        label=StartCondition.S_ZOMBIE_X.text,
+        style=discord.ButtonStyle.green,
+        emoji=StartCondition.S_ZOMBIE_X.icon,
+    )
+    async def button_callback_x(
+        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+    ):
+        self.process_data.story_context.start_condition = StartCondition.S_ZOMBIE_X
+        self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}")
+        event_view = StZombieTaleStartModal(self, self.process_data, self.config)
+        await button.response.send_modal(event_view)
+        await event_view.wait()
+
+    @discord.ui.button(
+        label=StartCondition.S_ZOMBIE_1.text,
+        style=discord.ButtonStyle.green,
+        emoji=StartCondition.S_ZOMBIE_1.icon,
+    )
+    async def button_callback_1(
+        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+    ):
+        self.process_data.story_context.start_condition = StartCondition.S_ZOMBIE_1
+        self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}")
+        event_view = StZombieTaleStartModal(self, self.process_data, self.config)
+        await button.response.send_modal(event_view)
+        await event_view.wait()
+
+    @discord.ui.button(
+        label=StartCondition.OWN.text,
+        style=discord.ButtonStyle.green,
+        emoji=StartCondition.OWN.icon,
+    )
+    async def button_callback_o(
+        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+    ):
+        self.process_data.story_context.start_condition = StartCondition.OWN
+        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN.text}")
+        event_view = OwnTaleStartModal(self, self.process_data, self.config)
+        await button.response.send_modal(event_view)
+        await event_view.wait()
+
+
+class OwnTaleStartModal(discord.ui.Modal, title="Additional input for your tale:"):
+    """
+    Modal class to enter additional text for the story.
+    """
+
+    def __init__(
+        self,
+        parent_view: discord.ui.View,
+        process_data: ProcessInput,
+        config: Configuration,
+    ):
+        super().__init__()
+        self.process_data = process_data
+        self.parent_view = parent_view
+        self.config = config
+        self.location_input = discord.ui.TextInput(
+            label="Start location",
+            placeholder="Enter the starting location for the tale.",
+            required=True,
+            min_length=1,
+            max_length=100,
+            style=discord.TextStyle.short,
+        )
+        self.prompt_input = discord.ui.TextInput(
+            label="KI Prompt",
+            placeholder="Your prompt for the AI.",
+            required=True,
+            min_length=1,
+            max_length=512,
+            style=discord.TextStyle.paragraph,
+        )
+        self.add_item(self.location_input)
+        self.add_item(self.prompt_input)
+
+    async def on_submit(
+        self, interaction: discord.Interaction
+    ):
+        if not self.location_input.value.strip():
+            await interaction.response.send_message(
+                "The start location field must not be left blank.", ephemeral=True
+            )
+            return
+        if not self.prompt_input.value.strip():
+            await interaction.response.send_message(
+                "The AI prompt field must not be left blank.", ephemeral=True
+            )
+            return
+
+        self.process_data.story_context.start_city = self.location_input.value
+        self.process_data.story_context.start_prompt = self.prompt_input.value
+        self.config.logger.debug(
+            f"Start location: {self.location_input.value}, KI Prompt: {self.prompt_input.value}"
+        )
+        await interaction.response.edit_message(
+            content="Input completed",
+        )
+        self.parent_view.stop()
+
+
+class StZombieTaleStartModal(discord.ui.Modal, title="Additional input for your zombie tale:"):
+    """
+    Modal class to enter additional text for the story.
+    """
+
+    def __init__(
+        self,
+        parent_view: discord.ui.View,
+        process_data: ProcessInput,
+        config: Configuration,
+    ):
+        super().__init__()
+        self.process_data = process_data
+        self.parent_view = parent_view
+        self.config = config
+        self.location_input = discord.ui.TextInput(
+            label="Start location",
+            placeholder="Enter the starting location for the tale.",
+            required=True,
+            min_length=1,
+            max_length=100,
+            style=discord.TextStyle.short,
+        )
+        self.prompt_input = discord.ui.TextInput(
+            label="KI Prompt",
+            placeholder="Your prompt for the AI.",
+            required=False,
+            min_length=1,
+            max_length=512,
+            style=discord.TextStyle.paragraph,
+        )
+        self.add_item(self.location_input)
+        self.add_item(self.prompt_input)
+
+    async def on_submit(
+        self, interaction: discord.Interaction
+    ):
+        if not self.location_input.value.strip():
+            await interaction.response.send_message(
+                "The start location field must not be left blank.", ephemeral=True
+            )
+            return
+
+        print(self.prompt_input.value)
+        self.process_data.story_context.start_city = self.location_input.value
+        self.process_data.story_context.start_prompt = self.prompt_input.value
+        self.config.logger.debug(
+            f"Start location: {self.location_input.value}, KI Prompt: {self.prompt_input.value}"
+        )
+        await interaction.response.edit_message(
+            content="Input completed",
+        )
+        self.parent_view.stop()
