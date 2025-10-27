@@ -67,7 +67,8 @@ class StartCondition(Enum):
     """
     S_ZOMBIE_X = 0, "🧟‍♀️", "Standard zombie tale X Player"
     S_ZOMBIE_1 = 1, "🧟‍♂️", "Standard zombie tale 1 Player"
-    OWN = 2, "✍️", "Your own prompt"
+    OWN_X = 2, "✍️", "Your own prompt X Player"
+    OWN_1 = 2, "✍️", "Your own prompt 1 Player"
 
     def __init__(self, value, icon, text):
         self._value_ = value

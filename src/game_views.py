@@ -385,15 +385,29 @@ class StartTaleButtonView(discord.ui.View):
         await event_view.wait()
 
     @discord.ui.button(
-        label=StartCondition.OWN.text,
+        label=StartCondition.OWN_X.text,
         style=discord.ButtonStyle.green,
-        emoji=StartCondition.OWN.icon,
+        emoji=StartCondition.OWN_X.icon,
     )
-    async def button_callback_o(
+    async def button_callback_ox(
         self, button: discord.ui.button, interaction: discord.interactions.Interaction
     ):
-        self.process_data.story_context.start_condition = StartCondition.OWN
-        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN.text}")
+        self.process_data.story_context.start_condition = StartCondition.OWN_X
+        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_X.text}")
+        event_view = OwnTaleStartModal(self, self.process_data, self.config)
+        await button.response.send_modal(event_view)
+        await event_view.wait()
+
+    @discord.ui.button(
+        label=StartCondition.OWN_1.text,
+        style=discord.ButtonStyle.green,
+        emoji=StartCondition.OWN_1.icon,
+    )
+    async def button_callback_o1(
+        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+    ):
+        self.process_data.story_context.start_condition = StartCondition.OWN_1
+        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_1.text}")
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()

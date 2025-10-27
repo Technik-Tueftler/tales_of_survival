@@ -34,7 +34,7 @@ from .db import (
     get_mapped_ugc_association,
     count_regist_char_from_game,
     get_character_from_game_id,
-    get_stories_messages_for_ai
+    get_stories_messages_for_ai,
 )
 from .game_views import (
     CharacterSelectView,
@@ -43,8 +43,8 @@ from .game_views import (
     UserSelectView,
     KeepTellingButtonView,
     NewGameStatusSelectView,
-    StartTaleButtonView
 )
+from .game_start import collect_start_input, get_first_phase_prompt, get_second_phase_prompt
 
 
 async def collect_all_game_contexts(
@@ -325,75 +325,47 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     await update_db_objs(config, [association, selected_character])
 
 
-async def start_game(
+async def start_game_schedule(
     interaction: Interaction, config: Configuration, game_data: ProcessInput
 ):
-    # Game select übergeben, Interaction?
-    # Story element erstellen mit system/content
-    # Beispiel: "Du bist ein Geschichtenerzähler für eine Zombie Apokalypse. Die Antworten nur in deutsch."
-    telling_view = StartTaleButtonView(config, game_data)
-    await interaction.followup.send(view=telling_view, ephemeral=True)
-    await telling_view.wait()
-
-    print(game_data.story_context.start_condition)
-    print(game_data.story_context.start_city)
-    print(game_data.story_context.start_prompt)
+    await collect_start_input(interaction, config, game_data)
 
     tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
-    game_character = await get_character_from_game_id(config, game_data.game_context.selected_game.id)
-    game_data.story_context.event = tale
+    game_character = await get_character_from_game_id(
+        config, game_data.game_context.selected_game.id
+    )
+    game_data.story_context.tale = tale
     game_data.story_context.character = game_character
 
-    # TODO: In die Config packen bzw. constants.py bzw. language.py
-    # TODO: init 1 hinzufügen, dass er mit Absätzen die Geschichte gliedert
-    # TODO: Hier jetzt den Input des erstellungs-Modal verknüpfen und in die prompts einfügen
-    # TODO: Alles in seperate Funktionen aufteilen und in eigenes File auslagern.
-    system_requ_prompt = f"Du bist ein Geschichtenerzähler für ein/e {tale.genre.name}. Die Antworten nur in {tale.genre.language}."
-    system_requ_prompt += (
-        f" Der Erzählstil sollte: {tale.genre.storytelling_style} sein."
-        if tale.genre.storytelling_style is not None
-        else ""
-    )
-    system_requ_prompt += (
-        f" Die Atmosphäre der Geschichte ist: {tale.genre.atmosphere}."
-        if tale.genre.atmosphere is not None
-        else ""
-    )
-    user_requ_prompt = "Beschreibe mir die Welt in der die Menschen jetzt leben müssen mit (maximal 200 Wörter)"
+    messages = await get_first_phase_prompt(game_data)
+    response_world = await request_openai(config, messages)
 
-    messages = [
-        {"role": "user", "content": system_requ_prompt},
-        {"role": "user", "content": user_requ_prompt},
-    ]
-    response_world = await request_openai(config=config, messages=messages)
     stories = [
         STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
         for story in messages
     ]
-    stories.append(STORY(response=response_world, story_type=StoryType.INIT, tale_id=tale.id))
+    stories.append(
+        STORY(response=response_world, story_type=StoryType.INIT, tale_id=tale.id)
+    )
     await update_db_objs(config=config, objs=stories)
 
-    # Charakter Vorstellung, siehe output_1a als dritter init
     messages = await get_stories_messages_for_ai(config, tale.id)
     stories = []
-    char_requ_prompt = f"Es sind die folgenden Charaktere (Anzahl: {len(game_character)}) in der Geschichte:"
-    messages.append({"role": "user", "content": char_requ_prompt})
-    stories.append(STORY(request=char_requ_prompt, story_type=StoryType.INIT, tale_id=tale.id))
-    for character in game_character:
-        messages.append({"role": "user", "content": character.summary})
-        stories.append(STORY(request=character.summary, story_type=StoryType.INIT, tale_id=tale.id))
-    if game_data.story_context.start_prompt == "":
-        start_requ_prompt = f"Erzähl mir den Start der Geschichte (maximal 600 Wörter) bei der sich die Charaktere in einer Stadt namens {game_data.story_context.start_city} treffen und beschließen eine Gemeinschaft zu bilden."
-        print("jop wir sind hier")
-    else:
-        start_requ_prompt = game_data.story_context.start_prompt
-    messages.append({"role": "user", "content": start_requ_prompt})
-    stories.append(STORY(request=start_requ_prompt, story_type=StoryType.INIT, tale_id=tale.id))
-    response_start = await request_openai(config=config, messages=messages)
-    stories.append(STORY(response=response_start, story_type=StoryType.INIT, tale_id=tale.id))
+
+    messages_second_phase = await get_second_phase_prompt(config, game_data)
+
+    for msg in messages_second_phase:
+        stories.append(
+            STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+        )
+
+    messages.extend(messages_second_phase)
+    response_start = await request_openai(config, messages)
+
+    stories.append(
+        STORY(response=response_start, story_type=StoryType.INIT, tale_id=tale.id)
+    )
     await update_db_objs(config=config, objs=stories)
-    # Text Model -> Erster input vom user/content
-    # Beispiel: "Erzähl mir den start einer geschichte (maximal 200 Wörter) bei der sich 4 Charaktere in einer Stadt namens Louisville treffen und beschließen eine gemeinschaft zu bilden."
 
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
@@ -451,7 +423,7 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
                 + "will be started.",
                 ephemeral=True,
             )
-            await start_game(interaction, config, process_data)
+            await start_game_schedule(interaction, config, process_data)
         process_data.game_context.selected_game.status = (
             process_data.game_context.new_game_status
         )
