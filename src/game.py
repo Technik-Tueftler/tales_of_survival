@@ -45,7 +45,7 @@ from .game_views import (
     NewGameStatusSelectView,
 )
 from .game_start import collect_start_input, get_first_phase_prompt, get_second_phase_prompt
-from .game_telling import telling_event
+from .game_telling import telling_event, telling_fiction
 
 
 async def collect_all_game_contexts(
@@ -277,9 +277,7 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
             await telling_event(config, process_data)
 
         elif process_data.story_context.story_type is StoryType.FICTION:
-            print(
-                f"Weitererzählen mit dem Input: {process_data.story_context.fiction_prompt}"
-            )
+            await telling_fiction(config, process_data)
         else:
             config.logger.error(
                 f"Story type: {process_data.story_context.story_type} is not defined."

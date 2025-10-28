@@ -39,6 +39,10 @@ async def get_first_phase_prompt(
     Returns:
         list[dict]: List of prompt messages
     """
+    config.logger.debug(
+        "Generating first phase prompt for game start for tale id: "
+        + f"{game_data.story_context.tale.id}"
+    )
     system_requ_prompt = (
         f"Du bist ein Geschichtenerzähler für ein/e {game_data.story_context.tale.genre.name}. "
         + f"Die Antworten nur in {game_data.story_context.tale.genre.language}."
@@ -78,6 +82,10 @@ async def get_second_phase_prompt(
     Returns:
         list[dict]: List of prompt messages
     """
+    config.logger.debug(
+        "Generating second phase prompt for game start for tale id: "
+        + f"{game_data.story_context.tale.id}"
+    )
     messages = []
 
     match game_data.story_context.start_condition:

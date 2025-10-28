@@ -487,6 +487,17 @@ async def get_character_from_game_id(
 async def get_stories_messages_for_ai(
     config: Configuration, tale_id: int
 ) -> list[dict]:
+    """
+    This function retrieves all stories for a given tale id and formats them
+    into a list of messages suitable for AI processing.
+
+    Args:
+        config (Configuration): App configuration
+        tale_id (int): Tale ID to retrieve stories
+
+    Returns:
+        list[dict]: List of messages formatted for AI
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(STORY).where(STORY.tale_id == tale_id).order_by(STORY.id)
