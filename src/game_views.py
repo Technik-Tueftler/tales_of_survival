@@ -230,6 +230,10 @@ class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the s
 
 
 class KeepTellingButtonView(discord.ui.View):
+    """
+    This view generates buttons for the user to select the next story part
+    to continue the story.
+    """
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
@@ -246,8 +250,11 @@ class KeepTellingButtonView(discord.ui.View):
         emoji=StoryType.FICTION.icon,
     )
     async def button_callback_f(
-        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+        self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
+        """
+        Callback function when the fiction button is clicked.
+        """
         self.process_data.story_context.story_type = StoryType.FICTION
         self.config.logger.trace(f"Story type selected: {StoryType.FICTION}")
         event_view = StoryFictionModal(self, self.process_data, self.config)
@@ -260,8 +267,11 @@ class KeepTellingButtonView(discord.ui.View):
         emoji=StoryType.EVENT.icon,
     )
     async def button_callback_e(
-        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+        self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
+        """
+        Callback function when the event button is clicked.
+        """
         self.process_data.story_context.story_type = StoryType.EVENT
         self.config.logger.trace(f"Story type selected: {StoryType.EVENT}")
         await button.response.edit_message(
@@ -351,6 +361,11 @@ class NewGameStatusSelect(discord.ui.Select):
 
 
 class StartTaleButtonView(discord.ui.View):
+    """
+    This view generates buttons for the user to select the tale type
+    to start the story. It is only used during game switch status from
+    CREATED to RUNNING.
+    """
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
@@ -362,8 +377,11 @@ class StartTaleButtonView(discord.ui.View):
         emoji=StartCondition.S_ZOMBIE_X.icon,
     )
     async def button_callback_x(
-        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+        self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
+        """
+        Callback function when button for standard zombie tale with more then 1 player is clicked.
+        """
         self.process_data.story_context.start_condition = StartCondition.S_ZOMBIE_X
         self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}")
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
@@ -376,8 +394,11 @@ class StartTaleButtonView(discord.ui.View):
         emoji=StartCondition.S_ZOMBIE_1.icon,
     )
     async def button_callback_1(
-        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+        self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
+        """
+        Callback function when button for standard zombie tale with one player is clicked.
+        """
         self.process_data.story_context.start_condition = StartCondition.S_ZOMBIE_1
         self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}")
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
@@ -390,8 +411,11 @@ class StartTaleButtonView(discord.ui.View):
         emoji=StartCondition.OWN_X.icon,
     )
     async def button_callback_ox(
-        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+        self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
+        """
+        Callback function when button for own tale with more then 1 player is clicked.
+        """
         self.process_data.story_context.start_condition = StartCondition.OWN_X
         self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_X.text}")
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
@@ -404,8 +428,11 @@ class StartTaleButtonView(discord.ui.View):
         emoji=StartCondition.OWN_1.icon,
     )
     async def button_callback_o1(
-        self, button: discord.ui.button, interaction: discord.interactions.Interaction
+        self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
+        """
+        Callback function when button for own tale with one player is clicked.
+        """
         self.process_data.story_context.start_condition = StartCondition.OWN_1
         self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_1.text}")
         event_view = OwnTaleStartModal(self, self.process_data, self.config)

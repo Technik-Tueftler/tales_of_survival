@@ -2,7 +2,15 @@ from openai import OpenAI
 from .configuration import Configuration
 
 
-async def request_openai(config: Configuration, messages: list):
+async def request_openai(config: Configuration, messages: list) -> None:
+    """
+    This function is the entry point to communicate with the configured
+    LLM model via OpenAI API.
+
+    Args:
+        config (Configuration): App configuration
+        messages (list): List of prompt messages´
+    """
     client = OpenAI(
         base_url=config.env.base_url,
         api_key=config.env.api_key,

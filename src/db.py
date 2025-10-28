@@ -21,8 +21,7 @@ from .db_classes import (
     USER,
     UserGameCharacterAssociation,
     GameStatus,
-    STORY,
-    StoryType
+    STORY
 )
 
 
@@ -346,17 +345,21 @@ async def get_all_user_games(config: Configuration, process_data: ProcessInput) 
         return
 
 
-async def get_all_games(config: Configuration, process_data: ProcessInput) -> None:
+async def get_all_running_games(config: Configuration, process_data: ProcessInput) -> None:
     """
     Function to get all available games from the database which are not finished.
 
     Args:
         config (Configuration): App configuration
-        request_data (dict):
+        process_data (ProcessInput): Game data object
     """
     try:
         async with config.session() as session, session.begin():
-            statement = select(GAME).where(GAME.end_date.is_(None))
+            statement = (
+                select(GAME)
+                .where(GAME.end_date.is_(None))
+                .where(GAME.status == GameStatus.RUNNING)
+            )
             result = (await session.execute(statement)).scalars().all()
 
             if result is None or len(result) == 0:
@@ -486,7 +489,7 @@ async def get_stories_messages_for_ai(
 ) -> list[dict]:
     try:
         async with config.session() as session, session.begin():
-            statement = (select(STORY).where(STORY.tale_id == tale_id).order_by(STORY.id))
+            statement = select(STORY).where(STORY.tale_id == tale_id).order_by(STORY.id)
             stories = (await session.execute(statement)).scalars().all()
         if stories is None or len(stories) == 0:
             config.logger.debug(f"No stories found for tale id: {tale_id}")
@@ -498,7 +501,9 @@ async def get_stories_messages_for_ai(
             elif story.response is not None and story.response != "":
                 messages.append({"role": "assistant", "content": story.response})
             else:
-                config.logger.warning(f"Story with id {story.id} has no request or response.")
+                config.logger.warning(
+                    f"Story with id {story.id} has no request or response."
+                )
         return messages
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {err}")

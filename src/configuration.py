@@ -69,10 +69,10 @@ class StoryContext:
         self.event: EVENT = None
         self.character: list[CHARACTER] = []
         self.start_condition: StartCondition = None
-        self.start_city: str = "Louisville"
+        self.start_city: str = ""
         self.start_prompt: str = ""
 
-    async def events_available(self) -> bool:
+    def events_available(self) -> bool:
         if len(self.tale.genre.events) <= 0:
             return False
         return True

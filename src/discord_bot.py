@@ -6,7 +6,7 @@ The bot is implemented using the discord.py library and provides a simple comman
 import discord
 from discord.ext import commands
 from .configuration import Configuration
-from .game import create_game, keep_telling, select_character, setup_game
+from .game import create_game, keep_telling_schedule, select_character, setup_game
 from .file_utils import import_data
 
 
@@ -68,7 +68,7 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command to continue telling a story."
             )
-            await keep_telling(interaction, self.config)
+            await keep_telling_schedule(interaction, self.config)
 
         async def wrapped_import_data(interaction: discord.Interaction):
             self.config.logger.trace(

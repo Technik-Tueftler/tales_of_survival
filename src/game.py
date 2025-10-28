@@ -26,7 +26,7 @@ from .db import (
     update_db_objs,
     get_available_characters,
     get_object_by_id,
-    get_all_games,
+    get_all_running_games,
     get_all_user_games,
     get_tale_from_game_id,
     get_games_w_status,
@@ -45,6 +45,7 @@ from .game_views import (
     NewGameStatusSelectView,
 )
 from .game_start import collect_start_input, get_first_phase_prompt, get_second_phase_prompt
+from .game_telling import telling_event
 
 
 async def collect_all_game_contexts(
@@ -237,11 +238,20 @@ async def create_game(interaction: Interaction, config: Configuration):
         print(err, type(err))
 
 
-async def keep_telling(interaction: Interaction, config: Configuration):
+async def keep_telling_schedule(interaction: Interaction, config: Configuration):
+    """
+    This function is the schedule to keep telling a story. It collects all necessary
+    inputs from the user and write the next part of the story.
+
+    Args:
+        interaction (Interaction): Interaction object
+        config (Configuration): App configuration
+    """
     try:
         process_data = ProcessInput()
-        await get_all_games(config, process_data)
-        if not await process_data.game_context.input_valid_game:
+        await get_all_running_games(config, process_data)
+        print(process_data.game_context.available_games)
+        if not await process_data.game_context.input_valid_game():
             return
         game_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
@@ -261,10 +271,11 @@ async def keep_telling(interaction: Interaction, config: Configuration):
         config.logger.debug("Finish keep telling input interaction.")
         if (
             process_data.story_context.story_type is StoryType.EVENT
-            and await process_data.story_context.events_available()
+            and process_data.story_context.events_available()
         ):
             await process_data.story_context.get_random_event_weighted()
-            print(process_data.story_context.event)
+            await telling_event(config, process_data)
+
         elif process_data.story_context.story_type is StoryType.FICTION:
             print(
                 f"Weitererzählen mit dem Input: {process_data.story_context.fiction_prompt}"
@@ -328,6 +339,17 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
 async def start_game_schedule(
     interaction: Interaction, config: Configuration, game_data: ProcessInput
 ):
+    """
+    This function the schedule to start a new game. It collects all necessary
+    inputs from the user, gets the tale and character data from the database,
+    creates the prompts for the LLM model, sends the requests and stores
+    the responses in the database.
+
+    Args:
+        interaction (Interaction): Interaction object
+        config (Configuration): App configuration
+        game_data (ProcessInput): Game data object
+    """
     await collect_start_input(interaction, config, game_data)
 
     tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
@@ -337,7 +359,7 @@ async def start_game_schedule(
     game_data.story_context.tale = tale
     game_data.story_context.character = game_character
 
-    messages = await get_first_phase_prompt(game_data)
+    messages = await get_first_phase_prompt(config, game_data)
     response_world = await request_openai(config, messages)
 
     stories = [
