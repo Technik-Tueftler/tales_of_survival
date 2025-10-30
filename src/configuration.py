@@ -8,6 +8,7 @@ from typing import List
 import environ
 from dotenv import load_dotenv
 import loguru
+from discord.ext.commands import Bot as DcBot
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
 from .tetue_generic.watcher import WatcherConfiguration
@@ -132,6 +133,7 @@ class Configuration:
     """
 
     def __init__(self, config: EnvConfiguration):
+        self.dc_bot = DcBot
         self.env = config
         self.engine = create_async_engine(config.db.db_url)
         self.session = async_sessionmaker(bind=self.engine, expire_on_commit=False)

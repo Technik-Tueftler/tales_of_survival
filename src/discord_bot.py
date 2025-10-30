@@ -24,6 +24,7 @@ class DiscordBot:
         intents.message_content = True
         # intents.reactions = True
         self.bot = commands.Bot(command_prefix="!", intents=intents)
+        self.config.dc_bot = self.bot
 
         @self.bot.event
         async def on_ready():
