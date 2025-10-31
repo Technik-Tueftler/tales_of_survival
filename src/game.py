@@ -234,8 +234,6 @@ async def create_game(interaction: Interaction, config: Configuration):
         config.logger.error(f"Timeout error occurred: {err}")
     except KeyError as err:
         config.logger.error(f"Missing key in game data or for DB object: {err}")
-    except Exception as err:
-        print(err, type(err))
 
 
 async def keep_telling_schedule(interaction: Interaction, config: Configuration):
@@ -284,54 +282,81 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
             )
             return
 
-    except Exception as err:
-        print(type(err), err)
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message: {err}")
+    except (TypeError, ValueError) as err:
+        config.logger.error(f"General error occurred: {err}")
+    except asyncio.TimeoutError as err:
+        config.logger.error(f"Timeout error occurred: {err}")
+    except KeyError as err:
+        config.logger.error(f"Missing key in game data or for DB object: {err}")
 
 
 async def select_character(interaction: Interaction, config: Configuration) -> None:
-    process_data = ProcessInput()
-    process_data.user_context.user_dc_id = str(interaction.user.id)
-    await get_all_user_games(config, process_data)
-    if not await process_data.game_context.input_valid_game():
+    """
+    This function allows the user to select a character for a specific game.
+
+    Args:
+        interaction (Interaction): Interaction object
+        config (Configuration): App configuration
+    """
+    try:
+        process_data = ProcessInput()
+        process_data.user_context.user_dc_id = str(interaction.user.id)
+        await get_all_user_games(config, process_data)
+        if not await process_data.game_context.input_valid_game():
+            await interaction.response.send_message(
+                "An error occurred while retrieving your games. Your not registered "
+                "for any game. Please contact the admin.",
+                ephemeral=True,
+            )
+            return
+        game_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
-            "An error occurred while retrieving your games. Your not registered "
-            "for any game. Please contact the admin.",
+            "Please select the game for set character",
+            view=game_view,
             ephemeral=True,
         )
-        return
-    game_view = GameSelectView(config, process_data)
-    await interaction.response.send_message(
-        "Please select the game for set character",
-        view=game_view,
-        ephemeral=True,
-    )
-    await game_view.wait()
-    process_data.user_context.available_chars = await get_available_characters(config)
-    if not await process_data.user_context.input_valid_char():
-        await interaction.response.send_message(
-            "An error occurred while retrieving character. There are no selectable characters. "
-            "Please contact the admin.",
+        await game_view.wait()
+        process_data.user_context.available_chars = await get_available_characters(config)
+        if not await process_data.user_context.input_valid_char():
+            await interaction.response.send_message(
+                "An error occurred while retrieving character. There are no selectable characters. "
+                "Please contact the admin.",
+                ephemeral=True,
+            )
+            return
+        character_view = CharacterSelectView(config, process_data)
+        await interaction.followup.send(
+            "Please select now the character for the game.",
+            view=character_view,
             ephemeral=True,
         )
-        return
-    character_view = CharacterSelectView(config, process_data)
-    await interaction.followup.send(
-        "Please select now the character for the game.",
-        view=character_view,
-        ephemeral=True,
-    )
-    await character_view.wait()
-    user = await get_user_from_dc_id(config, process_data.user_context.user_dc_id)
-    association = await get_mapped_ugc_association(
-        config, process_data.game_context.selected_game_id, user.id
-    )
-    selected_character = await get_object_by_id(
-        config, CHARACTER, process_data.user_context.selected_char
-    )
-    selected_character.user_id = association.user_id
-    selected_character.start_date = datetime.now(timezone.utc)
-    association.character_id = process_data.user_context.selected_char
-    await update_db_objs(config, [association, selected_character])
+        await character_view.wait()
+        user = await get_user_from_dc_id(config, process_data.user_context.user_dc_id)
+        association = await get_mapped_ugc_association(
+            config, process_data.game_context.selected_game_id, user.id
+        )
+        selected_character = await get_object_by_id(
+            config, CHARACTER, process_data.user_context.selected_char
+        )
+        selected_character.user_id = association.user_id
+        selected_character.start_date = datetime.now(timezone.utc)
+        association.character_id = process_data.user_context.selected_char
+        await update_db_objs(config, [association, selected_character])
+
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message: {err}")
+    except (TypeError, ValueError) as err:
+        config.logger.error(f"General error occurred: {err}")
+    except asyncio.TimeoutError as err:
+        config.logger.error(f"Timeout error occurred: {err}")
+    except KeyError as err:
+        config.logger.error(f"Missing key in game data or for DB object: {err}")
 
 
 async def start_game_schedule(
@@ -448,5 +473,14 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             process_data.game_context.new_game_status
         )
         await update_db_objs(config, [process_data.game_context.selected_game])
-    except Exception as err:
-        config.logger.error(err)
+
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException as err:
+        config.logger.error(f"Failed to send message: {err}")
+    except (TypeError, ValueError) as err:
+        config.logger.error(f"General error occurred: {err}")
+    except asyncio.TimeoutError as err:
+        config.logger.error(f"Timeout error occurred: {err}")
+    except KeyError as err:
+        config.logger.error(f"Missing key in game data or for DB object: {err}")

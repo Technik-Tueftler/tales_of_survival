@@ -58,19 +58,24 @@ async def import_data(interaction: Interaction, config: Configuration):
             await create_character_from_input(config, result_character)
         context = {
             "genre_status": (
-                config.locale["successful"]
+                "successful"
                 if result_genre.success
-                else config.locale["unsuccessful"]
+                else "unsuccessful"
             ),
             "genre_number": result_genre.import_number,
             "char_status": (
-                config.locale["successful"]
+                "successful"
                 if result_character.success
-                else config.locale["unsuccessful"]
+                else "unsuccessful"
             ),
             "char_number": result_character.import_number,
         }
-        message = config.locale["import_message"].format(**context)
+        message = (
+            f"The import from genre was {context["genre_status"]} "
+            f"and {context["genre_number"]} records were imported. "
+            f"The import from character was {context["char_status"]} "
+            f"and {context["char_number"]} records were imported."
+        )
         await interaction.response.send_message(message)
     except FileNotFoundError as err:
         config.logger.error(f"File not found: {err}")

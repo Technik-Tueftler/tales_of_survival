@@ -1,8 +1,10 @@
 """
 This module contains utility functions for interacting with Discord.
 """
+
 import discord
 from .configuration import Configuration
+
 
 async def send_channel_message(config: Configuration, channel_id: int, message: str):
     """

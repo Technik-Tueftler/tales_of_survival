@@ -49,7 +49,7 @@ class DiscordBot:
         await self.bot.change_presence(
             status=discord.Status.online,
             activity=discord.Activity(
-                type=discord.ActivityType.listening, name=self.config.locale["listening"]
+                type=discord.ActivityType.listening, name="storyteller"
             ),
         )
 
@@ -90,26 +90,25 @@ class DiscordBot:
             await setup_game(interaction, self.config)
 
         self.bot.tree.command(
-            name="create_game",
-            description=self.config.locale["create_game"],
+            name="create_game", description="Create a new game and set the parameters."
         )(wrapped_create_game)
 
         self.bot.tree.command(
             name="keep_telling",
-            description=self.config.locale["keep_telling"],
+            description="Continue the story of a game.",
         )(wrapped_keep_telling)
 
         self.bot.tree.command(
             name="import_data",
-            description=self.config.locale["import_data"],
+            description="Import game data from a YAML file.",
         )(wrapped_import_data)
 
         self.bot.tree.command(
             name="select_character",
-            description=self.config.locale["select_character"],
+            description="Select a character for a game.",
         )(wrapped_select_char)
 
         self.bot.tree.command(
             name="setup_game",
-            description=self.config.locale["setup_game"],
+            description="Switch game state to specific status like running, paused, finished, etc.",
         )(wrapped_setup_game)

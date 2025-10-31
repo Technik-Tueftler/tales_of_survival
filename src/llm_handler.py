@@ -1,3 +1,6 @@
+"""
+This module contains the function to handle requests to the OpenAI API.
+"""
 from openai import OpenAI
 from .configuration import Configuration
 

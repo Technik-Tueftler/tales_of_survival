@@ -22,7 +22,6 @@ from .db_classes import (
     GameStatus,
     StartCondition
 )
-from .language import load_locale
 
 
 load_dotenv("default.env")
@@ -30,18 +29,32 @@ load_dotenv("files/.env", override=True)
 
 
 class UserContext:
+    """
+    Class to specify the user context and input data
+    for processing.
+    """
     def __init__(self):
         self.user_dc_id: str = "0"
         self.available_chars: List[CHARACTER] = []
         self.selected_char: int = 0
 
     async def input_valid_char(self) -> bool:
+        """
+        Checks if character are available for selection.
+
+        Returns:
+            bool: Character available
+        """
         if len(self.available_chars) <= 0:
             return False
         return True
 
 
 class GameContext:
+    """
+    Class to specify the game context and input data
+    for processing.
+    """
     def __init__(self):
         self.available_games: List[GAME] = []
         self.selected_game_id: int = 0
@@ -49,11 +62,23 @@ class GameContext:
         self.new_game_status: GameStatus = None
 
     async def input_valid_game(self) -> bool:
+        """
+        Checks if games are available for selection.
+
+        Returns:
+            bool: Games available
+        """
         if len(self.available_games) <= 0:
             return False
         return True
 
     async def request_game_start(self) -> bool:
+        """
+        Checks if a game start is requested, based on the selected game status.
+
+        Returns:
+            bool: Game start is requested.
+        """
         return (
             self.selected_game.status is GameStatus.CREATED
             and self.new_game_status is GameStatus.RUNNING
@@ -63,6 +88,10 @@ class GameContext:
 
 
 class StoryContext:
+    """
+    Class to specify the story context and input data
+    for processing.
+    """
     def __init__(self):
         self.story_type: StoryType = None
         self.fiction_prompt: str = ""
@@ -74,11 +103,21 @@ class StoryContext:
         self.start_prompt: str = ""
 
     def events_available(self) -> bool:
+        """
+        Checks if events are available.
+
+        Returns:
+            bool: Events available
+        """
         if len(self.tale.genre.events) <= 0:
             return False
         return True
 
     async def get_random_event_weighted(self):
+        """
+        Function selecting a random event based on the weights defined
+        in the database for the tale's genre.
+        """
         weights = [element.chance for element in self.tale.genre.events]
         self.event = random.choices(  # pylint: disable=no-member
             self.tale.genre.events, weights=weights, k=1
@@ -86,13 +125,16 @@ class StoryContext:
 
 
 class ProcessInput:
+    """
+    Combined class to hold all context and input data for processing.
+    """
     def __init__(self):
         self.user_context = UserContext()
         self.game_context = GameContext()
         self.story_context = StoryContext()
 
 
-@environ.config(prefix="LANG")
+@environ.config(prefix="LANGUAGE")
 class LangConfiguration:
     """
     Configuration model for the language
@@ -139,4 +181,3 @@ class Configuration:
         self.session = async_sessionmaker(bind=self.engine, expire_on_commit=False)
         self.write_lock = asyncio.Lock()  # pylint: disable=not-callable
         self.logger: loguru._logger.Logger = None
-        self.locale = load_locale(self.env.lang.locale)
