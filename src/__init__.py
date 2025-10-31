@@ -17,4 +17,4 @@ from .tetue_generic.watcher import *
 
 __version__ = "v0.1.0"
 __repository__ = "https://github.com/Technik-Tueftler/tales_of_survival"
-MODE_DEVELOP = True
+MODE_DEVELOP = False
