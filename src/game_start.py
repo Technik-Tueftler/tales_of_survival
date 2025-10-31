@@ -88,7 +88,7 @@ async def get_second_phase_prompt(
     )
     messages = []
 
-    match game_data.story_context.start_condition:
+    match game_data.story_context.start.condition:
         case StartCondition.S_ZOMBIE_X:
             char_requ_prompt = (
                 "Es sind die folgenden Charaktere (Anzahl: "
@@ -97,15 +97,15 @@ async def get_second_phase_prompt(
             messages.append({"role": "user", "content": char_requ_prompt})
             for character in game_data.story_context.character:
                 messages.append({"role": "user", "content": character.summary})
-            if game_data.story_context.start_prompt == "":
+            if game_data.story_context.start.prompt == "":
                 start_requ_prompt = (
                     f"Erzähl mir den Start der Geschichte (maximal {MAX_WORDS_START_PROMPT} "
                     + "Wörter) bei der sich die Charaktere in einer Stadt namens "
-                    + f"{game_data.story_context.start_city} treffen und beschließen eine "
+                    + f"{game_data.story_context.start.city} treffen und beschließen eine "
                     + "Gemeinschaft zu bilden."
                 )
             else:
-                start_requ_prompt = game_data.story_context.start_prompt
+                start_requ_prompt = game_data.story_context.start.prompt
             messages.append({"role": "user", "content": start_requ_prompt})
 
         case StartCondition.S_ZOMBIE_1:
@@ -117,15 +117,15 @@ async def get_second_phase_prompt(
                     "content": game_data.story_context.character[0].summary,
                 }
             )
-            if game_data.story_context.start_prompt == "":
+            if game_data.story_context.start.prompt == "":
                 start_requ_prompt = (
                     f"Erzähl mir den Start der Geschichte (maximal {MAX_WORDS_START_PROMPT} "
                     + "Wörter) bei der sich der Charakter in einer Stadt namens "
-                    + f"{game_data.story_context.start_city} aufhält und dort versucht "
+                    + f"{game_data.story_context.start.city} aufhält und dort versucht "
                     + "zu überleben."
                 )
             else:
-                start_requ_prompt = game_data.story_context.start_prompt
+                start_requ_prompt = game_data.story_context.start.prompt
             messages.append({"role": "user", "content": start_requ_prompt})
 
         case StartCondition.OWN_X:
@@ -136,7 +136,7 @@ async def get_second_phase_prompt(
             messages.append({"role": "user", "content": char_requ_prompt})
             for character in game_data.story_context.character:
                 messages.append({"role": "user", "content": character.summary})
-            start_requ_prompt = game_data.story_context.start_prompt
+            start_requ_prompt = game_data.story_context.start.prompt
             messages.append({"role": "user", "content": start_requ_prompt})
 
         case StartCondition.OWN_1:
@@ -148,11 +148,11 @@ async def get_second_phase_prompt(
                     "content": game_data.story_context.character[0].summary,
                 }
             )
-            start_requ_prompt = game_data.story_context.start_prompt
+            start_requ_prompt = game_data.story_context.start.prompt
             messages.append({"role": "user", "content": start_requ_prompt})
 
         case _:
             config.logger.error(
-                f"Start condition {game_data.story_context.start_condition} not defined."
+                f"Start condition {game_data.story_context.start.condition} not defined."
             )
     return messages

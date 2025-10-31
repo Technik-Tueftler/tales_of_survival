@@ -98,9 +98,7 @@ class StoryContext:
         self.tale: TALE = None
         self.event: EVENT = None
         self.character: list[CHARACTER] = []
-        self.start_condition: StartCondition = None
-        self.start_city: str = ""
-        self.start_prompt: str = ""
+        self.start = StoryStartContext()
 
     def events_available(self) -> bool:
         """
@@ -123,6 +121,16 @@ class StoryContext:
             self.tale.genre.events, weights=weights, k=1
         )[0]
 
+
+class StoryStartContext:
+    """
+    Class to specify the story start context and input data
+    for processing.
+    """
+    def __init__(self):
+        self.condition: StartCondition = None
+        self.city: str = ""
+        self.prompt: str = ""
 
 class ProcessInput:
     """

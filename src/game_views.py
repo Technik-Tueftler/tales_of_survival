@@ -382,7 +382,7 @@ class StartTaleButtonView(discord.ui.View):
         """
         Callback function when button for standard zombie tale with more then 1 player is clicked.
         """
-        self.process_data.story_context.start_condition = StartCondition.S_ZOMBIE_X
+        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_X
         self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}")
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
@@ -399,7 +399,7 @@ class StartTaleButtonView(discord.ui.View):
         """
         Callback function when button for standard zombie tale with one player is clicked.
         """
-        self.process_data.story_context.start_condition = StartCondition.S_ZOMBIE_1
+        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_1
         self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}")
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
@@ -416,7 +416,7 @@ class StartTaleButtonView(discord.ui.View):
         """
         Callback function when button for own tale with more then 1 player is clicked.
         """
-        self.process_data.story_context.start_condition = StartCondition.OWN_X
+        self.process_data.story_context.start.condition = StartCondition.OWN_X
         self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_X.text}")
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
@@ -433,7 +433,7 @@ class StartTaleButtonView(discord.ui.View):
         """
         Callback function when button for own tale with one player is clicked.
         """
-        self.process_data.story_context.start_condition = StartCondition.OWN_1
+        self.process_data.story_context.start.condition = StartCondition.OWN_1
         self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_1.text}")
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
@@ -488,8 +488,8 @@ class OwnTaleStartModal(discord.ui.Modal, title="Additional input for your tale:
             )
             return
 
-        self.process_data.story_context.start_city = self.location_input.value
-        self.process_data.story_context.start_prompt = self.prompt_input.value
+        self.process_data.story_context.start.city = self.location_input.value
+        self.process_data.story_context.start.prompt = self.prompt_input.value
         self.config.logger.debug(
             f"Start location: {self.location_input.value}, KI Prompt: {self.prompt_input.value}"
         )
@@ -543,8 +543,8 @@ class StZombieTaleStartModal(discord.ui.Modal, title="Additional input for your 
             return
 
         print(self.prompt_input.value)
-        self.process_data.story_context.start_city = self.location_input.value
-        self.process_data.story_context.start_prompt = self.prompt_input.value
+        self.process_data.story_context.start.city = self.location_input.value
+        self.process_data.story_context.start.prompt = self.prompt_input.value
         self.config.logger.debug(
             f"Start location: {self.location_input.value}, KI Prompt: {self.prompt_input.value}"
         )
