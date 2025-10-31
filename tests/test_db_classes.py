@@ -13,48 +13,36 @@ def session():
     yield sess
     sess.close()
 
-def test_create_tale_genre(session):
-    """
-    This test ensures that both the creation of models (tale and genre) and the one-to-one
-    relationship are processed correctly by the database session. A tale can only be 
-    created with an existing genre.
 
-    Args:
-        session: Pytest fixture used for a DB connection and open session.
-
-    Asserts:
-        - Assert that the retrieved object exists 
-        - Assert that tales language matches "de"
-        - Assert that tales relation to genre exists and the name is "Action"
-    """
-    genre = src.GENRE(name="Action")
-    tale = src.TALE(language="de", genre=genre)
+def test_story_tale_relationship(session):
+    # Create a Tale
+    tale = src.TALE(genre_id=1)
     session.add(tale)
     session.commit()
 
-    tale_db = session.query(src.TALE).filter_by(language="de").first()
-    assert tale_db is not None
-    assert tale_db.language == "de"
-    assert tale_db.genre.name == "Action"
-
-
-def test_create_genre(session):
-    """
-    This test ensures that genre creation is possible without any dependencies and relationships.
-    A genre can always created without any relationships.
-   
-    Args:
-        session: Pytest fixture used for a DB connection and open session.
-
-    Asserts:
-        - Assert that the retrieved object exists 
-        - Assert that genre name matches "Action"
-
-    """
-    genre = src.GENRE(name="Action")
-    session.add(genre)
+    # Create two Stories, link to Tale and commit
+    story1 = src.STORY(
+        request="request",
+        response="",
+        tale_id=tale.id,
+        story_type=src.StoryType.FICTION,
+    )
+    story2 = src.STORY(
+        request="",
+        response="response",
+        tale_id=tale.id,
+        story_type=src.StoryType.FICTION,
+    )
+    session.add_all([story1, story2])
     session.commit()
 
-    genre_db = session.query(src.GENRE).filter_by(name="Action").first()
-    assert genre_db is not None
-    assert genre_db.name == "Action"
+    # Fetch Tale and related Stories
+    loaded_tale = session.query(src.TALE).filter_by(id=tale.id).one()
+    assert len(loaded_tale.stories) == 2
+    requests = {story.request for story in loaded_tale.stories}
+    responses = {story.response for story in loaded_tale.stories}
+    assert "request" in requests and "response" in responses
+
+    # Fetch Story and related Tale
+    loaded_story = session.query(src.STORY).filter_by(id=story1.id).one()
+    assert loaded_story.tale.id == tale.id
