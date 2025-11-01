@@ -1,6 +1,7 @@
 """
 This module contains the function to handle requests to the OpenAI API.
 """
+import traceback
 from openai import OpenAI
 from .configuration import Configuration
 
@@ -12,14 +13,17 @@ async def request_openai(config: Configuration, messages: list) -> None:
 
     Args:
         config (Configuration): App configuration
-        messages (list): List of prompt messages´
+        messages (list): List of prompt messages
     """
-    client = OpenAI(
-        base_url=config.env.base_url,
-        api_key=config.env.api_key,
-    )
+    try:
+        client = OpenAI(
+            base_url=config.env.base_url,
+            api_key=config.env.api_key,
+        )
 
-    response = client.chat.completions.create(
-        model=config.env.model, reasoning_effort="high", messages=messages
-    )
-    return response.choices[0].message.content
+        response = client.chat.completions.create(
+            model=config.env.model, reasoning_effort="high", messages=messages
+        )
+        return response.choices[0].message.content
+    except Exception as err:
+        traceback.print_exception(err)

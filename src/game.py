@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 import asyncio
 import discord
 from discord import Interaction
-
+import traceback
+from .discord_utils import send_channel_message
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
@@ -44,7 +45,11 @@ from .game_views import (
     KeepTellingButtonView,
     NewGameStatusSelectView,
 )
-from .game_start import collect_start_input, get_first_phase_prompt, get_second_phase_prompt
+from .game_start import (
+    collect_start_input,
+    get_first_phase_prompt,
+    get_second_phase_prompt,
+)
 from .game_telling import telling_event, telling_fiction
 
 
@@ -259,8 +264,12 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
         )
         await game_view.wait()
 
+        # TODO: Eventuell eine Funktion bauen in ProcessInput um alle releventen Objekte zu laden?
         process_data.story_context.tale = await get_tale_from_game_id(
             config, process_data.game_context.selected_game_id
+        )
+        process_data.game_context.selected_game = await get_object_by_id(
+            config, GAME, process_data.game_context.selected_game_id
         )
         telling_view = KeepTellingButtonView(config, process_data)
 
@@ -320,7 +329,9 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
             ephemeral=True,
         )
         await game_view.wait()
-        process_data.user_context.available_chars = await get_available_characters(config)
+        process_data.user_context.available_chars = await get_available_characters(
+            config
+        )
         if not await process_data.user_context.input_valid_char():
             await interaction.response.send_message(
                 "An error occurred while retrieving character. There are no selectable characters. "
@@ -383,8 +394,11 @@ async def start_game_schedule(
     game_data.story_context.character = game_character
 
     messages = await get_first_phase_prompt(config, game_data)
-    response_world = await request_openai(config, messages)
 
+    response_world = await request_openai(config, messages)
+    await send_channel_message(
+        config, game_data.game_context.selected_game.channel_id, response_world
+    )
     stories = [
         STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
         for story in messages
@@ -406,6 +420,10 @@ async def start_game_schedule(
 
     messages.extend(messages_second_phase)
     response_start = await request_openai(config, messages)
+
+    await send_channel_message(
+        config, game_data.game_context.selected_game.channel_id, response_start
+    )
 
     stories.append(
         STORY(response=response_start, story_type=StoryType.INIT, tale_id=tale.id)

@@ -17,14 +17,19 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
     """
     try:
         channel = config.dc_bot.get_channel(channel_id)
-        if channel is not None:
-            await channel.send(message)
-        else:
+        if channel is None:
             channel = await config.dc_bot.fetch_channel(channel_id)
-            await channel.send(message)
+
+        for msg_part in message.splitlines():
+            if msg_part.strip() != "":
+            # TODO: Nochmal prüfen auf 2000 Zeichen?
+                await channel.send(msg_part)
+
     except discord.errors.NotFound:
         config.logger.error(f"Channel ID {channel_id} not found.")
     except discord.errors.Forbidden:
         config.logger.error(f"No permission to write to channel {channel_id}.")
     except discord.errors.HTTPException as e:
         config.logger.error(f"HTTP-Error during send: {e}")
+    except KeyError as _:
+        config.logger.error("The message is missing the content key.")
