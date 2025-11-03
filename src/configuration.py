@@ -142,15 +142,6 @@ class ProcessInput:
         self.story_context = StoryContext()
 
 
-@environ.config(prefix="LANGUAGE")
-class LangConfiguration:
-    """
-    Configuration model for the language
-    """
-
-    locale: str = environ.var("en", converter=str)
-
-
 @environ.config(prefix="DC")
 class DcConfiguration:
     """
@@ -173,7 +164,6 @@ class EnvConfiguration:
     watcher = environ.group(WatcherConfiguration)
     db = environ.group(DbConfiguration)
     dc = environ.group(DcConfiguration)
-    lang = environ.group(LangConfiguration)
 
 
 class Configuration:
