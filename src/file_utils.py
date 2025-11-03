@@ -47,6 +47,14 @@ async def load_yaml(config: Configuration, result: ImportResult) -> dict:
 
 
 async def import_data(interaction: Interaction, config: Configuration):
+    """
+    Function to import game data from yml files based on predefined paths and filenames
+    for genre and character data.
+
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+    """
     try:
         result_genre = ImportResult(data=None, file_path="files/genre.yml")
         result_character = ImportResult(data=None, file_path="files/character.yml")

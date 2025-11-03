@@ -37,45 +37,6 @@ class ImportResult:
     import_number: int = 0
 
 
-# async def test_db4(config: Configuration):
-#     """
-#     Test
-#     """
-#     print(20 * "#" + " Start Test 4 " + 20 * "#")
-#     async with config.session() as session:
-#         async with session.begin():
-#             tale = (
-#                 await session.execute(
-#                     select(TALE).where(TALE.id == 2).options(selectinload(TALE.stories))
-#                 )
-#             ).scalar_one_or_none()
-#     for story in tale.stories:
-#         print(story.id, story.story_type.icon)
-# async def test_db2(config: Configuration):
-#     """
-#     Test
-#     """
-#     print(20 * "#" + " Start Test 2 " + 20 * "#")
-#     async with config.write_lock:
-#         async with config.session() as session:
-#             async with session.begin():
-#                 genre1 = GENRE(name="Action", language="deutsch")
-#                 event1 = EVENT(text="lala blub blub", chance=0.6, genre=genre1)
-#                 event2 = EVENT(text="lala blub blub 2", chance=0.6, genre=genre1)
-#                 session.add_all([event1, event2])
-#     async with config.session() as session:
-#         # stmt = select(EVENT).join(EVENT.genre).filter(GENRE.name == "Action")
-#         stmt = (
-#             select(EVENT)
-#             .join(EVENT.genre)
-#             .where(GENRE.name == "Action")
-#             .options(selectinload(EVENT.genre))
-#         )
-#         events = (await session.execute(stmt)).scalars().all()
-#         for event in events:
-#             print(event, event.genre.id)
-
-
 async def get_genre_double_cond(
     config: Configuration, genre_id: int, genre_name: str = None
 ) -> GENRE | None:

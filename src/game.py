@@ -251,7 +251,6 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
     try:
         process_data = ProcessInput()
         await get_all_running_games(config, process_data)
-        print(process_data.game_context.available_games)
         if not await process_data.game_context.input_valid_game():
             return
         game_view = GameSelectView(config, process_data)
@@ -262,7 +261,6 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
         )
         await game_view.wait()
 
-        # TODO: Eventuell eine Funktion bauen in ProcessInput um alle releventen Objekte zu laden?
         process_data.story_context.tale = await get_tale_from_game_id(
             config, process_data.game_context.selected_game_id
         )

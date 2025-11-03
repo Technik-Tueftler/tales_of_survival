@@ -17,14 +17,6 @@ async def main():
     discord_bot = src.DiscordBot(config)
     tasks = [discord_bot.start()]
     await asyncio.gather(*tasks)
-    ########
-    #data = await src.load_yaml("files/template_genre.yml")
-    #await src.create_genre_from_input(config, data)
-    #data = await src.load_yaml("files/template_character.yml")
-    #await src.create_character_from_input(config, data)
-    ########
-    # await src.test_db8(config)
-    # await src.openai_test(config)
 
 
 if __name__ == "__main__":
