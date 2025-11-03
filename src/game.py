@@ -1,6 +1,8 @@
 """
 Module to handle game creation and management
 """
+
+import traceback
 from datetime import datetime, timezone
 import asyncio
 import discord
@@ -88,13 +90,13 @@ async def collect_all_game_contexts(
         config.logger.error("Cannot send message, permission denied.")
         return game_data
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {err}")
+        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
         return game_data
     except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {err}")
+        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
         return game_data
     except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {err}")
+        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
         return game_data
 
 
@@ -139,9 +141,9 @@ async def send_game_information(
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {err}")
+        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
     except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {err}")
+        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
 
 
 async def inform_players(
@@ -166,7 +168,9 @@ async def inform_players(
     except discord.Forbidden:
         config.logger.error(f"Cannot send message to {user.name}, permission denied.")
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message to {user.name}: {err}")
+        config.logger.error(
+            f"Failed to send message to {user.name}: {traceback.print_exception(err)}"
+        )
 
 
 async def create_dc_message_link(
@@ -230,13 +234,15 @@ async def create_game(interaction: Interaction, config: Configuration):
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {err}")
+        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
     except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {err}")
+        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
     except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {err}")
+        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
     except KeyError as err:
-        config.logger.error(f"Missing key in game data or for DB object: {err}")
+        config.logger.error(
+            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        )
 
 
 async def keep_telling_schedule(interaction: Interaction, config: Configuration):
@@ -290,13 +296,15 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {err}")
+        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
     except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {err}")
+        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
     except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {err}")
+        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
     except KeyError as err:
-        config.logger.error(f"Missing key in game data or for DB object: {err}")
+        config.logger.error(
+            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        )
 
 
 async def select_character(interaction: Interaction, config: Configuration) -> None:
@@ -357,13 +365,15 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {err}")
+        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
     except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {err}")
+        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
     except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {err}")
+        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
     except KeyError as err:
-        config.logger.error(f"Missing key in game data or for DB object: {err}")
+        config.logger.error(
+            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        )
 
 
 async def start_game_schedule(
@@ -491,10 +501,12 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
     except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {err}")
+        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
     except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {err}")
+        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
     except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {err}")
+        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
     except KeyError as err:
-        config.logger.error(f"Missing key in game data or for DB object: {err}")
+        config.logger.error(
+            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        )

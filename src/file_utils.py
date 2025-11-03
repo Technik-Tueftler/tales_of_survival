@@ -3,7 +3,7 @@ This file contains all functions and definitions required for document handling.
 """
 
 from pathlib import Path
-
+import traceback
 import aiofiles
 import yaml
 from discord import HTTPException, Interaction
@@ -39,11 +39,15 @@ async def load_yaml(config: Configuration, result: ImportResult) -> dict:
             f"Expected a file but found a directory: {result.file_path}"
         )
     except IOError as err:
-        config.logger.error(f"I/O error reading file {result.file_path}: {err}")
+        config.logger.error(
+            f"I/O error reading file {result.file_path}: {traceback.print_exception(err)}"
+        )
     except UnicodeDecodeError:
         config.logger.error(f"File {result.file_path} is not valid UTF-8 encoded")
     except yaml.YAMLError as err:
-        config.logger.error(f"YAML parsing error in file {result.file_path}: {err}")
+        config.logger.error(
+            f"YAML parsing error in file {result.file_path}: {traceback.print_exception(err)}"
+        )
 
 
 async def import_data(interaction: Interaction, config: Configuration):
@@ -65,16 +69,10 @@ async def import_data(interaction: Interaction, config: Configuration):
         if result_character.data:
             await create_character_from_input(config, result_character)
         context = {
-            "genre_status": (
-                "successful"
-                if result_genre.success
-                else "unsuccessful"
-            ),
+            "genre_status": ("successful" if result_genre.success else "unsuccessful"),
             "genre_number": result_genre.import_number,
             "char_status": (
-                "successful"
-                if result_character.success
-                else "unsuccessful"
+                "successful" if result_character.success else "unsuccessful"
             ),
             "char_number": result_character.import_number,
         }
@@ -86,13 +84,17 @@ async def import_data(interaction: Interaction, config: Configuration):
         )
         await interaction.response.send_message(message)
     except FileNotFoundError as err:
-        config.logger.error(f"File not found: {err}")
+        config.logger.error(f"File not found: {traceback.print_exception(err)}")
         await interaction.response.send_message("A required file was not found.")
     except yaml.YAMLError as err:
-        config.logger.error(f"Error parsing the YAML file: {err}")
+        config.logger.error(
+            f"Error parsing the YAML file: {traceback.print_exception(err)}"
+        )
         await interaction.response.send_message("Error parsing the YAML file")
     except PermissionError as err:
-        config.logger.error(f"No access rights: {err}")
+        config.logger.error(f"No access rights: {traceback.print_exception(err)}")
         await interaction.response.send_message("Access rights to a file are missing.")
     except HTTPException as err:
-        config.logger.error(f"Error in Discord communication: {err}")
+        config.logger.error(
+            f"Error in Discord communication: {traceback.print_exception(err)}"
+        )

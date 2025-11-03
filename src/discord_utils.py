@@ -2,6 +2,7 @@
 This module contains utility functions for interacting with Discord.
 """
 
+import traceback
 import discord
 from .configuration import Configuration
 from .constants import DC_MAX_CHAR_MESSAGE
@@ -55,7 +56,7 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         config.logger.error(f"Channel ID {channel_id} not found.")
     except discord.errors.Forbidden:
         config.logger.error(f"No permission to write to channel {channel_id}.")
-    except discord.errors.HTTPException as e:
-        config.logger.error(f"HTTP-Error during send: {e}")
+    except discord.errors.HTTPException as err:
+        config.logger.error(f"HTTP-Error during send: {traceback.print_exception(err)}")
     except KeyError as _:
         config.logger.error("The message is missing the content key.")

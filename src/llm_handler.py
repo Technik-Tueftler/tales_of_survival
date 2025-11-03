@@ -1,8 +1,15 @@
 """
 This module contains the function to handle requests to the OpenAI API.
 """
+
 import traceback
-from openai import OpenAI
+from openai import (
+    OpenAI,
+    OpenAIError,
+    APIConnectionError,
+    RateLimitError,
+    AuthenticationError,
+)
 from .configuration import Configuration
 
 
@@ -25,5 +32,11 @@ async def request_openai(config: Configuration, messages: list) -> None:
             model=config.env.model, reasoning_effort="high", messages=messages
         )
         return response.choices[0].message.content
-    except Exception as err:
-        traceback.print_exception(err)
+    except AuthenticationError:
+        config.logger.error("API key invalid or expired")
+    except RateLimitError:
+        config.logger.error("Rate limit reached, retry later")
+    except APIConnectionError:
+        config.logger.error("Failed to connect to API")
+    except OpenAIError as err:
+        config.logger.error(f"OpenAI error: {traceback.print_exception(err)}")

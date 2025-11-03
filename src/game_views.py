@@ -2,6 +2,7 @@
 This module contains all view for game creation and general game handling.
 """
 
+import traceback
 import discord
 
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
@@ -234,6 +235,7 @@ class KeepTellingButtonView(discord.ui.View):
     This view generates buttons for the user to select the next story part
     to continue the story.
     """
+
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
@@ -242,7 +244,9 @@ class KeepTellingButtonView(discord.ui.View):
         for item in self.children:
             if isinstance(item, discord.ui.Button):
                 if item.label == StoryType.EVENT.text:
-                    item.disabled = not self.process_data.story_context.events_available()
+                    item.disabled = (
+                        not self.process_data.story_context.events_available()
+                    )
 
     @discord.ui.button(
         label=StoryType.FICTION.text,
@@ -353,9 +357,13 @@ class NewGameStatusSelect(discord.ui.Select):
             )
             self.view.stop()
         except (IndexError, ValueError) as err:
-            self.config.logger.error(f"Error during callback: {err}")
+            self.config.logger.error(
+                f"Error during callback: {traceback.print_exception(err)}"
+            )
         except discord.errors.Forbidden as err:
-            self.config.logger.error(f"Error during callback with DC permissons: {err}")
+            self.config.logger.error(
+                f"Error during callback with DC permissons: {traceback.print_exception(err)}"
+            )
 
 
 class StartTaleButtonView(discord.ui.View):
@@ -364,6 +372,7 @@ class StartTaleButtonView(discord.ui.View):
     to start the story. It is only used during game switch status from
     CREATED to RUNNING.
     """
+
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
@@ -381,7 +390,9 @@ class StartTaleButtonView(discord.ui.View):
         Callback function when button for standard zombie tale with more then 1 player is clicked.
         """
         self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_X
-        self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}")
+        self.config.logger.trace(
+            f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}"
+        )
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
@@ -398,7 +409,9 @@ class StartTaleButtonView(discord.ui.View):
         Callback function when button for standard zombie tale with one player is clicked.
         """
         self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_1
-        self.config.logger.trace(f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}")
+        self.config.logger.trace(
+            f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}"
+        )
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
@@ -415,7 +428,9 @@ class StartTaleButtonView(discord.ui.View):
         Callback function when button for own tale with more then 1 player is clicked.
         """
         self.process_data.story_context.start.condition = StartCondition.OWN_X
-        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_X.text}")
+        self.config.logger.trace(
+            f"Start tale type selected: {StartCondition.OWN_X.text}"
+        )
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
@@ -432,7 +447,9 @@ class StartTaleButtonView(discord.ui.View):
         Callback function when button for own tale with one player is clicked.
         """
         self.process_data.story_context.start.condition = StartCondition.OWN_1
-        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN_1.text}")
+        self.config.logger.trace(
+            f"Start tale type selected: {StartCondition.OWN_1.text}"
+        )
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
@@ -472,7 +489,7 @@ class OwnTaleStartModal(discord.ui.Modal, title="Additional input for your tale:
         self.add_item(self.location_input)
         self.add_item(self.prompt_input)
 
-    async def on_submit( # pylint: disable=arguments-differ
+    async def on_submit(  # pylint: disable=arguments-differ
         self, interaction: discord.Interaction
     ):
         if not self.location_input.value.strip():
@@ -497,7 +514,9 @@ class OwnTaleStartModal(discord.ui.Modal, title="Additional input for your tale:
         self.parent_view.stop()
 
 
-class StZombieTaleStartModal(discord.ui.Modal, title="Additional input for your zombie tale:"):
+class StZombieTaleStartModal(
+    discord.ui.Modal, title="Additional input for your zombie tale:"
+):
     """
     Modal class to enter additional text for the story.
     """
@@ -531,7 +550,7 @@ class StZombieTaleStartModal(discord.ui.Modal, title="Additional input for your 
         self.add_item(self.location_input)
         self.add_item(self.prompt_input)
 
-    async def on_submit( # pylint: disable=arguments-differ
+    async def on_submit(  # pylint: disable=arguments-differ
         self, interaction: discord.Interaction
     ):
         if not self.location_input.value.strip():

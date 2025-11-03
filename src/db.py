@@ -3,6 +3,7 @@ This File contains the database setup, initialization functions and
 general database related functions.
 """
 
+import traceback
 from dataclasses import dataclass
 
 import discord
@@ -21,7 +22,7 @@ from .db_classes import (
     USER,
     UserGameCharacterAssociation,
     GameStatus,
-    STORY
+    STORY,
 )
 
 
@@ -80,7 +81,7 @@ async def get_genre_double_cond(
             )
             return genres[-1]
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return None
 
 
@@ -117,7 +118,9 @@ async def create_genre_from_input(config: Configuration, result: ImportResult):
         result.import_number = len(final_genre)
         result.success = True
     except (KeyError, IntegrityError) as err:
-        config.logger.error(f"Error while import genre file: {err}")
+        config.logger.error(
+            f"Error while import genre file: {traceback.print_exception(err)}"
+        )
 
 
 async def create_character_from_input(config: Configuration, result: ImportResult):
@@ -146,7 +149,9 @@ async def create_character_from_input(config: Configuration, result: ImportResul
         result.import_number = len(final_character)
         result.success = True
     except (KeyError, IntegrityError) as err:
-        config.logger.error(f"Error while import character file: {err}")
+        config.logger.error(
+            f"Error while import character file: {traceback.print_exception(err)}"
+        )
 
 
 async def get_characters_from_ids(
@@ -272,7 +277,7 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
             return result
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return
 
 
@@ -299,11 +304,13 @@ async def get_all_user_games(config: Configuration, process_data: ProcessInput) 
             )
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return
 
 
-async def get_all_running_games(config: Configuration, process_data: ProcessInput) -> None:
+async def get_all_running_games(
+    config: Configuration, process_data: ProcessInput
+) -> None:
     """
     Function to get all available games from the database which are not finished.
 
@@ -326,7 +333,7 @@ async def get_all_running_games(config: Configuration, process_data: ProcessInpu
             process_data.game_context.available_games = result
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return
 
 
@@ -357,7 +364,7 @@ async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | N
             return (await session.execute(statement)).scalar_one_or_none()
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return
 
 
@@ -401,7 +408,7 @@ async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER | None:
             return (await session.execute(statement)).scalar_one_or_none()
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return
 
 
@@ -429,7 +436,7 @@ async def get_mapped_ugc_association(
             return (await session.execute(statement)).scalar_one_or_none()
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return
 
 
@@ -461,7 +468,7 @@ async def count_regist_char_from_game(config: Configuration, game_id: int) -> in
             return temp_return
 
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return 0
 
 
@@ -490,7 +497,7 @@ async def get_character_from_game_id(
             )
             return (await session.execute(statement)).scalars().all()
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
 
 
 async def get_stories_messages_for_ai(
@@ -526,5 +533,5 @@ async def get_stories_messages_for_ai(
                 )
         return messages
     except (AttributeError, SQLAlchemyError, TypeError) as err:
-        config.logger.error(f"Error in sql select: {err}")
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return []

@@ -83,8 +83,6 @@ class GameContext:
             self.selected_game.status is GameStatus.CREATED
             and self.new_game_status is GameStatus.RUNNING
         )
-    # async def request_game_allowed(self) -> bool:
-    #     return sd
 
 
 class StoryContext:
