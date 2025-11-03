@@ -4,6 +4,30 @@ This module contains utility functions for interacting with Discord.
 
 import discord
 from .configuration import Configuration
+from .constants import DC_MAX_CHAR_MESSAGE
+
+
+async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]:
+    """
+    Function split a long text into smaller parts based on a maximum length.
+
+    Args:
+        text (str): Text to split
+        max_len (int, optional): Character threshold . Defaults to DC_MAX_CHAR_MESSAGE.
+
+    Returns:
+        list[str]: Plitted text parts
+    """
+    text_parts = []
+    while len(text) > max_len:
+        split_at = text.rfind(' ', 0, max_len)
+        if split_at == -1:
+            split_at = max_len
+        text_parts.append(text[:split_at])
+        text = text[split_at:].lstrip()
+    if text:
+        text_parts.append(text)
+    return text_parts
 
 
 async def send_channel_message(config: Configuration, channel_id: int, message: str):
@@ -20,9 +44,11 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         if channel is None:
             channel = await config.dc_bot.fetch_channel(channel_id)
 
-        for msg_part in message.splitlines():
-            if msg_part.strip() != "":
-            # TODO: Nochmal prüfen auf 2000 Zeichen?
+        for text_part in message.splitlines():
+            if text_part.strip() == "":
+                continue
+            msg_parts = await split_text(text_part, DC_MAX_CHAR_MESSAGE)
+            for msg_part in msg_parts:
                 await channel.send(msg_part)
 
     except discord.errors.NotFound:
