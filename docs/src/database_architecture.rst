@@ -7,19 +7,31 @@ Context classes
 
 .. mermaid ::
     erDiagram
-        CHARACTER }|--|| USER : "N:1"
-        USER }|--|{ GAME : "N:M"
-        GAME ||--|| TALE : "1:1"
-        TALE ||--|{ STORY : "1:N"
-        TALE ||--|| GENRE : "1:1"
-        InspirationalWords }|--|| GENRE : "N:1"
+        INSPIRATIONALWORD }|--|| GENRE : "N:1"
         EVENT }|--|| GENRE : "N:1"
+        GENRE }|--|| TALE : "N:1"
+        TALE ||--|{ STORY : "1:N"
+        GAME ||--|| TALE : "1:1"
+        GAME }|--|{ UserGameCharacterAssociation : "N:M"
+        CHARACTER ||--|| UserGameCharacterAssociation : "1:1"
+        USER }|--|{ UserGameCharacterAssociation : "N:M"
+
         style GENRE fill:#f9f,stroke:#333,stroke-width:4px
         style CHARACTER fill:#f9f,stroke:#333,stroke-width:4px
-        style InspirationalWords fill:#f9f,stroke:#333,stroke-width:4px
+        style INSPIRATIONALWORD fill:#f9f,stroke:#333,stroke-width:4px
         style EVENT fill:#f9f,stroke:#333,stroke-width:4px
+        style UserGameCharacterAssociation fill:#AB82FF,stroke:#333,stroke-width:4px
+        
+        UserGameCharacterAssociation {
+            int id
+            int game_id
+            int user_id
+            int character_id
+            datetime request_date
+            datetime end_date
+        }
         CHARACTER {
-            string id
+            int id
             string name
             int age
             string background
@@ -28,19 +40,23 @@ Context classes
             string neg_trait
             string summary
             boolean alive
+            datetime start_date
+            datetime end_date
+            int user_id
         }
         GAME {
-            string id
+            int id
             string name
-            string status
+            GameStatus status
             datetime start_timestamp
             datetime end_timestamp
             int message_id
             int channel_id
+            int tale_id
         }
         TALE {
             string id
-            string language
+            int genre_id
         }
         STORY {
             string id
@@ -48,28 +64,35 @@ Context classes
             string response
             string summary
             StoryType story_type
+            int tale_id
         }
         USER {
             string id
-            string dc_id
             string name
+            string dc_id
         }
         GENRE {
             string id
             string name
             string storytelling_style
             string atmosphere
+            string language
         }
-        InspirationalWords {
+        INSPIRATIONALWORD {
             string id
             string text
             int chance
+            int genre_id
         }
         EVENT {
             string id
             string text
             int chance
+            int genre_id
         }
 
 .. note::
     The tables in pink can be customized, modified, or expanded through imports. This allows the stories to be individually tailored to the needs of the players, creating new and exciting stories every time.
+
+.. note::
+    The table in purple serves as a association table to manage the N:M relationships.

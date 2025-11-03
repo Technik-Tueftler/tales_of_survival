@@ -1339,8 +1339,14 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "myst-parser" },
+    { name = "pydata-sphinx-theme" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-mermaid" },
+    { name = "sphinx-toolbox" },
 ]
 
 [package.metadata]
@@ -1365,8 +1371,14 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "myst-parser", specifier = ">=4.0.1" },
+    { name = "pydata-sphinx-theme", specifier = ">=0.16.1" },
     { name = "pytest", specifier = ">=8.4.2" },
     { name = "pytest-asyncio", specifier = ">=1.2.0" },
+    { name = "sphinx", specifier = ">=8.2.3" },
+    { name = "sphinx-copybutton", specifier = ">=0.5.2" },
+    { name = "sphinx-mermaid", specifier = ">=0.0.8" },
+    { name = "sphinx-toolbox", specifier = ">=4.0.0" },
 ]
 
 [[package]]

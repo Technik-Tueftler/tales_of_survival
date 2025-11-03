@@ -143,10 +143,7 @@ class GENRE(Base):
     language: Mapped[str] = mapped_column(nullable=False)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
-    # tale: Mapped["TALE"] = relationship(
-    #     "TALE", back_populates="genre", uselist=False
-    # )  # 1:1
-    tales: Mapped[list["TALE"]] = relationship("TALE", back_populates="genre")
+    tales: Mapped[list["TALE"]] = relationship("TALE", back_populates="genre") # 1:N
 
     def __repr__(self) -> str:
         return f"Genre(id={self.id}, name={self.name})"
@@ -182,9 +179,7 @@ class TALE(Base):
     __tablename__ = "tales"
     id: Mapped[int] = mapped_column(primary_key=True)
     genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"), nullable=False)
-    # genre: Mapped[GENRE] = relationship("GENRE", back_populates="tale", uselist=False) # 1:1
-    genre: Mapped[GENRE] = relationship("GENRE", back_populates="tales")
-
+    genre: Mapped[GENRE] = relationship("GENRE", back_populates="tales") # 1:1
     stories: Mapped[list["STORY"]] = relationship()  # 1:N
     game: Mapped["GAME"] = relationship("GAME", back_populates="tale", uselist=False)
 
@@ -208,7 +203,6 @@ class UserGameCharacterAssociation(Base):
     )
     request_date: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
     end_date: Mapped[datetime] = mapped_column(nullable=True)
-
     game: Mapped["GAME"] = relationship("GAME", back_populates="user_participations")
     user: Mapped["USER"] = relationship("USER", back_populates="game_participations")
     character: Mapped["CHARACTER"] = relationship(
@@ -234,13 +228,9 @@ class GAME(Base):
     channel_id: Mapped[int] = mapped_column(nullable=True)
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"), nullable=False)  # 1:1
     tale: Mapped[TALE] = relationship("TALE", back_populates="game", uselist=False)
-    # M:N - Association mit Back_populates
-    # users: Mapped[list["USER"]] = relationship(
-    #     secondary=association_user_game, back_populates="games"
-    # )
     user_participations: Mapped[list["UserGameCharacterAssociation"]] = relationship(
         back_populates="game"
-    )
+    ) # N:M
 
     def __repr__(self) -> str:
         return f"Game(id={self.id}, name={self.name})"
@@ -257,7 +247,7 @@ class USER(Base):
     characters: Mapped[list["CHARACTER"]] = relationship(back_populates="user")
     game_participations: Mapped[list["UserGameCharacterAssociation"]] = relationship(
         back_populates="user"
-    )
+    ) # N:M
 
 
 class CHARACTER(Base):
