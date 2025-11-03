@@ -1,12 +1,10 @@
 """
 Module to handle game creation and management
 """
-
 from datetime import datetime, timezone
 import asyncio
 import discord
 from discord import Interaction
-import traceback
 from .discord_utils import send_channel_message
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai

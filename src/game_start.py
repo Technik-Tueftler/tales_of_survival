@@ -6,7 +6,7 @@ user input and generating initial prompts.
 from discord import Interaction
 from .configuration import Configuration, ProcessInput, StartCondition
 from .game_views import StartTaleButtonView
-from .constants import MAX_WORDS_DESCRIPTION_PROMPT, MAX_WORDS_START_PROMPT
+from .constants import PROMPT_MAX_WORDS_DESCRIPTION, PROMPT_MAX_WORDS_START
 
 
 async def collect_start_input(
@@ -59,7 +59,7 @@ async def get_first_phase_prompt(
     )
     user_requ_prompt = (
         "Beschreibe mir die Welt in der die Menschen jetzt "
-        + f"leben müssen mit (maximal {MAX_WORDS_DESCRIPTION_PROMPT} Wörter)"
+        + f"leben müssen mit (maximal {PROMPT_MAX_WORDS_DESCRIPTION} Wörter)"
     )
     messages = [
         {"role": "user", "content": system_requ_prompt},
@@ -99,7 +99,7 @@ async def get_second_phase_prompt(
                 messages.append({"role": "user", "content": character.summary})
             if game_data.story_context.start.prompt == "":
                 start_requ_prompt = (
-                    f"Erzähl mir den Start der Geschichte (maximal {MAX_WORDS_START_PROMPT} "
+                    f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
                     + "Wörter) bei der sich die Charaktere in einer Stadt namens "
                     + f"{game_data.story_context.start.city} treffen und beschließen eine "
                     + "Gemeinschaft zu bilden."
@@ -119,7 +119,7 @@ async def get_second_phase_prompt(
             )
             if game_data.story_context.start.prompt == "":
                 start_requ_prompt = (
-                    f"Erzähl mir den Start der Geschichte (maximal {MAX_WORDS_START_PROMPT} "
+                    f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
                     + "Wörter) bei der sich der Charakter in einer Stadt namens "
                     + f"{game_data.story_context.start.city} aufhält und dort versucht "
                     + "zu überleben."

@@ -280,16 +280,13 @@ async def update_db_objs(
         config (Configuration): App configuration
         obj (GAME | USER | TALE | GENRE): Object to update in the database
     """
-    try:
-        async with config.write_lock, config.session() as session, session.begin():
-            session.add_all(objs)
-            await session.flush()
-            for obj in objs:
-                config.logger.trace(
-                    f"Updated object in database: {obj.__class__.__name__} with ID: {obj.id}"
-                )
-    except Exception as err:
-        print(err, type(err))
+    async with config.write_lock, config.session() as session, session.begin():
+        session.add_all(objs)
+        await session.flush()
+        for obj in objs:
+            config.logger.trace(
+                f"Updated object in database: {obj.__class__.__name__} with ID: {obj.id}"
+            )
 
 
 async def get_available_characters(config: Configuration) -> list[CHARACTER]:
@@ -373,6 +370,16 @@ async def get_all_running_games(config: Configuration, process_data: ProcessInpu
 
 
 async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | None:
+    """
+    Function to get the tale based on handed over game id.
+
+    Args:
+        config (Configuration): App configuration
+        game_id (int): Game id
+
+    Returns:
+        TALE | None: One Tale or None
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (
@@ -416,7 +423,17 @@ async def get_games_w_status(
     return games
 
 
-async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER:
+async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER | None:
+    """
+    Get the user object based on handed over discord id.
+
+    Args:
+        config (Configuration): App configuration
+        dc_id (str): Discord ID of user
+
+    Returns:
+        USER | None: One User or None
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(USER).where(USER.dc_id == dc_id)
@@ -429,7 +446,18 @@ async def get_user_from_dc_id(config: Configuration, dc_id: str) -> USER:
 
 async def get_mapped_ugc_association(
     config: Configuration, game_id: int, user_id: int
-) -> UserGameCharacterAssociation:
+) -> UserGameCharacterAssociation | None:
+    """
+    Function get the association object based on handed over game and user id.
+
+    Args:
+        config (Configuration): App configuration
+        game_id (int): Game id
+        user_id (int): User id
+
+    Returns:
+        UserGameCharacterAssociation | None: Linked association object
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (
@@ -445,6 +473,16 @@ async def get_mapped_ugc_association(
 
 
 async def count_regist_char_from_game(config: Configuration, game_id: int) -> int:
+    """
+    Function get the number of registered character in a handed over game based on id.
+
+    Args:
+        config (Configuration): App configuration
+        game_id (int): Game id
+
+    Returns:
+        int: Count of registered characters
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (
@@ -469,6 +507,16 @@ async def count_regist_char_from_game(config: Configuration, game_id: int) -> in
 async def get_character_from_game_id(
     config: Configuration, game_id: int
 ) -> list[CHARACTER] | None:
+    """
+    Function get all registered characters from a game based on handed over game id.
+
+    Args:
+        config (Configuration): App configuration
+        game_id (int): Game id
+
+    Returns:
+        list[CHARACTER] | None: List of characters or None
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (

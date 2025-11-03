@@ -356,8 +356,6 @@ class NewGameStatusSelect(discord.ui.Select):
             self.config.logger.error(f"Error during callback: {err}")
         except discord.errors.Forbidden as err:
             self.config.logger.error(f"Error during callback with DC permissons: {err}")
-        except Exception as err:
-            print(err, type(err))
 
 
 class StartTaleButtonView(discord.ui.View):
@@ -474,7 +472,7 @@ class OwnTaleStartModal(discord.ui.Modal, title="Additional input for your tale:
         self.add_item(self.location_input)
         self.add_item(self.prompt_input)
 
-    async def on_submit(
+    async def on_submit( # pylint: disable=arguments-differ
         self, interaction: discord.Interaction
     ):
         if not self.location_input.value.strip():
@@ -533,7 +531,7 @@ class StZombieTaleStartModal(discord.ui.Modal, title="Additional input for your 
         self.add_item(self.location_input)
         self.add_item(self.prompt_input)
 
-    async def on_submit(
+    async def on_submit( # pylint: disable=arguments-differ
         self, interaction: discord.Interaction
     ):
         if not self.location_input.value.strip():
