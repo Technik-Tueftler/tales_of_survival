@@ -7,7 +7,7 @@ import traceback
 from dataclasses import dataclass
 
 import discord
-from sqlalchemy import select, func
+from sqlalchemy import select, func, exists
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import selectinload, joinedload
 
@@ -538,3 +538,16 @@ async def get_stories_messages_for_ai(
     except (AttributeError, SQLAlchemyError, TypeError) as err:
         config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
         return []
+
+
+async def channel_id_exist(config: Configuration, channel_id: str) -> bool:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(exists().where(GAME.channel_id == channel_id))
+            )
+            return (await session.execute(statement)).scalar()
+
+    except (AttributeError, SQLAlchemyError, TypeError) as err:
+        config.logger.error(f"Error in sql select: {traceback.print_exception(err)}")
+        return True

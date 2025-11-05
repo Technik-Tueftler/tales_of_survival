@@ -36,6 +36,7 @@ from .db import (
     count_regist_char_from_game,
     get_character_from_game_id,
     get_stories_messages_for_ai,
+    channel_id_exist,
 )
 from .game_views import (
     CharacterSelectView,
@@ -204,6 +205,15 @@ async def create_game(interaction: Interaction, config: Configuration):
         config (Configuration): App configuration
     """
     try:
+        if await channel_id_exist(config, interaction.channel_id):
+            await interaction.response.send_message(
+                (
+                    "In this channel is a Tale ongoing and no new Tale can created. "
+                    "Please select another channel."
+                ),
+                ephemeral=True,
+            )
+            return
         game_data = await collect_all_game_contexts(interaction, config)
         genre = await get_genre_double_cond(config, game_data["genre_id"])
         processed_user_list = await process_player(config, game_data["user"])
