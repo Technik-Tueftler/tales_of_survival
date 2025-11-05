@@ -39,7 +39,7 @@ Customizing the documentation
     .. code-block:: bash
 
         make clean && make html
-        uv run -- sphinx-build -b html docs/source docs/build/html
+        uv run -- sphinx-build -b html docs docs/_build/html
 
     This command can be useful because dependencies or formatting from previous builds interfere with or destroy the view of new elements. So if the documentation looks strange for some unknown reason, this can be tried to solve it.
 

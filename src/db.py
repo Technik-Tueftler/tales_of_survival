@@ -541,6 +541,16 @@ async def get_stories_messages_for_ai(
 
 
 async def channel_id_exist(config: Configuration, channel_id: str) -> bool:
+    """
+    This function checks if a channel ID exists in a game.
+
+    Args:
+        config (Configuration): App configuration
+        channel_id (str): Channel ID
+
+    Returns:
+        bool: Any game started with same channel ID
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (

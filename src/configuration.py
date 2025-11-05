@@ -140,6 +140,13 @@ class StoryContext:
         return len(self.tale.genre.inspirational_words) <= 0
 
     async def get_fiction_prompt(self) -> str:
+        """
+        This function create the fiction prompt based on saved attributes
+        and input from user.
+
+        Returns:
+            str: Fiction prompt
+        """
         if self.fiction_prompt:
             return self.fiction_prompt
         return (await self.get_random_insp_word_weighted()).text
