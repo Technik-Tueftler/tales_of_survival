@@ -209,8 +209,13 @@ class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the s
         self.process_data = process_data
         self.parent_view = parent_view
         self.config = config
+        self.insp_words_available = (
+            self.process_data.story_context.insp_words_not_available()
+        )
         self.story_text_input = discord.ui.TextInput(
-            label="Additional text", required=True, style=discord.TextStyle.paragraph
+            label="Additional text",
+            required=self.insp_words_available,
+            style=discord.TextStyle.paragraph,
         )
         self.add_item(self.story_text_input)
 
@@ -559,7 +564,6 @@ class StZombieTaleStartModal(
             )
             return
 
-        print(self.prompt_input.value)
         self.process_data.story_context.start.city = self.location_input.value
         self.process_data.story_context.start.prompt = self.prompt_input.value
         self.config.logger.debug(

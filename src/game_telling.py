@@ -75,9 +75,11 @@ async def telling_fiction(config: Configuration, process_data: ProcessInput):
     messages = await get_stories_messages_for_ai(
         config, process_data.story_context.tale.id
     )
+    fiction_prompt = await process_data.story_context.get_fiction_prompt()
+    config.logger.trace(f"Fiction word: {fiction_prompt}")
     fiction_requ_prompt = (
         "Schreibe die Geschichte weiter basierend auf dem folgenden Input: "
-        + f"{process_data.story_context.fiction_prompt} mit maximal "
+        + f"{fiction_prompt} mit maximal "
         + f"{PROMPT_MAX_WORDS_FICTION} Wörtern."
     )
 

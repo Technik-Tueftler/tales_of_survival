@@ -354,7 +354,10 @@ async def get_tale_from_game_id(config: Configuration, game_id: int) -> TALE | N
                 select(TALE)
                 .join(TALE.game)
                 .options(
-                    joinedload(TALE.genre).options(selectinload(GENRE.events)),
+                    joinedload(TALE.genre).options(
+                        selectinload(GENRE.events),
+                        selectinload(GENRE.inspirational_words),
+                    ),
                     joinedload(TALE.game).options(
                         selectinload(GAME.user_participations)
                     ),

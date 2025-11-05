@@ -20,7 +20,8 @@ from .db_classes import (
     EVENT,
     CHARACTER,
     GameStatus,
-    StartCondition
+    StartCondition,
+    INSPIRATIONALWORD
 )
 
 
@@ -118,6 +119,30 @@ class StoryContext:
         self.event = random.choices(  # pylint: disable=no-member
             self.tale.genre.events, weights=weights, k=1
         )[0]
+
+    async def get_random_insp_word_weighted(self) -> INSPIRATIONALWORD:
+        """
+        Function selecting a random inspirational word based on the weights defined
+        in the database for the tale's genre.
+        """
+        weights = [element.chance for element in self.tale.genre.inspirational_words]
+        return random.choices(  # pylint: disable=no-member
+            self.tale.genre.inspirational_words, weights=weights, k=1
+        )[0]
+
+    def insp_words_not_available(self) -> bool:
+        """
+        Function checks 
+
+        Returns:
+            bool: _description_
+        """
+        return len(self.tale.genre.inspirational_words) <= 0
+
+    async def get_fiction_prompt(self) -> str:
+        if self.fiction_prompt:
+            return self.fiction_prompt
+        return (await self.get_random_insp_word_weighted()).text
 
 
 class StoryStartContext:
