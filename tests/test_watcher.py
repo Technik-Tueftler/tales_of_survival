@@ -40,38 +40,6 @@ def fct_temp_log_file():
         yield Path(f.name)
 
 
-def test_init_logging(temp_log_file):
-    """
-    Tests the initialization of the logging system.
-
-    This test verifies that the logging system is correctly initialized with the specified 
-    configuration, including custom log levels and file output.
-
-    Args:
-        temp_log_file (str): Path to a temporary log file used for testing.
-
-    Procedure:
-        1. Initializes the logging system with a WatcherConfiguration set to TRACE level
-           and a specified temporary log file path.
-        2. Verifies that the log file has been created.
-
-    Assertions:
-        - Confirms that the specified log file has been created.
-
-    Notes:
-        - This test is crucial for ensuring that the logging system is properly configured
-          at the application startup.
-        - It validates both the custom log level setup and the file logging functionality.
-    """
-    # Procedure 1: Initialize the logging system
-    src.init_logging(
-        src.WatcherConfiguration(log_level="TRACE", log_file_path=temp_log_file)
-    )
-
-    # Procedure 2: Check if the log file was created
-    assert os.path.exists(temp_log_file), "Log file was not created"
-
-
 def test_console_logging(capture_logs):
     """
     Tests the functionality of file logging.

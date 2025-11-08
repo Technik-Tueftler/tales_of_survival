@@ -1,0 +1,8 @@
+"""
+Constants for organizing various fixed values used across the application.
+"""
+PROMPT_MAX_WORDS_DESCRIPTION = 200
+PROMPT_MAX_WORDS_START = 600
+PROMPT_MAX_WORDS_EVENT = 150
+PROMPT_MAX_WORDS_FICTION = 300
+DC_MAX_CHAR_MESSAGE = 2000

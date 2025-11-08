@@ -1,0 +1,62 @@
+"""
+This module contains utility functions for interacting with Discord.
+"""
+
+import traceback
+import discord
+from .configuration import Configuration
+from .constants import DC_MAX_CHAR_MESSAGE
+
+
+async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]:
+    """
+    Function split a long text into smaller parts based on a maximum length.
+
+    Args:
+        text (str): Text to split
+        max_len (int, optional): Character threshold . Defaults to DC_MAX_CHAR_MESSAGE.
+
+    Returns:
+        list[str]: Plitted text parts
+    """
+    text_parts = []
+    while len(text) > max_len:
+        split_at = text.rfind(' ', 0, max_len)
+        if split_at == -1:
+            split_at = max_len
+        text_parts.append(text[:split_at])
+        text = text[split_at:].lstrip()
+    if text:
+        text_parts.append(text)
+    return text_parts
+
+
+async def send_channel_message(config: Configuration, channel_id: int, message: str):
+    """
+    This function send a message to a specific Discord channel.
+
+    Args:
+        config (Configuration): App configuration
+        channel_id (int): Channel ID to send the message to
+        message (str): Message to send
+    """
+    try:
+        channel = config.dc_bot.get_channel(channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(channel_id)
+
+        for text_part in message.splitlines():
+            if text_part.strip() == "":
+                continue
+            msg_parts = await split_text(text_part, DC_MAX_CHAR_MESSAGE)
+            for msg_part in msg_parts:
+                await channel.send(msg_part)
+
+    except discord.errors.NotFound:
+        config.logger.error(f"Channel ID {channel_id} not found.")
+    except discord.errors.Forbidden:
+        config.logger.error(f"No permission to write to channel {channel_id}.")
+    except discord.errors.HTTPException as err:
+        config.logger.error(f"HTTP-Error during send: {traceback.print_exception(err)}")
+    except KeyError as _:
+        config.logger.error("The message is missing the content key.")

@@ -1,0 +1,82 @@
+- name: Markus Weber
+  age: 34
+  background: Gelernter Schreiner, aufgewachsen in einer Kleinstadt in Kentucky.
+  description: >
+    Markus ist ein praktischer, bodenständiger Mann, dessen Hände vom Arbeiten mit Holz und
+    Werkzeugen gezeichnet sind. Schon vor dem Ausbruch war er jemand, der lieber etwas
+    reparierte, anstatt es neu zu kaufen. Sein handwerkliches Geschick macht ihn in einer
+    Welt des Zerfalls zu einem wertvollen Überlebenden – er kann schnell improvisieren und
+    aus begrenzten Ressourcen funktionale Werkzeuge oder Barrikaden bauen. Doch so nützlich
+    diese Fähigkeiten auch sind, Markus trägt auch eine schwer wiegende Schwäche in sich.
+    Er ist ungeschickt im Umgang mit anderen Menschen, denn seit jeher fällt es ihm schwer,
+    Vertrauen zu schenken und im Team zu arbeiten. In Gefahrensituationen neigt er dazu,
+    eigensinnig Entscheidungen zu treffen, manchmal auf Kosten der Gruppe.
+  pos_trait: Handy (geschickt mit Werkzeugen, kann Reparaturen schneller und effizienter durchführen)
+  neg_trait: Cowardly / Ängstlich (gerät in Panik, wenn die Situation brenzlig wird, was seine Handlungen unzuverlässig machen kann)
+  summary: >
+    Markus ist ein Überlebender, der zwischen seinem praktischen Talent und seinen inneren
+    Ängsten steht. Seine größte Stärke – sein Können mit den Händen – könnte die Gruppe
+    retten. Doch wenn der Druck zu groß wird, könnten gerade seine Unsicherheiten alles ins 
+    Wanken bringen."
+
+- name: Anna Schmidt
+  age: 28
+  background: Ehemalige Krankenschwester aus Chicago, spezialisiert auf Notfall- und Intensivpflege.
+  description: >
+    Anna ist eine ruhige und besonnene Helferin, die in der Krise stets einen kühlen Kopf
+    bewahrt. Ihre medizinischen Fähigkeiten machen sie unverzichtbar für die Gruppe, da
+    sie Verletzungen versorgt und Krankheiten behandelt. Dennoch kann ihr Perfektionismus
+    sie gelegentlich lähmen, wenn schnelle Entscheidungen gefragt sind.
+  pos_trait: First Aid Expert (schnellere und effektivere Behandlung von Wunden und Krankheiten)
+  neg_trait: Overthinker (zögert bei Entscheidungen unter Stress, was manchmal gefährlich sein kann)
+  summary: >
+    Anna hält die Gruppe medizinisch am Leben, doch ihre zögerliche Art sorgt für Spannung
+    in hektischen Situationen.
+
+- name: Joachim Hartmann
+  age: 41
+  background: Ehemaliger Feuerwehrmann aus Berlin mit umfangreicher Erfahrung in Einsatzleitung und Brandbekämpfung.
+  description: >
+    Joachim ist ein durchsetzungsfähiger und furchtloser Überlebenskämpfer, der sich
+    in der Apokalypse besonders beim Schutz des Unterschlupfs hervortut. Sein starker
+    Willen und seine körperliche Fitness helfen der Gruppe, gefährliche Situationen
+    zu meistern, auch wenn sein impulsives Verhalten manchmal das Risiko erhöht.
+  pos_trait: Stout and Tough (erhöht Ausdauer und Schadensresistenz)
+  neg_trait: Hot-Headed (entscheidet oft ohne Nachzudenken und bringt die Gruppe dadurch in Gefahr)
+  summary: >
+    Joachim ist der Fels in der Brandung, aber manchmal stürzt seine Ungeduld die Gruppe in Schwierigkeiten.
+
+- name: Lena Fischer
+  age: 23
+  background: Urban Explorer und Kletterexpertin aus Hamburg mit einem Talent fürs Schleichen und Entdecken.
+  description: >
+    Lena bewegt sich leise und unauffällig durch die gefährlichen Straßen, was sie
+    zur idealen Späherin und Plünderin macht. Ihr Wissen über urbane Strukturen und
+    ihre Kletterfähigkeiten ermöglichen es ihr, Ressourcen zu finden, die andere
+    übersehen. Allerdings bringt sie ihre Neugier manchmal in riskante Situationen.
+  pos_trait: Lightfooted and Nimble (geräuschloses Bewegen, schnell und wendig)
+  neg_trait: Curious (geht oft Risiken ein, um mehr zu entdecken, was gefährlich sein kann)
+  summary: Lena bringt wertvolle Ressourcen und Infos, doch ihre Neugier kann die Gruppe in Gefahr bringen.
+
+- name: Michael Krüger
+  age: 36
+  background: Mechaniker und ehemaliger Rennfahrer aus München, spezialisiert auf Fahrzeuge und Motoren.
+  description: >
+    Michael versteht es, Fahrzeuge zu reparieren und zu modifizieren, was der Gruppe
+    Mobilität und einen Fluchtvorteil verschafft. Er ist pragmatisch und ruhig,
+    doch seine Einsamkeit und sein Misstrauen gegenüber anderen erschweren die
+    Zusammenarbeit.
+  pos_trait: Mechanic (schnellere und effektivere Reparaturen an Fahrzeugen und Maschinen)
+  neg_trait: Loner (arbeitet lieber allein, hat Probleme mit Teamarbeit)
+  summary: Michael ist der technische Retter der Gruppe, doch seine Abneigung gegen soziale Bindungen schränkt die Teamdynamik ein.
+
+- name: Sabine Meier
+  age: 30
+  background: Gelernte Köchin aus Köln, die vor dem Ausbruch ein kleines Restaurant leitete.
+  description: >
+    Sabine sorgt nicht nur für das leibliche Wohl der Gruppe, sondern kennt sich auch 
+    mit Hygiene und Haltbarmachung aus. Ihre optimistische Art hebt die Moral, obwohl
+    sie körperlich nicht besonders widerstandsfähig ist und sich vor Kämpfen drückt.
+  pos_trait: Cook (verbessert die Nahrungszubereitung und sorgt für bessere Effekte der Mahlzeiten)
+  neg_trait: Fragile (empfindlich gegenüber Verletzungen und Krankheiten)
+  summary: Sabine stärkt die Gruppe mit guter Küche und Moral, doch ihre körperliche Verletzlichkeit fordert Schutz durch andere.

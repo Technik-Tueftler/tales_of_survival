@@ -1,5 +1,51 @@
 {
     "code-runner.cwd": "${workspaceFolder}/src",
     "terminal.integrated.cwd": "${workspaceFolder}/src",
-    "code-runner.fileDirectoryAsCwd": true
+    "code-runner.fileDirectoryAsCwd": true,
+    "iis.configDir": "",
+    "python.analysis.typeCheckingMode": "off",
+
+    "todohighlight.isEnable": true,
+    "todohighlight.isCaseSensitive": true,
+    "todohighlight.keywords": [
+        "DEBUG:",
+        "REVIEW:",
+        {
+            "text": "NOTE:",
+            "color": "#ff0000",
+            "backgroundColor": "yellow",
+            "overviewRulerColor": "grey"
+        },
+        {
+            "text": "HACK:",
+            "color": "#000",
+            "isWholeLine": false,
+        },
+        {
+            "text": "TODO:",
+            "color": "red",
+            "border": "1px solid red",
+            "borderRadius": "2px", //NOTE: using borderRadius along with `border` or you will see nothing change
+            "backgroundColor": "rgba(0,0,0,.2)",
+            //other styling properties goes here ... 
+        }
+    ],
+    // "todohighlight.keywordsPattern": "config\\.watcher\\.logger\\.debug\\(\\s*([\\s\\S]*?)\\s*\\)", 
+    "todohighlight.keywordsPattern": "config\\.logger\\.[a-zA-Z_][a-zA-Z0-9_]*\\(\\s*([\\s\\S]*?)\\s*\\)", 
+    "todohighlight.defaultStyle": {
+        "color": "#444444",
+        "backgroundColor": "#222222",
+        "overviewRulerColor": "#222222",
+        "cursor": "pointer",
+        // "border": "1px solid #eee",
+        // "borderRadius": "2px",
+        "isWholeLine": true,
+    },
+    "todohighlight.include": [
+        "**/*.py",
+    ],
+    "todohighlight.exclude": [
+    ],
+    "todohighlight.maxFilesForSearch": 5120,
+    "todohighlight.toggleURI": false,
 }

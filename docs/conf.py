@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.abspath("../"))
 
 from src import __version__, __repository__
 
-project = 'TeTueGeneric'
+project = 'Tales of Survival'
 copyright = '2025, Technik Tueftler'
 author = 'Technik Tueftler'
 release = __version__
@@ -28,6 +28,7 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
     'loguru': ('https://loguru.readthedocs.io/en/stable/', None),
     'requests': ('https://requests.readthedocs.io/en/latest/', None),
+    'discordpy': ('https://discordpy.readthedocs.io/en/latest/', None),
     }
 
 autodoc_member_order = 'bysource'
@@ -39,7 +40,7 @@ sphinxmermaid_mermaid_init = {
   'theme': 'base',
   'themeVariables': {
     'primaryColor': '#4CAF50',
-    'primaryTextColor': '#FFFFFF',
+    'primaryTextColor': "#000000",
     'primaryBorderColor': '#757575',
     'lineColor': '#B0BEC5',
     'secondaryColor': '#2196F3',
@@ -75,3 +76,7 @@ html_theme_options = {
     ],
 }
 html_static_path = []
+
+autodoc_type_aliases = {
+    'Configuration': 'configuration.Configuration',
+}
