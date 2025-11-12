@@ -315,9 +315,6 @@ class NewGameStatusSelect(discord.ui.Select):
                 discord.SelectOption(
                     label="RUNNING", value=str(GameStatus.RUNNING.value)
                 ),
-                discord.SelectOption(
-                    label="PAUSED", value=str(GameStatus.PAUSED.value)
-                ),
             ]
         elif process_data.game_context.selected_game.status == GameStatus.RUNNING:
             options = [
