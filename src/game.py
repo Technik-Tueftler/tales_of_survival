@@ -173,7 +173,6 @@ async def inform_players(
             f"Failed to send message to {user.name}: {traceback.print_exception(err)}"
         )
 
-
 async def create_dc_message_link(
     config: Configuration, message: discord.Message, interaction: Interaction
 ) -> str:
@@ -466,6 +465,12 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
                 GameStatus.PAUSED,
             ],
         )
+        if not await process_data.game_context.input_valid_game():
+            await interaction.response.send_message(
+                "No game is available, please contact a Mod.",
+                ephemeral=True,
+            )
+            return
         select_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
             "Which game would you like to change the status of?",
