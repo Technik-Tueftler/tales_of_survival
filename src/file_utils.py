@@ -82,18 +82,24 @@ async def import_data(interaction: Interaction, config: Configuration):
             f"The import from character was {context["char_status"]} "
             f"and {context["char_number"]} records were imported."
         )
-        await interaction.response.send_message(message)
+        await interaction.response.send_message(message, ephemeral=True)
     except FileNotFoundError as err:
         config.logger.error(f"File not found: {traceback.print_exception(err)}")
-        await interaction.response.send_message("A required file was not found.")
+        await interaction.response.send_message(
+            "A required file was not found.", ephemeral=True
+        )
     except yaml.YAMLError as err:
         config.logger.error(
             f"Error parsing the YAML file: {traceback.print_exception(err)}"
         )
-        await interaction.response.send_message("Error parsing the YAML file")
+        await interaction.response.send_message(
+            "Error parsing the YAML file", ephemeral=True
+        )
     except PermissionError as err:
         config.logger.error(f"No access rights: {traceback.print_exception(err)}")
-        await interaction.response.send_message("Access rights to a file are missing.")
+        await interaction.response.send_message(
+            "Access rights to a file are missing.", ephemeral=True
+        )
     except HTTPException as err:
         config.logger.error(
             f"Error in Discord communication: {traceback.print_exception(err)}"
