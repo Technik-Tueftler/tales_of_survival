@@ -9,6 +9,7 @@ from openai import (
     APIConnectionError,
     RateLimitError,
     AuthenticationError,
+    InternalServerError,
 )
 from .configuration import Configuration
 
@@ -38,5 +39,7 @@ async def request_openai(config: Configuration, messages: list) -> None:
         config.logger.error("Rate limit reached, retry later")
     except APIConnectionError:
         config.logger.error("Failed to connect to API")
+    except InternalServerError as err:
+        config.logger.error(f"OpenAI server error: {traceback.print_exception(err)}")
     except OpenAIError as err:
         config.logger.error(f"OpenAI error: {traceback.print_exception(err)}")
