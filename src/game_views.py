@@ -2,7 +2,7 @@
 This module contains all view for game creation and general game handling.
 """
 
-import traceback
+import sys
 import discord
 
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
@@ -358,13 +358,13 @@ class NewGameStatusSelect(discord.ui.Select):
                 )
             )
             self.view.stop()
-        except (IndexError, ValueError) as err:
-            self.config.logger.error(
-                f"Error during callback: {traceback.print_exception(err)}"
+        except (IndexError, ValueError):
+            self.config.logger.opt(exception=sys.exc_info()).error(
+                "Error during callback."
             )
-        except discord.errors.Forbidden as err:
-            self.config.logger.error(
-                f"Error during callback with DC permissons: {traceback.print_exception(err)}"
+        except discord.errors.Forbidden:
+            self.config.logger.opt(exception=sys.exc_info()).error(
+                "Error during callback with DC permissons."
             )
 
 

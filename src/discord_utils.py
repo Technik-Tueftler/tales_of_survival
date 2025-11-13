@@ -2,7 +2,7 @@
 This module contains utility functions for interacting with Discord.
 """
 
-import traceback
+import sys
 import discord
 from .configuration import Configuration
 from .constants import DC_MAX_CHAR_MESSAGE
@@ -21,7 +21,7 @@ async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]
     """
     text_parts = []
     while len(text) > max_len:
-        split_at = text.rfind(' ', 0, max_len)
+        split_at = text.rfind(" ", 0, max_len)
         if split_at == -1:
             split_at = max_len
         text_parts.append(text[:split_at])
@@ -56,7 +56,9 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         config.logger.error(f"Channel ID {channel_id} not found.")
     except discord.errors.Forbidden:
         config.logger.error(f"No permission to write to channel {channel_id}.")
-    except discord.errors.HTTPException as err:
-        config.logger.error(f"HTTP-Error during send: {traceback.print_exception(err)}")
-    except KeyError as _:
+    except discord.errors.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "HTTP-Error during send message"
+        )
+    except KeyError:
         config.logger.error("The message is missing the content key.")

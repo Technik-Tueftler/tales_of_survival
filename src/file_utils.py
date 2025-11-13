@@ -2,8 +2,8 @@
 This file contains all functions and definitions required for document handling.
 """
 
+import sys
 from pathlib import Path
-import traceback
 import aiofiles
 import yaml
 from discord import HTTPException, Interaction
@@ -38,15 +38,15 @@ async def load_yaml(config: Configuration, result: ImportResult) -> dict:
         config.logger.error(
             f"Expected a file but found a directory: {result.file_path}"
         )
-    except IOError as err:
-        config.logger.error(
-            f"I/O error reading file {result.file_path}: {traceback.print_exception(err)}"
+    except IOError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "I/O error reading file {result.file_path}."
         )
     except UnicodeDecodeError:
         config.logger.error(f"File {result.file_path} is not valid UTF-8 encoded")
-    except yaml.YAMLError as err:
-        config.logger.error(
-            f"YAML parsing error in file {result.file_path}: {traceback.print_exception(err)}"
+    except yaml.YAMLError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "YAML parsing error in file {result.file_path}."
         )
 
 
@@ -83,24 +83,24 @@ async def import_data(interaction: Interaction, config: Configuration):
             f"and {context["char_number"]} records were imported."
         )
         await interaction.response.send_message(message, ephemeral=True)
-    except FileNotFoundError as err:
-        config.logger.error(f"File not found: {traceback.print_exception(err)}")
+    except FileNotFoundError:
+        config.logger.opt(exception=sys.exc_info()).error("File not found.")
         await interaction.response.send_message(
             "A required file was not found.", ephemeral=True
         )
-    except yaml.YAMLError as err:
-        config.logger.error(
-            f"Error parsing the YAML file: {traceback.print_exception(err)}"
+    except yaml.YAMLError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error parsing the YAML file."
         )
         await interaction.response.send_message(
             "Error parsing the YAML file", ephemeral=True
         )
-    except PermissionError as err:
-        config.logger.error(f"No access rights: {traceback.print_exception(err)}")
+    except PermissionError:
+        config.logger.opt(exception=sys.exc_info()).error("No access rights.")
         await interaction.response.send_message(
             "Access rights to a file are missing.", ephemeral=True
         )
-    except HTTPException as err:
-        config.logger.error(
-            f"Error in Discord communication: {traceback.print_exception(err)}"
+    except HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error in Discord communication."
         )

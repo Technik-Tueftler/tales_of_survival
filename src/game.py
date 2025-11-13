@@ -2,7 +2,7 @@
 Module to handle game creation and management
 """
 
-import traceback
+import sys
 from datetime import datetime, timezone
 import asyncio
 import discord
@@ -90,14 +90,14 @@ async def collect_all_game_contexts(
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
         return game_data
-    except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
         return game_data
-    except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
         return game_data
-    except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
         return game_data
 
 
@@ -141,10 +141,10 @@ async def send_game_information(
         return message
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
-    except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
-    except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
 
 
 async def inform_players(
@@ -168,10 +168,11 @@ async def inform_players(
             await user.send(temp_message)
     except discord.Forbidden:
         config.logger.error(f"Cannot send message to {user.name}, permission denied.")
-    except discord.HTTPException as err:
-        config.logger.error(
-            f"Failed to send message to {user.name}: {traceback.print_exception(err)}"
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            f"Failed to send message to {user.name}."
         )
+
 
 async def create_dc_message_link(
     config: Configuration, message: discord.Message, interaction: Interaction
@@ -242,15 +243,15 @@ async def create_game(interaction: Interaction, config: Configuration):
 
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
-    except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
-    except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
-    except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
-    except KeyError as err:
-        config.logger.error(
-            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
+    except KeyError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Missing key in game data or for DB object."
         )
 
 
@@ -303,16 +304,18 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
             return
 
     except discord.Forbidden:
-        config.logger.error("Cannot send message, permission denied.")
-    except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
-    except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
-    except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
-    except KeyError as err:
-        config.logger.error(
-            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Cannot send message, permission denied."
+        )
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
+    except KeyError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Missing key in game data or for DB object."
         )
 
 
@@ -372,16 +375,18 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
         await update_db_objs(config, [association, selected_character])
 
     except discord.Forbidden:
-        config.logger.error("Cannot send message, permission denied.")
-    except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
-    except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
-    except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
-    except KeyError as err:
-        config.logger.error(
-            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Cannot send message, permission denied."
+        )
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
+    except KeyError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Missing key in game data or for DB object."
         )
 
 
@@ -514,14 +519,16 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         await update_db_objs(config, [process_data.game_context.selected_game])
 
     except discord.Forbidden:
-        config.logger.error("Cannot send message, permission denied.")
-    except discord.HTTPException as err:
-        config.logger.error(f"Failed to send message: {traceback.print_exception(err)}")
-    except (TypeError, ValueError) as err:
-        config.logger.error(f"General error occurred: {traceback.print_exception(err)}")
-    except asyncio.TimeoutError as err:
-        config.logger.error(f"Timeout error occurred: {traceback.print_exception(err)}")
-    except KeyError as err:
-        config.logger.error(
-            f"Missing key in game data or for DB object: {traceback.print_exception(err)}"
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Cannot send message, permission denied."
+        )
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
+    except KeyError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Missing key in game data or for DB object."
         )

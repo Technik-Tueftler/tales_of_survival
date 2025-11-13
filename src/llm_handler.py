@@ -2,7 +2,7 @@
 This module contains the function to handle requests to the OpenAI API.
 """
 
-import traceback
+import sys
 from openai import (
     OpenAI,
     OpenAIError,
@@ -39,7 +39,7 @@ async def request_openai(config: Configuration, messages: list) -> None:
         config.logger.error("Rate limit reached, retry later")
     except APIConnectionError:
         config.logger.error("Failed to connect to API")
-    except InternalServerError as err:
-        config.logger.error(f"OpenAI server error: {traceback.print_exception(err)}")
-    except OpenAIError as err:
-        config.logger.error(f"OpenAI error: {traceback.print_exception(err)}")
+    except InternalServerError:
+        config.logger.opt(exception=sys.exc_info()).error("OpenAI server error.")
+    except OpenAIError:
+        config.logger.opt(exception=sys.exc_info()).error("OpenAI error.")
