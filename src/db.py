@@ -36,6 +36,7 @@ class ImportResult:
     data: dict
     success: bool = False
     import_number: int = 0
+    text_genre: str = ""
 
 
 async def get_genre_double_cond(
@@ -85,6 +86,22 @@ async def get_genre_double_cond(
         return None
 
 
+async def check_exist_unique_genre(config: Configuration, genre: dict) -> bool:
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(
+                exists()
+                .where(GENRE.name == genre["name"])
+                .where(GENRE.storytelling_style == genre["storytelling-type"])
+                .where(GENRE.atmosphere == genre["atmosphere"])
+                .where(GENRE.language == genre["language"])
+            )
+            return (await session.execute(statement)).scalar()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return False
+
+
 async def create_genre_from_input(config: Configuration, result: ImportResult):
     """
     Function to create genre from imported file.
@@ -95,7 +112,14 @@ async def create_genre_from_input(config: Configuration, result: ImportResult):
     """
     try:
         final_genre = []
+        missed_genre = []
         for genre in result.data:
+            if await check_exist_unique_genre(config, genre):
+                config.logger.debug(
+                    f"The following genre already exist: {genre["name"]}"
+                )
+                missed_genre.append(genre["name"])
+                continue
             temp_genre = GENRE(
                 name=genre["name"],
                 storytelling_style=genre["storytelling-type"],
@@ -117,6 +141,11 @@ async def create_genre_from_input(config: Configuration, result: ImportResult):
             session.add_all(final_genre)
         result.import_number = len(final_genre)
         result.success = True
+        if missed_genre:
+            result.text_genre = (
+                "The following genres already exist with the settings "
+                + f"provided: {", ".join(missed_genre)}. "
+            )
     except (KeyError, IntegrityError):
         config.logger.opt(exception=sys.exc_info()).error(
             "Error while import genre file."
@@ -194,7 +223,7 @@ async def get_object_by_id(
         ).scalar_one_or_none()
 
 
-async def get_all_genre(config: Configuration) -> list[GENRE]:
+async def get_all_active_genre(config: Configuration) -> list[GENRE]:
     """
     Function to get all genres from the database.
 
@@ -205,7 +234,11 @@ async def get_all_genre(config: Configuration) -> list[GENRE]:
         list[GENRE]: List of all genres in the database
     """
     async with config.session() as session, session.begin():
-        return (await session.execute(select(GENRE))).scalars().all()
+        return (
+            (await session.execute(select(GENRE).where(GENRE.active.is_(True))))
+            .scalars()
+            .all()
+        )
 
 
 async def process_player(

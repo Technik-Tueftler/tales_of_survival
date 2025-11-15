@@ -141,6 +141,8 @@ class GENRE(Base):
     storytelling_style: Mapped[str] = mapped_column(String(100), nullable=True)
     atmosphere: Mapped[str] = mapped_column(String(100), nullable=True)
     language: Mapped[str] = mapped_column(String(100), nullable=False)
+    # TODO: Neuen allgemeinen Command mit buttons, dass man genre inaktiv setzen kann
+    active: Mapped[bool] = mapped_column(default=True)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
     tales: Mapped[list["TALE"]] = relationship("TALE", back_populates="genre") # 1:N

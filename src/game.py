@@ -21,7 +21,7 @@ from .db_classes import (
     STORY,
 )
 from .db import (
-    get_all_genre,
+    get_all_active_genre,
     get_genre_double_cond,
     process_player,
     update_db_objs,
@@ -77,7 +77,7 @@ async def collect_all_game_contexts(
         )
         await user_view.wait()
 
-        genres = await get_all_genre(config)
+        genres = await get_all_active_genre(config)
         genre_view = GenreSelectView(config, game_data, genres)
         await interaction.followup.send(
             "Please select the genre for the new story.",

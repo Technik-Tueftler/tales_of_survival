@@ -10,6 +10,7 @@ from discord import HTTPException, Interaction
 
 from .configuration import Configuration
 from .db import ImportResult, create_character_from_input, create_genre_from_input
+from .constants import DC_DESCRIPTION_MAX_CHAR
 
 
 async def load_yaml(config: Configuration, result: ImportResult) -> dict:
@@ -40,13 +41,13 @@ async def load_yaml(config: Configuration, result: ImportResult) -> dict:
         )
     except IOError:
         config.logger.opt(exception=sys.exc_info()).error(
-            "I/O error reading file {result.file_path}."
+            f"I/O error reading file {result.file_path}."
         )
     except UnicodeDecodeError:
         config.logger.error(f"File {result.file_path} is not valid UTF-8 encoded")
     except yaml.YAMLError:
         config.logger.opt(exception=sys.exc_info()).error(
-            "YAML parsing error in file {result.file_path}."
+            f"YAML parsing error in file {result.file_path}."
         )
 
 
@@ -79,6 +80,7 @@ async def import_data(interaction: Interaction, config: Configuration):
         message = (
             f"The import from genre was {context["genre_status"]} "
             f"and {context["genre_number"]} records were imported. "
+            f"{result_genre.text_genre}"
             f"The import from character was {context["char_status"]} "
             f"and {context["char_number"]} records were imported."
         )
@@ -104,3 +106,16 @@ async def import_data(interaction: Interaction, config: Configuration):
         config.logger.opt(exception=sys.exc_info()).error(
             "Error in Discord communication."
         )
+
+def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
+    """
+    The function limits a text to a certain number of characters. 
+
+    Args:
+        text (str): Text
+        limit (int, optional): Character limit. Defaults to DC_DESCRIPTION_MAX_CHAR.
+
+    Returns:
+        str: Limited text
+    """
+    return text[:limit]

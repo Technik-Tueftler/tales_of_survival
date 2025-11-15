@@ -7,6 +7,7 @@ import discord
 
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
 from .configuration import Configuration, ProcessInput
+from .file_utils import limit_text
 
 
 class CharacterSelectView(discord.ui.View):
@@ -107,14 +108,20 @@ class GenreSelect(discord.ui.Select):
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         self.config = config
         self.game_data = game_data
-        options = [
-            discord.SelectOption(
-                label=f"{genre.id}: {genre.name}",
-                value=str(genre.id),
-                description=f"Style: {genre.storytelling_style}, atmosphere: {genre.atmosphere}",
+        options = []
+        for genre in genres:
+            description = (
+                f"Style: {genre.storytelling_style}, "
+                + f"atmosphere: {genre.atmosphere}, "
+                + f"language: {genre.language}"
             )
-            for genre in genres
-        ]
+            options.append(
+                discord.SelectOption(
+                    label=f"{genre.id}: {genre.name}",
+                    value=str(genre.id),
+                    description=limit_text(description),
+                )
+            )
         super().__init__(
             placeholder="Select a genre...",
             min_values=1,
