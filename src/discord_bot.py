@@ -89,6 +89,12 @@ class DiscordBot:
             )
             await setup_game(interaction, self.config)
 
+        async def wrapped_reset_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for reset game."
+            )
+            await setup_game(interaction, self.config)
+
         self.bot.tree.command(
             name="create_game", description="Create a new game and set the parameters."
         )(wrapped_create_game)
@@ -112,3 +118,8 @@ class DiscordBot:
             name="setup_game",
             description="Switch game state to specific status like running, paused, finished, etc.",
         )(wrapped_setup_game)
+
+        self.bot.tree.command(
+            name="reset_game",
+            description="Restart a Tale and create new start prompt.",
+        )(wrapped_reset_game)

@@ -42,6 +42,7 @@ async def telling_event(config: Configuration, process_data: ProcessInput):
         )
     )
     response_event = await request_openai(config, messages)
+    config.logger.trace(f"Event response: {response_event}")
 
     await send_channel_message(
         config,
@@ -92,6 +93,7 @@ async def telling_fiction(config: Configuration, process_data: ProcessInput):
         )
     )
     response_fiction = await request_openai(config, messages)
+    config.logger.trace(f"Fiction response: {response_fiction}")
 
     await send_channel_message(
         config,

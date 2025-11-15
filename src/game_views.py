@@ -2,11 +2,12 @@
 This module contains all view for game creation and general game handling.
 """
 
-import traceback
+import sys
 import discord
 
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
 from .configuration import Configuration, ProcessInput
+from .file_utils import limit_text
 
 
 class CharacterSelectView(discord.ui.View):
@@ -107,14 +108,20 @@ class GenreSelect(discord.ui.Select):
     def __init__(self, config, game_data: dict, genres: list[GENRE]):
         self.config = config
         self.game_data = game_data
-        options = [
-            discord.SelectOption(
-                label=f"{genre.id}: {genre.name}",
-                value=str(genre.id),
-                description=f"Style: {genre.storytelling_style}, atmosphere: {genre.atmosphere}",
+        options = []
+        for genre in genres:
+            description = (
+                f"Style: {genre.storytelling_style}, "
+                + f"atmosphere: {genre.atmosphere}, "
+                + f"language: {genre.language}"
             )
-            for genre in genres
-        ]
+            options.append(
+                discord.SelectOption(
+                    label=f"{genre.id}: {genre.name}",
+                    value=str(genre.id),
+                    description=limit_text(description),
+                )
+            )
         super().__init__(
             placeholder="Select a genre...",
             min_values=1,
@@ -315,9 +322,6 @@ class NewGameStatusSelect(discord.ui.Select):
                 discord.SelectOption(
                     label="RUNNING", value=str(GameStatus.RUNNING.value)
                 ),
-                discord.SelectOption(
-                    label="PAUSED", value=str(GameStatus.PAUSED.value)
-                ),
             ]
         elif process_data.game_context.selected_game.status == GameStatus.RUNNING:
             options = [
@@ -361,13 +365,13 @@ class NewGameStatusSelect(discord.ui.Select):
                 )
             )
             self.view.stop()
-        except (IndexError, ValueError) as err:
-            self.config.logger.error(
-                f"Error during callback: {traceback.print_exception(err)}"
+        except (IndexError, ValueError):
+            self.config.logger.opt(exception=sys.exc_info()).error(
+                "Error during callback."
             )
-        except discord.errors.Forbidden as err:
-            self.config.logger.error(
-                f"Error during callback with DC permissons: {traceback.print_exception(err)}"
+        except discord.errors.Forbidden:
+            self.config.logger.opt(exception=sys.exc_info()).error(
+                "Error during callback with DC permissons."
             )
 
 

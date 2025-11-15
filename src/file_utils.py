@@ -2,14 +2,15 @@
 This file contains all functions and definitions required for document handling.
 """
 
+import sys
 from pathlib import Path
-import traceback
 import aiofiles
 import yaml
 from discord import HTTPException, Interaction
 
 from .configuration import Configuration
 from .db import ImportResult, create_character_from_input, create_genre_from_input
+from .constants import DC_DESCRIPTION_MAX_CHAR
 
 
 async def load_yaml(config: Configuration, result: ImportResult) -> dict:
@@ -38,15 +39,15 @@ async def load_yaml(config: Configuration, result: ImportResult) -> dict:
         config.logger.error(
             f"Expected a file but found a directory: {result.file_path}"
         )
-    except IOError as err:
-        config.logger.error(
-            f"I/O error reading file {result.file_path}: {traceback.print_exception(err)}"
+    except IOError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            f"I/O error reading file {result.file_path}."
         )
     except UnicodeDecodeError:
         config.logger.error(f"File {result.file_path} is not valid UTF-8 encoded")
-    except yaml.YAMLError as err:
-        config.logger.error(
-            f"YAML parsing error in file {result.file_path}: {traceback.print_exception(err)}"
+    except yaml.YAMLError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            f"YAML parsing error in file {result.file_path}."
         )
 
 
@@ -79,22 +80,42 @@ async def import_data(interaction: Interaction, config: Configuration):
         message = (
             f"The import from genre was {context["genre_status"]} "
             f"and {context["genre_number"]} records were imported. "
+            f"{result_genre.text_genre}"
             f"The import from character was {context["char_status"]} "
             f"and {context["char_number"]} records were imported."
         )
-        await interaction.response.send_message(message)
-    except FileNotFoundError as err:
-        config.logger.error(f"File not found: {traceback.print_exception(err)}")
-        await interaction.response.send_message("A required file was not found.")
-    except yaml.YAMLError as err:
-        config.logger.error(
-            f"Error parsing the YAML file: {traceback.print_exception(err)}"
+        await interaction.response.send_message(message, ephemeral=True)
+    except FileNotFoundError:
+        config.logger.opt(exception=sys.exc_info()).error("File not found.")
+        await interaction.response.send_message(
+            "A required file was not found.", ephemeral=True
         )
-        await interaction.response.send_message("Error parsing the YAML file")
-    except PermissionError as err:
-        config.logger.error(f"No access rights: {traceback.print_exception(err)}")
-        await interaction.response.send_message("Access rights to a file are missing.")
-    except HTTPException as err:
-        config.logger.error(
-            f"Error in Discord communication: {traceback.print_exception(err)}"
+    except yaml.YAMLError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error parsing the YAML file."
         )
+        await interaction.response.send_message(
+            "Error parsing the YAML file", ephemeral=True
+        )
+    except PermissionError:
+        config.logger.opt(exception=sys.exc_info()).error("No access rights.")
+        await interaction.response.send_message(
+            "Access rights to a file are missing.", ephemeral=True
+        )
+    except HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error in Discord communication."
+        )
+
+def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
+    """
+    The function limits a text to a certain number of characters. 
+
+    Args:
+        text (str): Text
+        limit (int, optional): Character limit. Defaults to DC_DESCRIPTION_MAX_CHAR.
+
+    Returns:
+        str: Limited text
+    """
+    return text[:limit]
