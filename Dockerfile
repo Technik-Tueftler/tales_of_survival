@@ -10,6 +10,7 @@ COPY src/ ./src/
 COPY main.py default.env ./
 COPY pyproject.toml uv.lock ./
 
+ENV MARIADB_CONFIG=/usr/bin/mariadb_config
 RUN uv sync --locked
 
 CMD ["uv", "run", "main.py"]
