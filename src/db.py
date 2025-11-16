@@ -37,6 +37,7 @@ class ImportResult:
     success: bool = False
     import_number: int = 0
     text_genre: str = ""
+    text_character: str = ""
 
 
 async def get_genre_double_cond(
@@ -86,7 +87,37 @@ async def get_genre_double_cond(
         return None
 
 
+async def check_exist_unique_character(config: Configuration, character: dict) -> bool:
+    """
+    Function checks whether the character passed is unique.
+
+    Args:
+        config (Configuration): App configuration
+        genre (dict): New character from yml load
+
+    Returns:
+        bool: Transferred character already exists.
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(exists().where(CHARACTER.name == character["name"]))
+            return (await session.execute(statement)).scalar()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return False
+
+
 async def check_exist_unique_genre(config: Configuration, genre: dict) -> bool:
+    """
+    Function checks whether the genre passed is unique.
+
+    Args:
+        config (Configuration): App configuration
+        genre (dict): New genre from yml load
+
+    Returns:
+        bool: Transferred genre already exists.
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(
@@ -161,25 +192,37 @@ async def create_character_from_input(config: Configuration, result: ImportResul
         result (ImportResult): Result class from importing a file
     """
     try:
-        async with config.write_lock, config.session() as session, session.begin():
-            final_character = [
-                CHARACTER(
-                    name=character["name"],
-                    age=character["age"],
-                    background=character["background"],
-                    description=character["description"],
-                    pos_trait=character["pos_trait"],
-                    neg_trait=character["neg_trait"],
-                    summary=character["summary"],
+        missed_character = []
+        final_character = []
+        for character in result.data:
+            if await check_exist_unique_character(config, character):
+                config.logger.debug(
+                    f"The following character already exist: {character["name"]}"
                 )
-                for character in result.data
-            ]
+                missed_character.append(character["name"])
+                continue
+            temp_character = CHARACTER(
+                name=character["name"],
+                age=character["age"],
+                background=character["background"],
+                description=character["description"],
+                pos_trait=character["pos_trait"],
+                neg_trait=character["neg_trait"],
+                summary=character["summary"],
+            )
+            final_character.append(temp_character)
+        async with config.write_lock, config.session() as session, session.begin():
             session.add_all(final_character)
         result.import_number = len(final_character)
         result.success = True
+        if missed_character:
+            result.text_character = (
+                "The following characters already exist with the settings "
+                + f"provided: {", ".join(missed_character)}. "
+            )
     except (KeyError, IntegrityError):
         config.logger.opt(exception=sys.exc_info()).error(
-            "Error while import genre file."
+            "Error while import character file."
         )
 
 
