@@ -555,6 +555,38 @@ async def count_regist_char_from_game(config: Configuration, game_id: int) -> in
         return 0
 
 
+async def get_active_user_from_game(
+    config: Configuration, game_id: int
+) -> list[USER] | None:
+    """
+    Function get all active user based on game ID and if a character is selected in game
+    association.
+
+    Args:
+        config (Configuration): App configuration
+        game_id (int): Game ID
+
+    Returns:
+        list[USER] | None: All active user in game or None
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(USER)
+                .join(
+                    UserGameCharacterAssociation,
+                    USER.id == UserGameCharacterAssociation.user_id,
+                )
+                .where(UserGameCharacterAssociation.game_id == game_id)
+                .where(UserGameCharacterAssociation.character_id.isnot(None))
+                .distinct(USER.id)
+            )
+            users = (await session.execute(statement)).scalars().all()
+            print([user.name for user in users])
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+
+
 async def get_character_from_game_id(
     config: Configuration, game_id: int
 ) -> list[CHARACTER] | None:
