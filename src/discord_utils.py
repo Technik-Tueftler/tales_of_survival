@@ -4,8 +4,11 @@ This module contains utility functions for interacting with Discord.
 
 import sys
 import discord
+from discord import TextChannel, Embed
 from .configuration import Configuration
-from .constants import DC_MAX_CHAR_MESSAGE
+from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION
+from .db import get_active_user_from_game
+from .db_classes import GAME, USER
 
 
 async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]:
@@ -62,3 +65,55 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         )
     except KeyError:
         config.logger.error("The message is missing the content key.")
+
+
+async def update_embed_message(config: Configuration, game: GAME) -> None:
+    """
+    This function updates a game embed with the start information and current players.
+
+    Args:
+        config (Configuration): App configuration
+        game (GAME): Game object to udpate the embed message
+    """
+    config.logger.trace("Start with update game embed.")
+    try:
+        users: list[USER] = await get_active_user_from_game(config, game.id)
+        config.logger.debug(
+            f"All active user in game <id>: {game.id}. <user>: {[user.name for user in users]}"
+        )
+        channel: TextChannel = config.dc_bot.get_channel(game.channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(game.channel_id)
+        embed_message = await channel.fetch_message(game.message_id)
+        embed: Embed = embed_message.embeds[0]
+        fields = list(embed.fields)
+        config.logger.trace("DC channel and embed loaded.")
+        embed.title = game.name
+        embed.description = game.description if game.description else DC_EMBED_DESCRIPTION
+        embed.color = discord.Color.green()
+        config.logger.trace("General Embed fields updated.")
+        for i, field in enumerate(fields):
+            if field.name == "The Players:":
+                field_name = "The Players:" if len(users) > 1 else "The Player:"
+                player = ", ".join([f"<@{user.dc_id}>" for user in users])
+                embed.set_field_at(
+                    i, name=field_name, value=player, inline=field.inline
+                )
+                config.logger.trace("Embed field <Player> upddated.")
+                break
+        await embed_message.edit(embed=embed)
+
+    except discord.errors.NotFound:
+        config.logger.error(f"Channel ID {game.channel_id} not found.")
+    except discord.errors.Forbidden:
+        config.logger.error(f"No permission to write to channel {game.channel_id}.")
+    except discord.errors.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "HTTP-Error during update embed message"
+        )
+    except KeyError:
+        config.logger.error("The message is missing the content key.")
+    except TypeError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Type-Error during update embed message"
+        )

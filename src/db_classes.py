@@ -222,6 +222,7 @@ class GAME(Base):
     __tablename__ = "games"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str] = mapped_column(String(500), nullable=True)
     status = mapped_column(
         AlchemyEnum(GameStatus, native_enum=False, validate_strings=True),
         default=GameStatus.CREATED,

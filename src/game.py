@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import asyncio
 import discord
 from discord import Interaction
-from .discord_utils import send_channel_message
+from .discord_utils import send_channel_message, update_embed_message
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
@@ -52,6 +52,7 @@ from .game_start import (
     get_second_phase_prompt,
 )
 from .game_telling import telling_event, telling_fiction
+from .constants import DC_EMBED_DESCRIPTION
 
 
 async def collect_all_game_contexts(
@@ -122,10 +123,11 @@ async def send_game_information(
         discord.Message: Discord message object
     """
     try:
+        game_description = game.description if game.description else DC_EMBED_DESCRIPTION
         embed = discord.Embed(
             title=game.name,
-            description=f"A new story is being told! (ID: {game.id})",
-            color=discord.Color.green(),
+            description=game_description,
+            color=discord.Color.yellow(),
         )
         embed.add_field(name="Genre", value=genre.name, inline=False)
         embed.add_field(name="Language", value=genre.language, inline=True)
@@ -136,6 +138,7 @@ async def send_game_information(
             value=", ".join([f"<@{user.dc_id}>" for user in users]),
             inline=False,
         )
+        embed.set_footer(text=f"Game-ID: {game.id}")
 
         message = await interaction.followup.send(embed=embed)
         return message
@@ -144,6 +147,8 @@ async def send_game_information(
     except discord.HTTPException:
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
     except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except Exception:
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
 
 
@@ -517,6 +522,7 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             process_data.game_context.new_game_status
         )
         await update_db_objs(config, [process_data.game_context.selected_game])
+        await update_embed_message(config, process_data.game_context.selected_game)
 
     except discord.Forbidden:
         config.logger.opt(exception=sys.exc_info()).error(
@@ -532,3 +538,6 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
+
+async def reset_game(interaction: Interaction, config: Configuration) -> None:
+    ...

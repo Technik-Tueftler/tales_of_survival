@@ -581,10 +581,10 @@ async def get_active_user_from_game(
                 .where(UserGameCharacterAssociation.character_id.isnot(None))
                 .distinct(USER.id)
             )
-            users = (await session.execute(statement)).scalars().all()
-            print([user.name for user in users])
+            return (await session.execute(statement)).scalars().all()
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return None
 
 
 async def get_character_from_game_id(
