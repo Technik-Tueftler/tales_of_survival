@@ -34,7 +34,7 @@ async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]
     return text_parts
 
 
-async def send_channel_message(config: Configuration, channel_id: int, message: str):
+async def send_channel_message(config: Configuration, channel_id: int, message: str) -> None:
     """
     This function send a message to a specific Discord channel.
 

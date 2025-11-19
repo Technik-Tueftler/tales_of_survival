@@ -301,7 +301,7 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
             and process_data.story_context.events_available()
         ):
             await process_data.story_context.get_random_event_weighted()
-            await telling_event(config, process_data)
+            await telling_event(config, process_data, interaction)
 
         elif process_data.story_context.story_type is StoryType.FICTION:
             await telling_fiction(config, process_data)
