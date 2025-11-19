@@ -56,8 +56,8 @@ from .constants import DC_EMBED_DESCRIPTION
 
 
 async def collect_all_game_contexts(
-    interaction: Interaction, config: Configuration
-) -> dict:
+    interaction: Interaction, config: Configuration, process_data: ProcessInput
+):
     """
     Function to collect all necessary game contexts from user interactions.
 
@@ -69,37 +69,32 @@ async def collect_all_game_contexts(
         dict: game data collected from user interactions
     """
     try:
-        game_data = {}
-        user_view = UserSelectView(config, game_data)
+        user_view = UserSelectView(config, process_data)
         await interaction.response.send_message(
             "Please select all players for the new story.",
             view=user_view,
             ephemeral=True,
         )
         await user_view.wait()
-
+        config.logger.trace("Player selected.")
         genres = await get_all_active_genre(config)
-        genre_view = GenreSelectView(config, game_data, genres)
+        config.logger.debug(f"All active genre: {[genre.id for genre in genres]}")
+        genre_view = GenreSelectView(config, process_data, genres)
         await interaction.followup.send(
             "Please select the genre for the new story.",
             view=genre_view,
             ephemeral=True,
         )
         await genre_view.wait()
-        game_data["Valid"] = True
-        return game_data
+
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
-        return game_data
     except discord.HTTPException:
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
-        return game_data
     except (TypeError, ValueError):
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
-        return game_data
     except asyncio.TimeoutError:
         config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
-        return game_data
 
 
 async def send_game_information(
@@ -123,7 +118,9 @@ async def send_game_information(
         discord.Message: Discord message object
     """
     try:
-        game_description = game.description if game.description else DC_EMBED_DESCRIPTION
+        game_description = (
+            game.description if game.description else DC_EMBED_DESCRIPTION
+        )
         embed = discord.Embed(
             title=game.name,
             description=game_description,
@@ -147,8 +144,6 @@ async def send_game_information(
     except discord.HTTPException:
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
     except (TypeError, ValueError):
-        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
-    except Exception:
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
 
 
@@ -219,12 +214,18 @@ async def create_game(interaction: Interaction, config: Configuration):
                 ephemeral=True,
             )
             return
-        game_data = await collect_all_game_contexts(interaction, config)
-        genre = await get_genre_double_cond(config, game_data["genre_id"])
-        processed_user_list = await process_player(config, game_data["user"])
+        process_data = ProcessInput()
+        await collect_all_game_contexts(interaction, config, process_data)
+        genre = await get_genre_double_cond(
+            config, process_data.game_context.start.selected_genre
+        )
+        processed_user_list = await process_player(
+            config, process_data.game_context.start.selected_user
+        )
         tale = TALE(genre=genre)
         game = GAME(
-            name=game_data["game_name"],
+            name=process_data.game_context.start.game_name,
+            description=process_data.game_context.start.game_description,
             start_date=datetime.now(timezone.utc),
             tale=tale,
         )
@@ -244,7 +245,9 @@ async def create_game(interaction: Interaction, config: Configuration):
         )
         await update_db_objs(config, [game])
         message_link = await create_dc_message_link(config, message, interaction)
-        await inform_players(config, game_data["user"], message_link)
+        await inform_players(
+            config, process_data.game_context.start.selected_user, message_link
+        )
 
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
@@ -539,5 +542,5 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             "Missing key in game data or for DB object."
         )
 
-async def reset_game(interaction: Interaction, config: Configuration) -> None:
-    ...
+
+async def reset_game(interaction: Interaction, config: Configuration) -> None: ...
