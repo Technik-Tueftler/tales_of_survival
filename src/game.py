@@ -64,9 +64,7 @@ async def collect_all_game_contexts(
     Args:
         interaction (Interaction): Interaction object from Discord
         config (Configuration): App configuration
-
-    Returns:
-        dict: game data collected from user interactions
+        process_data (ProcessInput): Input collection object
     """
     try:
         user_view = UserSelectView(config, process_data)
@@ -78,6 +76,12 @@ async def collect_all_game_contexts(
         await user_view.wait()
         config.logger.trace("Player selected.")
         genres = await get_all_active_genre(config)
+        if not genres:
+            await interaction.followup.send(
+                "No genres are available. No game can be created. Please contact a mod or admin.",
+                ephemeral=True,
+            )
+            return
         config.logger.debug(f"All active genre: {[genre.id for genre in genres]}")
         genre_view = GenreSelectView(config, process_data, genres)
         await interaction.followup.send(
@@ -216,6 +220,11 @@ async def create_game(interaction: Interaction, config: Configuration):
             return
         process_data = ProcessInput()
         await collect_all_game_contexts(interaction, config, process_data)
+        if process_data.game_context.start.selected_genre == 0:
+            config.logger.trace(
+                "No genre can been selected. Game creation will be canceled."
+            )
+            return
         genre = await get_genre_double_cond(
             config, process_data.game_context.start.selected_genre
         )
@@ -345,6 +354,10 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
                 "for any game. Please contact the admin.",
                 ephemeral=True,
             )
+            config.logger.debug(
+                f"User: {interaction.user.id} wants to select a character, "
+                + "but has not been asked to do so in any game."
+            )
             return
         game_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
@@ -357,7 +370,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
             config
         )
         if not await process_data.user_context.input_valid_char():
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "An error occurred while retrieving character. There are no selectable characters. "
                 "Please contact the admin.",
                 ephemeral=True,
@@ -396,6 +409,8 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
+    except Exception as err:
+        print(err)
 
 
 async def start_game_schedule(
@@ -543,4 +558,11 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         )
 
 
-async def reset_game(interaction: Interaction, config: Configuration) -> None: ...
+async def reset_game(interaction: Interaction, config: Configuration) -> None:
+    """
+    _summary_
+
+    Args:
+        interaction (Interaction): _description_
+        config (Configuration): _description_
+    """

@@ -353,12 +353,12 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
 
             if result is None or len(result) == 0:
                 config.logger.debug("No available characters found in the database")
-                return
+                return []
             return result
 
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
-        return
+        return []
 
 
 async def get_all_user_games(config: Configuration, process_data: ProcessInput) -> None:
