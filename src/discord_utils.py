@@ -4,11 +4,12 @@ This module contains utility functions for interacting with Discord.
 
 import sys
 import discord
-from discord import TextChannel, Embed
-from .configuration import Configuration
+from discord import TextChannel, Embed, Interaction
+from .configuration import Configuration, ProcessInput
 from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION
-from .db import get_active_user_from_game
+from .db import get_active_user_from_game, get_object_by_id
 from .db_classes import GAME, USER
+from .game_views import GameSelectView
 
 
 async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]:
@@ -117,3 +118,42 @@ async def update_embed_message(config: Configuration, game: GAME) -> None:
         config.logger.opt(exception=sys.exc_info()).error(
             "Type-Error during update embed message"
         )
+
+
+async def interface_select_game(
+    interaction: Interaction, config: Configuration, process_data: ProcessInput
+) -> bool:
+    """
+    This function is a general interface to select a game for the player.
+    The required input is a list of games which is saved in process data. 
+
+    Args:
+        interaction (Interaction): Discord interaction
+        config (Configuration): App configuration
+        process_data (ProcessInput): Process data with required list of games
+
+    Returns:
+        bool: Selection was successful and a game was selected and saved in the process data.
+    """
+    try:
+        if not await process_data.game_context.input_valid_game():
+            await interaction.response.send_message(
+                "No game is available for this command, please contact a Mod.",
+                ephemeral=True,
+            )
+            return False
+
+        select_view = GameSelectView(config, process_data)
+        await interaction.response.send_message(
+            "Which game would you like to change the status of?",
+            view=select_view,
+            ephemeral=True,
+        )
+        await select_view.wait()
+        process_data.game_context.selected_game = await get_object_by_id(
+            config, GAME, process_data.game_context.selected_game_id
+        )
+        return True
+    except Exception as err:
+        print(err)
+        return False
