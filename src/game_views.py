@@ -4,7 +4,6 @@ This module contains all view for game creation and general game handling.
 
 import sys
 import discord
-
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
 from .configuration import Configuration, ProcessInput
 from .file_utils import limit_text
@@ -83,10 +82,17 @@ class GameSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        selected_value = self.values[0]
+        selected_option = [
+            option for option in self.options if option.value == selected_value
+        ]
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
         self.process_data.game_context.selected_game_id = int(self.values[0])
+        label = selected_option[0].label
+        self.disabled = True
         await interaction.response.edit_message(
-            content=f"You have chosen the game with ID: {self.values[0]}",
+            content=f"You have chosen the game {label}",
+            view=self.view
         )
         self.view.stop()
 
@@ -398,6 +404,8 @@ class StartTaleButtonView(discord.ui.View):
     CREATED to RUNNING.
     """
 
+    # TODO: Macht es noch Sinn hier die verschiedenen Wege zu gehen? 
+    # oder kann das automatisch gemacht werden?
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data

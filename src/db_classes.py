@@ -142,6 +142,7 @@ class GENRE(Base):
     atmosphere: Mapped[str] = mapped_column(String(100), nullable=True)
     language: Mapped[str] = mapped_column(String(100), nullable=False)
     # TODO: Neuen allgemeinen Command mit buttons, dass man genre inaktiv setzen kann
+    # TODO: Die Online-DB mit den neuen Attribten aktualisiert? Active und Description?
     active: Mapped[bool] = mapped_column(default=True)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
@@ -166,7 +167,7 @@ class STORY(Base):
         AlchemyEnum(StoryType, native_enum=False, validate_strings=True),
         default=StoryType.FICTION,
     )
-    timestamp: Mapped[datetime] = mapped_column(nullable=True)
+    timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
     message_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"))  # 1:N
     tale: Mapped["TALE"] = relationship(back_populates="stories")  # 1:N
