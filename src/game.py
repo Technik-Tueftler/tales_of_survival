@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import asyncio
 import discord
 from discord import Interaction
-from .discord_utils import send_channel_message, update_embed_message
+from .discord_utils import send_channel_message, update_embed_message, interface_select_game
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
@@ -40,7 +40,6 @@ from .db import (
 )
 from .game_views import (
     CharacterSelectView,
-    GameSelectView,
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
@@ -284,21 +283,11 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
     try:
         process_data = ProcessInput()
         await get_all_running_games(config, process_data)
-        if not await process_data.game_context.input_valid_game():
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
             return
-        game_view = GameSelectView(config, process_data)
-        await interaction.response.send_message(
-            "Please select the game for keep telling",
-            view=game_view,
-            ephemeral=True,
-        )
-        await game_view.wait()
-
         process_data.story_context.tale = await get_tale_from_game_id(
             config, process_data.game_context.selected_game_id
-        )
-        process_data.game_context.selected_game = await get_object_by_id(
-            config, GAME, process_data.game_context.selected_game_id
         )
         telling_view = KeepTellingButtonView(config, process_data)
 
@@ -359,13 +348,9 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
                 + "but has not been asked to do so in any game."
             )
             return
-        game_view = GameSelectView(config, process_data)
-        await interaction.response.send_message(
-            "Please select the game for set character",
-            view=game_view,
-            ephemeral=True,
-        )
-        await game_view.wait()
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
         process_data.user_context.available_chars = await get_available_characters(
             config
         )
@@ -499,16 +484,9 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
                 ephemeral=True,
             )
             return
-        select_view = GameSelectView(config, process_data)
-        await interaction.response.send_message(
-            "Which game would you like to change the status of?",
-            view=select_view,
-            ephemeral=True,
-        )
-        await select_view.wait()
-        process_data.game_context.selected_game = await get_object_by_id(
-            config, GAME, process_data.game_context.selected_game_id
-        )
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
         game_select_view = NewGameStatusSelectView(config, process_data)
         await interaction.followup.send(
             "Select now the new status for game with id: "
@@ -560,9 +538,21 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
 
 async def reset_game(interaction: Interaction, config: Configuration) -> None:
     """
-    _summary_
+    This function resets a game and generates a new start story. 
+    Only possible if stories in the game with the status INIT.
 
     Args:
-        interaction (Interaction): _description_
-        config (Configuration): _description_
+        interaction (Interaction): Discrod interaction
+        config (Configuration): App configuration
     """
+    try:
+        process_data = ProcessInput()
+        process_data.game_context.available_games = await get_games_w_status(
+            config, [GameStatus.PAUSED, GameStatus.RUNNING]
+        )
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
+        print(f"you select game: {process_data.game_context.selected_game.name}")
+    except Exception as err:
+        print(err)
