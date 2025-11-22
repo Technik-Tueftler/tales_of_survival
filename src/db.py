@@ -23,6 +23,7 @@ from .db_classes import (
     UserGameCharacterAssociation,
     GameStatus,
     STORY,
+    StoryType
 )
 
 
@@ -671,3 +672,30 @@ async def channel_id_exist(config: Configuration, channel_id: str) -> bool:
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
         return True
+
+
+async def check_only_init_stories(config: Configuration, tale_id: int) -> bool:
+    """
+    This function checks whether there are stories that have a story type other than INIT.
+
+    Args:
+        config (Configuration): App configuration
+        tale_id (int): Tale id to get all stories
+
+    Returns:
+        bool: Identify whether there are only stories that have the type INIT.
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(STORY)
+                .where(STORY.tale_id == tale_id)
+                .where(STORY.story_type != StoryType.INIT)
+            )
+            stories = (await session.execute(statement)).scalars().all()
+        if len(stories) <= 0:
+            return True
+        return False
+    except Exception as err:
+        print(type(err), err)
+        return False

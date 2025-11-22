@@ -37,6 +37,7 @@ from .db import (
     get_character_from_game_id,
     get_stories_messages_for_ai,
     channel_id_exist,
+    check_only_init_stories,
 )
 from .game_views import (
     CharacterSelectView,
@@ -554,5 +555,12 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
         if not select_success:
             return
         print(f"you select game: {process_data.game_context.selected_game.name}")
+        # process_data.story_context.tale = 
+        process_data.story_context.tale = await get_tale_from_game_id(config, process_data.game_context.selected_game.id)
+        print(f"Das Tale: {process_data.story_context.tale.id} ausgewählt.")
+        if await check_only_init_stories(config, process_data.story_context.tale.id):
+            print("Es gibt nur INIT stories")
+        else:
+            print("Es gibt mehr als nur INIT stories")
     except Exception as err:
         print(err)
