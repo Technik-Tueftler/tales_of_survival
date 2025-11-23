@@ -139,7 +139,7 @@ async def send_game_information(
             value=", ".join([f"<@{user.dc_id}>" for user in users]),
             inline=False,
         )
-        embed.set_footer(text=f"Game-ID: {game.id}")
+        embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
 
         message = await interaction.followup.send(embed=embed)
         return message
