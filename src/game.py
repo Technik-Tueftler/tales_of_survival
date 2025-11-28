@@ -7,7 +7,11 @@ from datetime import datetime, timezone
 import asyncio
 import discord
 from discord import Interaction
-from .discord_utils import send_channel_message, update_embed_message, interface_select_game
+from .discord_utils import (
+    send_channel_message,
+    update_embed_message,
+    interface_select_game,
+)
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
@@ -19,6 +23,7 @@ from .db_classes import (
     UserGameCharacterAssociation,
     CHARACTER,
     STORY,
+    MESSAGE
 )
 from .db import (
     get_all_active_genre,
@@ -413,52 +418,64 @@ async def start_game_schedule(
         config (Configuration): App configuration
         game_data (ProcessInput): Game data object
     """
-    await collect_start_input(interaction, config, game_data)
+    try:
+        await collect_start_input(interaction, config, game_data)
 
-    tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
-    game_character = await get_character_from_game_id(
-        config, game_data.game_context.selected_game.id
-    )
-    game_data.story_context.tale = tale
-    game_data.story_context.character = game_character
+        tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
+        game_character = await get_character_from_game_id(
+            config, game_data.game_context.selected_game.id
+        )
+        game_data.story_context.tale = tale
+        game_data.story_context.character = game_character
 
-    messages = await get_first_phase_prompt(config, game_data)
+        messages = await get_first_phase_prompt(config, game_data)
 
-    response_world = await request_openai(config, messages)
-    await send_channel_message(
-        config, game_data.game_context.selected_game.channel_id, response_world
-    )
-    stories = [
-        STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
-        for story in messages
-    ]
-    stories.append(
-        STORY(response=response_world, story_type=StoryType.INIT, tale_id=tale.id)
-    )
-    await update_db_objs(config=config, objs=stories)
-
-    messages = await get_stories_messages_for_ai(config, tale.id)
-    stories = []
-
-    messages_second_phase = await get_second_phase_prompt(config, game_data)
-
-    for msg in messages_second_phase:
+        response_world = await request_openai(config, messages)
+        msg_ids_world = await send_channel_message(
+            config, game_data.game_context.selected_game.channel_id, response_world
+        )
+        stories = [
+            STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
+            for story in messages
+        ]
         stories.append(
-            STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+            STORY(
+                response=response_world,
+                story_type=StoryType.INIT,
+                tale_id=tale.id,
+                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
+            )
+        )
+        await update_db_objs(config=config, objs=stories)
+
+        messages = await get_stories_messages_for_ai(config, tale.id)
+        stories = []
+
+        messages_second_phase = await get_second_phase_prompt(config, game_data)
+
+        for msg in messages_second_phase:
+            stories.append(
+                STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+            )
+
+        messages.extend(messages_second_phase)
+        response_start = await request_openai(config, messages)
+
+        msg_ids_start = await send_channel_message(
+            config, game_data.game_context.selected_game.channel_id, response_start
         )
 
-    messages.extend(messages_second_phase)
-    response_start = await request_openai(config, messages)
-
-    await send_channel_message(
-        config, game_data.game_context.selected_game.channel_id, response_start
-    )
-
-    stories.append(
-        STORY(response=response_start, story_type=StoryType.INIT, tale_id=tale.id)
-    )
-    await update_db_objs(config=config, objs=stories)
-
+        stories.append(
+            STORY(
+                response=response_start,
+                story_type=StoryType.INIT,
+                tale_id=tale.id,
+                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
+            )
+        )
+        await update_db_objs(config=config, objs=stories)
+    except Exception as err:
+        print(type(err), err)
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
     """
@@ -539,7 +556,7 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
 
 async def reset_game(interaction: Interaction, config: Configuration) -> None:
     """
-    This function resets a game and generates a new start story. 
+    This function resets a game and generates a new start story.
     Only possible if stories in the game with the status INIT.
 
     Args:
@@ -555,12 +572,18 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
         if not select_success:
             return
         print(f"you select game: {process_data.game_context.selected_game.name}")
-        # process_data.story_context.tale = 
-        process_data.story_context.tale = await get_tale_from_game_id(config, process_data.game_context.selected_game.id)
+        process_data.story_context.tale = await get_tale_from_game_id(
+            config, process_data.game_context.selected_game.id
+        )
         print(f"Das Tale: {process_data.story_context.tale.id} ausgewählt.")
-        if await check_only_init_stories(config, process_data.story_context.tale.id):
-            print("Es gibt nur INIT stories")
-        else:
-            print("Es gibt mehr als nur INIT stories")
+        if not await check_only_init_stories(
+            config, process_data.story_context.tale.id
+        ):
+            await interaction.followup.send(
+                "The story has already been passed on and cannot be reset.",
+                ephemeral=True,
+            )
+            return
+
     except Exception as err:
         print(err)

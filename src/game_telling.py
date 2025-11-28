@@ -1,12 +1,12 @@
 """
 Module for handling the telling of story command.
 """
-
+import sys
 from discord import Interaction
 from .discord_utils import send_channel_message
 from .configuration import Configuration, ProcessInput
 from .db import get_stories_messages_for_ai, update_db_objs
-from .db_classes import STORY, StoryType
+from .db_classes import STORY, StoryType, MESSAGE
 from .llm_handler import request_openai
 from .constants import PROMPT_MAX_WORDS_EVENT, PROMPT_MAX_WORDS_FICTION
 
@@ -47,7 +47,7 @@ async def telling_event(
     response_event = await request_openai(config, messages)
     config.logger.trace(f"Event response: {response_event}")
 
-    await send_channel_message(
+    msg_ids_event = await send_channel_message(
         config,
         process_data.game_context.selected_game.channel_id,
         response_event,
@@ -63,6 +63,7 @@ async def telling_event(
             response=response_event,
             story_type=StoryType.EVENT,
             tale_id=process_data.story_context.tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_event],
         )
     )
     await update_db_objs(config, commit_stories)
@@ -76,44 +77,48 @@ async def telling_fiction(config: Configuration, process_data: ProcessInput):
         config (Configuration): App configuration
         process_data (ProcessInput): Process game data
     """
-    config.logger.debug(
-        "Generating fiction phase prompt for tale id: "
-        + f"{process_data.story_context.tale.id}"
-    )
-    commit_stories = []
-    messages = await get_stories_messages_for_ai(
-        config, process_data.story_context.tale.id
-    )
-    fiction_prompt = await process_data.story_context.get_fiction_prompt()
-    config.logger.trace(f"Fiction word: {fiction_prompt}")
-    fiction_requ_prompt = (
-        "Schreibe die Geschichte weiter basierend auf dem folgenden Input: "
-        + f"{fiction_prompt} mit maximal "
-        + f"{PROMPT_MAX_WORDS_FICTION} Wörtern."
-    )
-
-    messages.append({"role": "user", "content": fiction_requ_prompt})
-    commit_stories.append(
-        STORY(
-            request=fiction_requ_prompt,
-            story_type=StoryType.FICTION,
-            tale_id=process_data.story_context.tale.id,
+    try:
+        config.logger.debug(
+            "Generating fiction phase prompt for tale id: "
+            + f"{process_data.story_context.tale.id}"
         )
-    )
-    response_fiction = await request_openai(config, messages)
-    config.logger.trace(f"Fiction response: {response_fiction}")
-
-    await send_channel_message(
-        config,
-        process_data.game_context.selected_game.channel_id,
-        response_fiction,
-    )
-
-    commit_stories.append(
-        STORY(
-            response=response_fiction,
-            story_type=StoryType.FICTION,
-            tale_id=process_data.story_context.tale.id,
+        commit_stories = []
+        messages = await get_stories_messages_for_ai(
+            config, process_data.story_context.tale.id
         )
-    )
-    await update_db_objs(config, commit_stories)
+        fiction_prompt = await process_data.story_context.get_fiction_prompt()
+        config.logger.trace(f"Fiction word: {fiction_prompt}")
+        fiction_requ_prompt = (
+            "Schreibe die Geschichte weiter basierend auf dem folgenden Input: "
+            + f"{fiction_prompt} mit maximal "
+            + f"{PROMPT_MAX_WORDS_FICTION} Wörtern."
+        )
+
+        messages.append({"role": "user", "content": fiction_requ_prompt})
+        commit_stories.append(
+            STORY(
+                request=fiction_requ_prompt,
+                story_type=StoryType.FICTION,
+                tale_id=process_data.story_context.tale.id,
+            )
+        )
+        response_fiction = await request_openai(config, messages)
+        config.logger.trace(f"Fiction response: {response_fiction}")
+
+        msg_ids_fiction = await send_channel_message(
+            config,
+            process_data.game_context.selected_game.channel_id,
+            response_fiction,
+        )
+
+        commit_stories.append(
+            STORY(
+                response=response_fiction,
+                story_type=StoryType.FICTION,
+                tale_id=process_data.story_context.tale.id,
+                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_fiction],
+            )
+        )
+        await update_db_objs(config, commit_stories)
+    except Exception:
+        config.logger.opt(exception=sys.exc_info()).error("Error during telling fiction")
