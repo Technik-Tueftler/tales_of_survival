@@ -142,7 +142,6 @@ class GENRE(Base):
     atmosphere: Mapped[str] = mapped_column(String(100), nullable=True)
     language: Mapped[str] = mapped_column(String(100), nullable=False)
     # TODO: Neuen allgemeinen Command mit buttons, dass man genre inaktiv setzen kann
-    # TODO: Die Online-DB mit den neuen Attribten aktualisiert? Active und Description?
     active: Mapped[bool] = mapped_column(default=True)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
@@ -168,12 +167,21 @@ class STORY(Base):
         default=StoryType.FICTION,
     )
     timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
-    message_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    messages: Mapped[list["MESSAGE"]] = relationship()  # 1:N
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"))  # 1:N
     tale: Mapped["TALE"] = relationship(back_populates="stories")  # 1:N
 
     def __repr__(self) -> str:
         return f"Story(id={self.id}, type={self.story_type})"
+
+
+class MESSAGE(Base):
+    __tablename__ = "messages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    story_id: Mapped[int] = mapped_column(ForeignKey("stories.id"))  # 1:N
+    story: Mapped["STORY"] = relationship(back_populates="messages")  # 1:N
+
 
 
 class TALE(Base):
@@ -190,6 +198,11 @@ class TALE(Base):
 
     def __repr__(self) -> str:
         return f"Tale(id={self.id}, genre_id={self.genre_id}, game={self.game.name})"
+
+
+class SendMessageAssociation(Base):
+    __tablename__ = "association_send_message"
+    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class UserGameCharacterAssociation(Base):

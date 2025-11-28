@@ -35,7 +35,7 @@ async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]
     return text_parts
 
 
-async def send_channel_message(config: Configuration, channel_id: int, message: str) -> None:
+async def send_channel_message(config: Configuration, channel_id: int, message: str) -> list[int]:
     """
     This function send a message to a specific Discord channel.
 
@@ -49,23 +49,31 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         if channel is None:
             channel = await config.dc_bot.fetch_channel(channel_id)
 
+        msg_ids = []
         for text_part in message.splitlines():
             if text_part.strip() == "":
                 continue
             msg_parts = await split_text(text_part, DC_MAX_CHAR_MESSAGE)
             for msg_part in msg_parts:
-                await channel.send(msg_part)
+                msg = await channel.send(msg_part)
+                msg_ids.append(msg.id)
+        config.logger.debug(f"Sended messages: {msg_ids}")
+        return msg_ids
 
     except discord.errors.NotFound:
         config.logger.error(f"Channel ID {channel_id} not found.")
+        return []
     except discord.errors.Forbidden:
         config.logger.error(f"No permission to write to channel {channel_id}.")
+        return []
     except discord.errors.HTTPException:
         config.logger.opt(exception=sys.exc_info()).error(
             "HTTP-Error during send message"
         )
+        return []
     except KeyError:
         config.logger.error("The message is missing the content key.")
+        return []
 
 
 async def update_embed_message(config: Configuration, game: GAME) -> None:
