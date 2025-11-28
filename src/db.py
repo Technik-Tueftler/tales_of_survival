@@ -23,6 +23,7 @@ from .db_classes import (
     UserGameCharacterAssociation,
     GameStatus,
     STORY,
+    StoryType
 )
 
 
@@ -37,6 +38,7 @@ class ImportResult:
     success: bool = False
     import_number: int = 0
     text_genre: str = ""
+    text_character: str = ""
 
 
 async def get_genre_double_cond(
@@ -86,7 +88,37 @@ async def get_genre_double_cond(
         return None
 
 
+async def check_exist_unique_character(config: Configuration, character: dict) -> bool:
+    """
+    Function checks whether the character passed is unique.
+
+    Args:
+        config (Configuration): App configuration
+        genre (dict): New character from yml load
+
+    Returns:
+        bool: Transferred character already exists.
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(exists().where(CHARACTER.name == character["name"]))
+            return (await session.execute(statement)).scalar()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return False
+
+
 async def check_exist_unique_genre(config: Configuration, genre: dict) -> bool:
+    """
+    Function checks whether the genre passed is unique.
+
+    Args:
+        config (Configuration): App configuration
+        genre (dict): New genre from yml load
+
+    Returns:
+        bool: Transferred genre already exists.
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(
@@ -161,25 +193,37 @@ async def create_character_from_input(config: Configuration, result: ImportResul
         result (ImportResult): Result class from importing a file
     """
     try:
-        async with config.write_lock, config.session() as session, session.begin():
-            final_character = [
-                CHARACTER(
-                    name=character["name"],
-                    age=character["age"],
-                    background=character["background"],
-                    description=character["description"],
-                    pos_trait=character["pos_trait"],
-                    neg_trait=character["neg_trait"],
-                    summary=character["summary"],
+        missed_character = []
+        final_character = []
+        for character in result.data:
+            if await check_exist_unique_character(config, character):
+                config.logger.debug(
+                    f"The following character already exist: {character["name"]}"
                 )
-                for character in result.data
-            ]
+                missed_character.append(character["name"])
+                continue
+            temp_character = CHARACTER(
+                name=character["name"],
+                age=character["age"],
+                background=character["background"],
+                description=character["description"],
+                pos_trait=character["pos_trait"],
+                neg_trait=character["neg_trait"],
+                summary=character["summary"],
+            )
+            final_character.append(temp_character)
+        async with config.write_lock, config.session() as session, session.begin():
             session.add_all(final_character)
         result.import_number = len(final_character)
         result.success = True
+        if missed_character:
+            result.text_character = (
+                "The following characters already exist with the settings "
+                + f"provided: {", ".join(missed_character)}. "
+            )
     except (KeyError, IntegrityError):
         config.logger.opt(exception=sys.exc_info()).error(
-            "Error while import genre file."
+            "Error while import character file."
         )
 
 
@@ -310,12 +354,12 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
 
             if result is None or len(result) == 0:
                 config.logger.debug("No available characters found in the database")
-                return
+                return []
             return result
 
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
-        return
+        return []
 
 
 async def get_all_user_games(config: Configuration, process_data: ProcessInput) -> None:
@@ -512,6 +556,38 @@ async def count_regist_char_from_game(config: Configuration, game_id: int) -> in
         return 0
 
 
+async def get_active_user_from_game(
+    config: Configuration, game_id: int
+) -> list[USER] | None:
+    """
+    Function get all active user based on game ID and if a character is selected in game
+    association.
+
+    Args:
+        config (Configuration): App configuration
+        game_id (int): Game ID
+
+    Returns:
+        list[USER] | None: All active user in game or None
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(USER)
+                .join(
+                    UserGameCharacterAssociation,
+                    USER.id == UserGameCharacterAssociation.user_id,
+                )
+                .where(UserGameCharacterAssociation.game_id == game_id)
+                .where(UserGameCharacterAssociation.character_id.isnot(None))
+                .distinct(USER.id)
+            )
+            return (await session.execute(statement)).scalars().all()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return None
+
+
 async def get_character_from_game_id(
     config: Configuration, game_id: int
 ) -> list[CHARACTER] | None:
@@ -596,3 +672,30 @@ async def channel_id_exist(config: Configuration, channel_id: str) -> bool:
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
         return True
+
+
+async def check_only_init_stories(config: Configuration, tale_id: int) -> bool:
+    """
+    This function checks whether there are stories that have a story type other than INIT.
+
+    Args:
+        config (Configuration): App configuration
+        tale_id (int): Tale id to get all stories
+
+    Returns:
+        bool: Identify whether there are only stories that have the type INIT.
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(STORY)
+                .where(STORY.tale_id == tale_id)
+                .where(STORY.story_type != StoryType.INIT)
+            )
+            stories = (await session.execute(statement)).scalars().all()
+        if len(stories) <= 0:
+            return True
+        return False
+    except Exception as err:
+        print(type(err), err)
+        return False
