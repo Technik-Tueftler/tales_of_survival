@@ -76,6 +76,33 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         return []
 
 
+async def delete_channel_messages(config: Configuration, game: GAME, dc_message_ids: list[int]) -> None:
+    try:
+        channel: TextChannel = config.dc_bot.get_channel(game.channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(game.channel_id)
+        delete_messages = []
+        for dc_msg in dc_message_ids:
+            msg = await channel.fetch_message(dc_msg)
+            delete_messages.append(msg)
+        await channel.delete_messages(delete_messages)
+        config.logger.debug(f"Deleted DC message ID: {len(delete_messages)}")
+    except discord.errors.NotFound:
+        config.logger.error(f"Channel ID {game.channel_id} not found.")
+    except discord.errors.Forbidden:
+        config.logger.error(f"No permission to write to channel {game.channel_id}.")
+    except discord.errors.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "HTTP-Error during delete messages"
+        )
+    except KeyError:
+        config.logger.error("The message is missing the content key.")
+    except TypeError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Type-Error during delete messages"
+        )
+
+
 async def update_embed_message(config: Configuration, game: GAME) -> None:
     """
     This function updates a game embed with the start information and current players.

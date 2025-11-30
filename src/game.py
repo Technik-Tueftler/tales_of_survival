@@ -11,6 +11,7 @@ from .discord_utils import (
     send_channel_message,
     update_embed_message,
     interface_select_game,
+    delete_channel_messages,
 )
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
@@ -23,7 +24,7 @@ from .db_classes import (
     UserGameCharacterAssociation,
     CHARACTER,
     STORY,
-    MESSAGE
+    MESSAGE,
 )
 from .db import (
     get_all_active_genre,
@@ -43,6 +44,7 @@ from .db import (
     get_stories_messages_for_ai,
     channel_id_exist,
     check_only_init_stories,
+    delete_init_stories,
 )
 from .game_views import (
     CharacterSelectView,
@@ -421,7 +423,9 @@ async def start_game_schedule(
     try:
         await collect_start_input(interaction, config, game_data)
 
-        tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
+        tale = await get_tale_from_game_id(
+            config, game_data.game_context.selected_game.id
+        )
         game_character = await get_character_from_game_id(
             config, game_data.game_context.selected_game.id
         )
@@ -455,7 +459,9 @@ async def start_game_schedule(
 
         for msg in messages_second_phase:
             stories.append(
-                STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+                STORY(
+                    request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
+                )
             )
 
         messages.extend(messages_second_phase)
@@ -476,6 +482,7 @@ async def start_game_schedule(
         await update_db_objs(config=config, objs=stories)
     except Exception as err:
         print(type(err), err)
+
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
     """
@@ -571,11 +578,9 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
         select_success = await interface_select_game(interaction, config, process_data)
         if not select_success:
             return
-        print(f"you select game: {process_data.game_context.selected_game.name}")
         process_data.story_context.tale = await get_tale_from_game_id(
             config, process_data.game_context.selected_game.id
         )
-        print(f"Das Tale: {process_data.story_context.tale.id} ausgewählt.")
         if not await check_only_init_stories(
             config, process_data.story_context.tale.id
         ):
@@ -584,6 +589,13 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
                 ephemeral=True,
             )
             return
-
+        dc_message_ids = await delete_init_stories(
+            config,
+            process_data.story_context.tale.id,
+            process_data.game_context.selected_game.id,
+        )
+        await delete_channel_messages(
+            config, process_data.game_context.selected_game, dc_message_ids
+        )
     except Exception as err:
         print(err)

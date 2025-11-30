@@ -23,7 +23,8 @@ from .db_classes import (
     UserGameCharacterAssociation,
     GameStatus,
     STORY,
-    StoryType
+    StoryType,
+    MESSAGE,
 )
 
 
@@ -699,3 +700,37 @@ async def check_only_init_stories(config: Configuration, tale_id: int) -> bool:
     except Exception as err:
         print(type(err), err)
         return False
+
+
+async def delete_init_stories(
+    config: Configuration, tale_id: int, game_id: int
+) -> list[int]:
+    try:
+        async with config.session() as session, session.begin():
+            statement_stories = select(STORY).where(STORY.tale_id == tale_id)
+            stories = (await session.execute(statement_stories)).scalars().all()
+            story_ids = [story.id for story in stories]
+            config.logger.debug(f"Select stories with IDs: {story_ids} for deleting.")
+            statement_messages = select(MESSAGE).where(MESSAGE.story_id.in_(story_ids))
+            messages = (await session.execute(statement_messages)).scalars().all()
+            config.logger.debug(
+                f"Select messages with IDs: {[message.id for message in messages]} for deleting."
+            )
+            dc_message_ids = [
+                message.message_id
+                for message in messages
+                if message.message_id is not None
+            ]
+            config.logger.debug(f"DC messages IDs to delete: {dc_message_ids}")
+            for message in messages:
+                await session.delete(message)
+            config.logger.debug(f"Deleted {len(messages)} messages.")
+            for story in stories:
+                await session.delete(story)
+            config.logger.debug(f"Deleted {len(messages)} stories.")
+            statement_game = select(GAME).where(GAME.id == game_id)
+            game = (await session.execute(statement_game)).scalar_one_or_none()
+            game.status = GameStatus.CREATED
+            return dc_message_ids
+    except Exception as err:
+        print(type(err), err)

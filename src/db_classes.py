@@ -183,7 +183,6 @@ class MESSAGE(Base):
     story: Mapped["STORY"] = relationship(back_populates="messages")  # 1:N
 
 
-
 class TALE(Base):
     """
     Class definition for tale in which the complete story is defined.
@@ -198,11 +197,6 @@ class TALE(Base):
 
     def __repr__(self) -> str:
         return f"Tale(id={self.id}, genre_id={self.genre_id}, game={self.game.name})"
-
-
-class SendMessageAssociation(Base):
-    __tablename__ = "association_send_message"
-    id: Mapped[int] = mapped_column(primary_key=True)
 
 
 class UserGameCharacterAssociation(Base):
