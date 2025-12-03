@@ -403,9 +403,6 @@ class StartTaleButtonView(discord.ui.View):
     to start the story. It is only used during game switch status from
     CREATED to RUNNING.
     """
-
-    # TODO: Macht es noch Sinn hier die verschiedenen Wege zu gehen? 
-    # oder kann das automatisch gemacht werden?
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data

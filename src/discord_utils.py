@@ -3,6 +3,7 @@ This module contains utility functions for interacting with Discord.
 """
 
 import sys
+import asyncio
 import discord
 from discord import TextChannel, Embed, Interaction
 from .configuration import Configuration, ProcessInput
@@ -35,7 +36,9 @@ async def split_text(text: str, max_len: int = DC_MAX_CHAR_MESSAGE) -> list[str]
     return text_parts
 
 
-async def send_channel_message(config: Configuration, channel_id: int, message: str) -> list[int]:
+async def send_channel_message(
+    config: Configuration, channel_id: int, message: str
+) -> list[int]:
     """
     This function send a message to a specific Discord channel.
 
@@ -76,7 +79,17 @@ async def send_channel_message(config: Configuration, channel_id: int, message: 
         return []
 
 
-async def delete_channel_messages(config: Configuration, game: GAME, dc_message_ids: list[int]) -> None:
+async def delete_channel_messages(
+    config: Configuration, game: GAME, dc_message_ids: list[int]
+) -> None:
+    """
+    Function to delete messages in a Discord channel based on message IDs.
+
+    Args:
+        config (Configuration): App configuration
+        game (GAME): Game object with all required information
+        dc_message_ids (list[int]): List of Discord message IDs to delete
+    """
     try:
         channel: TextChannel = config.dc_bot.get_channel(game.channel_id)
         if channel is None:
@@ -125,7 +138,9 @@ async def update_embed_message(config: Configuration, game: GAME) -> None:
         fields = list(embed.fields)
         config.logger.trace("DC channel and embed loaded.")
         embed.title = game.name
-        embed.description = game.description if game.description else DC_EMBED_DESCRIPTION
+        embed.description = (
+            game.description if game.description else DC_EMBED_DESCRIPTION
+        )
         embed.color = discord.Color.green()
         config.logger.trace("General Embed fields updated.")
         for i, field in enumerate(fields):
@@ -160,7 +175,7 @@ async def interface_select_game(
 ) -> bool:
     """
     This function is a general interface to select a game for the player.
-    The required input is a list of games which is saved in process data. 
+    The required input is a list of games which is saved in process data.
 
     Args:
         interaction (Interaction): Discord interaction
@@ -189,6 +204,17 @@ async def interface_select_game(
             config, GAME, process_data.game_context.selected_game_id
         )
         return True
-    except Exception as err:
-        print(err)
-        return False
+    except discord.Forbidden:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Cannot send message, permission denied."
+        )
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
+    except KeyError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Missing key in game data or for DB object."
+        )

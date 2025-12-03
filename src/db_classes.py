@@ -141,7 +141,6 @@ class GENRE(Base):
     storytelling_style: Mapped[str] = mapped_column(String(100), nullable=True)
     atmosphere: Mapped[str] = mapped_column(String(100), nullable=True)
     language: Mapped[str] = mapped_column(String(100), nullable=False)
-    # TODO: Neuen allgemeinen Command mit buttons, dass man genre inaktiv setzen kann
     active: Mapped[bool] = mapped_column(default=True)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
@@ -176,6 +175,9 @@ class STORY(Base):
 
 
 class MESSAGE(Base):
+    """
+    Class definition for messages that send to Discord channel for a story.
+    """
     __tablename__ = "messages"
     id: Mapped[int] = mapped_column(primary_key=True)
     message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)

@@ -87,7 +87,6 @@ async def get_second_phase_prompt(
         + f"{game_data.story_context.tale.id}"
     )
     messages = []
-    #TODO: Hier über die len von charakter gehenund schon mal dadurch nur noch zwei statt vier buttons zu haben
     match game_data.story_context.start.condition:
         case StartCondition.S_ZOMBIE_X:
             char_requ_prompt = (

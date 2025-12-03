@@ -402,8 +402,6 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
-    except Exception as err:
-        print(err)
 
 
 async def start_game_schedule(
@@ -420,68 +418,65 @@ async def start_game_schedule(
         config (Configuration): App configuration
         game_data (ProcessInput): Game data object
     """
-    try:
-        await collect_start_input(interaction, config, game_data)
+    await collect_start_input(interaction, config, game_data)
 
-        tale = await get_tale_from_game_id(
-            config, game_data.game_context.selected_game.id
-        )
-        game_character = await get_character_from_game_id(
-            config, game_data.game_context.selected_game.id
-        )
-        game_data.story_context.tale = tale
-        game_data.story_context.character = game_character
+    tale = await get_tale_from_game_id(
+        config, game_data.game_context.selected_game.id
+    )
+    game_character = await get_character_from_game_id(
+        config, game_data.game_context.selected_game.id
+    )
+    game_data.story_context.tale = tale
+    game_data.story_context.character = game_character
 
-        messages = await get_first_phase_prompt(config, game_data)
+    messages = await get_first_phase_prompt(config, game_data)
 
-        response_world = await request_openai(config, messages)
-        msg_ids_world = await send_channel_message(
-            config, game_data.game_context.selected_game.channel_id, response_world
+    response_world = await request_openai(config, messages)
+    msg_ids_world = await send_channel_message(
+        config, game_data.game_context.selected_game.channel_id, response_world
+    )
+    stories = [
+        STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
+        for story in messages
+    ]
+    stories.append(
+        STORY(
+            response=response_world,
+            story_type=StoryType.INIT,
+            tale_id=tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
         )
-        stories = [
-            STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
-            for story in messages
-        ]
+    )
+    await update_db_objs(config=config, objs=stories)
+
+    messages = await get_stories_messages_for_ai(config, tale.id)
+    stories = []
+
+    messages_second_phase = await get_second_phase_prompt(config, game_data)
+
+    for msg in messages_second_phase:
         stories.append(
             STORY(
-                response=response_world,
-                story_type=StoryType.INIT,
-                tale_id=tale.id,
-                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
+                request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
             )
         )
-        await update_db_objs(config=config, objs=stories)
 
-        messages = await get_stories_messages_for_ai(config, tale.id)
-        stories = []
+    messages.extend(messages_second_phase)
+    response_start = await request_openai(config, messages)
 
-        messages_second_phase = await get_second_phase_prompt(config, game_data)
+    msg_ids_start = await send_channel_message(
+        config, game_data.game_context.selected_game.channel_id, response_start
+    )
 
-        for msg in messages_second_phase:
-            stories.append(
-                STORY(
-                    request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
-                )
-            )
-
-        messages.extend(messages_second_phase)
-        response_start = await request_openai(config, messages)
-
-        msg_ids_start = await send_channel_message(
-            config, game_data.game_context.selected_game.channel_id, response_start
+    stories.append(
+        STORY(
+            response=response_start,
+            story_type=StoryType.INIT,
+            tale_id=tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
         )
-
-        stories.append(
-            STORY(
-                response=response_start,
-                story_type=StoryType.INIT,
-                tale_id=tale.id,
-                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
-            )
-        )
-        await update_db_objs(config=config, objs=stories)
-    except Exception as err:
-        print(type(err), err)
+    )
+    await update_db_objs(config=config, objs=stories)
 
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
@@ -570,32 +565,29 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
         interaction (Interaction): Discrod interaction
         config (Configuration): App configuration
     """
-    try:
-        process_data = ProcessInput()
-        process_data.game_context.available_games = await get_games_w_status(
-            config, [GameStatus.PAUSED, GameStatus.RUNNING]
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config, [GameStatus.PAUSED, GameStatus.RUNNING]
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return
+    process_data.story_context.tale = await get_tale_from_game_id(
+        config, process_data.game_context.selected_game.id
+    )
+    if not await check_only_init_stories(
+        config, process_data.story_context.tale.id
+    ):
+        await interaction.followup.send(
+            "The story has already been passed on and cannot be reset.",
+            ephemeral=True,
         )
-        select_success = await interface_select_game(interaction, config, process_data)
-        if not select_success:
-            return
-        process_data.story_context.tale = await get_tale_from_game_id(
-            config, process_data.game_context.selected_game.id
-        )
-        if not await check_only_init_stories(
-            config, process_data.story_context.tale.id
-        ):
-            await interaction.followup.send(
-                "The story has already been passed on and cannot be reset.",
-                ephemeral=True,
-            )
-            return
-        dc_message_ids = await delete_init_stories(
-            config,
-            process_data.story_context.tale.id,
-            process_data.game_context.selected_game.id,
-        )
-        await delete_channel_messages(
-            config, process_data.game_context.selected_game, dc_message_ids
-        )
-    except Exception as err:
-        print(err)
+        return
+    dc_message_ids = await delete_init_stories(
+        config,
+        process_data.story_context.tale.id,
+        process_data.game_context.selected_game.id,
+    )
+    await delete_channel_messages(
+        config, process_data.game_context.selected_game, dc_message_ids
+    )
