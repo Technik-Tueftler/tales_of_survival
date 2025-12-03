@@ -8,6 +8,7 @@ from typing import List
 import environ
 from dotenv import load_dotenv
 import loguru
+import discord
 from discord.ext.commands import Bot as DcBot
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from .tetue_generic.generic_requests import GenReqConfiguration
@@ -61,6 +62,7 @@ class GameContext:
         self.selected_game_id: int = 0
         self.selected_game: GAME = None
         self.new_game_status: GameStatus = None
+        self.start: GameStartContext = GameStartContext()
 
     async def input_valid_game(self) -> bool:
         """
@@ -161,6 +163,19 @@ class StoryStartContext:
         self.condition: StartCondition = None
         self.city: str = ""
         self.prompt: str = ""
+
+
+class GameStartContext:
+    """
+    Class to specify the game start context and input data
+    for processing.
+    """
+    def __init__(self):
+        self.selected_genre: int = 0
+        self.game_name: str = ""
+        self.game_description: str = ""
+        self.selected_user: List[discord.member.Member] = []
+
 
 class ProcessInput:
     """

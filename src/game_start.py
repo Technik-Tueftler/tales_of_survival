@@ -87,7 +87,6 @@ async def get_second_phase_prompt(
         + f"{game_data.story_context.tale.id}"
     )
     messages = []
-
     match game_data.story_context.start.condition:
         case StartCondition.S_ZOMBIE_X:
             char_requ_prompt = (
