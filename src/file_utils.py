@@ -10,7 +10,7 @@ from discord import HTTPException, Interaction
 
 from .configuration import Configuration
 from .db import ImportResult, create_character_from_input, create_genre_from_input
-from .constants import DC_DESCRIPTION_MAX_CHAR
+from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE
 
 
 async def load_yaml(config: Configuration, result: ImportResult) -> dict:
@@ -83,8 +83,11 @@ async def import_data(interaction: Interaction, config: Configuration):
             f"{result_genre.text_genre}"
             f"The import from character was {context["char_status"]} "
             f"and {context["char_number"]} records were imported."
+            f"{result_character.text_character}"
         )
-        await interaction.response.send_message(message, ephemeral=True)
+        await interaction.response.send_message(
+            limit_text(message, DC_MAX_CHAR_MESSAGE), ephemeral=True
+        )
     except FileNotFoundError:
         config.logger.opt(exception=sys.exc_info()).error("File not found.")
         await interaction.response.send_message(
@@ -107,9 +110,10 @@ async def import_data(interaction: Interaction, config: Configuration):
             "Error in Discord communication."
         )
 
+
 def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
     """
-    The function limits a text to a certain number of characters. 
+    The function limits a text to a certain number of characters.
 
     Args:
         text (str): Text

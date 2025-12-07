@@ -1,16 +1,18 @@
 """
 Module for handling the telling of story command.
 """
-
+from discord import Interaction
 from .discord_utils import send_channel_message
 from .configuration import Configuration, ProcessInput
 from .db import get_stories_messages_for_ai, update_db_objs
-from .db_classes import STORY, StoryType
+from .db_classes import STORY, StoryType, MESSAGE
 from .llm_handler import request_openai
 from .constants import PROMPT_MAX_WORDS_EVENT, PROMPT_MAX_WORDS_FICTION
 
 
-async def telling_event(config: Configuration, process_data: ProcessInput):
+async def telling_event(
+    config: Configuration, process_data: ProcessInput, interaction: Interaction
+):
     """
     This function handles the telling of story based on an event.
 
@@ -44,17 +46,23 @@ async def telling_event(config: Configuration, process_data: ProcessInput):
     response_event = await request_openai(config, messages)
     config.logger.trace(f"Event response: {response_event}")
 
-    await send_channel_message(
+    msg_ids_event = await send_channel_message(
         config,
         process_data.game_context.selected_game.channel_id,
         response_event,
     )
+
+    event_message = (
+        f"An event has been triggered:\nEvent: {process_data.story_context.event.text}"
+    )
+    await interaction.followup.send(event_message, ephemeral=True)
 
     commit_stories.append(
         STORY(
             response=response_event,
             story_type=StoryType.EVENT,
             tale_id=process_data.story_context.tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_event],
         )
     )
     await update_db_objs(config, commit_stories)
@@ -95,7 +103,7 @@ async def telling_fiction(config: Configuration, process_data: ProcessInput):
     response_fiction = await request_openai(config, messages)
     config.logger.trace(f"Fiction response: {response_fiction}")
 
-    await send_channel_message(
+    msg_ids_fiction = await send_channel_message(
         config,
         process_data.game_context.selected_game.channel_id,
         response_fiction,
@@ -106,6 +114,7 @@ async def telling_fiction(config: Configuration, process_data: ProcessInput):
             response=response_fiction,
             story_type=StoryType.FICTION,
             tale_id=process_data.story_context.tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_fiction],
         )
     )
     await update_db_objs(config, commit_stories)

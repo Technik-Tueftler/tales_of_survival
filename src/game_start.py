@@ -87,72 +87,70 @@ async def get_second_phase_prompt(
         + f"{game_data.story_context.tale.id}"
     )
     messages = []
-
-    match game_data.story_context.start.condition:
-        case StartCondition.S_ZOMBIE_X:
-            char_requ_prompt = (
-                "Es sind die folgenden Charaktere (Anzahl: "
-                + f"{len(game_data.story_context.character)}) in der Geschichte:"
+    start_condition = game_data.story_context.start.condition
+    if start_condition is StartCondition.S_ZOMBIE and len(game_data.story_context.character) > 1:
+        char_requ_prompt = (
+            "Es sind die folgenden Charaktere (Anzahl: "
+            + f"{len(game_data.story_context.character)}) in der Geschichte:"
+        )
+        messages.append({"role": "user", "content": char_requ_prompt})
+        for character in game_data.story_context.character:
+            messages.append({"role": "user", "content": character.summary})
+        if game_data.story_context.start.prompt == "":
+            start_requ_prompt = (
+                f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
+                + "Wörter) bei der sich die Charaktere in einer Stadt namens "
+                + f"{game_data.story_context.start.city} treffen und beschließen eine "
+                + "Gemeinschaft zu bilden."
             )
-            messages.append({"role": "user", "content": char_requ_prompt})
-            for character in game_data.story_context.character:
-                messages.append({"role": "user", "content": character.summary})
-            if game_data.story_context.start.prompt == "":
-                start_requ_prompt = (
-                    f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
-                    + "Wörter) bei der sich die Charaktere in einer Stadt namens "
-                    + f"{game_data.story_context.start.city} treffen und beschließen eine "
-                    + "Gemeinschaft zu bilden."
-                )
-            else:
-                start_requ_prompt = game_data.story_context.start.prompt
-            messages.append({"role": "user", "content": start_requ_prompt})
-
-        case StartCondition.S_ZOMBIE_1:
-            char_requ_prompt = "Um den folgende Charaktere geht es in der Geschichte:"
-            messages.append({"role": "user", "content": char_requ_prompt})
-            messages.append(
-                {
-                    "role": "user",
-                    "content": game_data.story_context.character[0].summary,
-                }
-            )
-            if game_data.story_context.start.prompt == "":
-                start_requ_prompt = (
-                    f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
-                    + "Wörter) bei der sich der Charakter in einer Stadt namens "
-                    + f"{game_data.story_context.start.city} aufhält und dort versucht "
-                    + "zu überleben."
-                )
-            else:
-                start_requ_prompt = game_data.story_context.start.prompt
-            messages.append({"role": "user", "content": start_requ_prompt})
-
-        case StartCondition.OWN_X:
-            char_requ_prompt = (
-                "Es sind die folgenden Charaktere (Anzahl: "
-                + f"{len(game_data.story_context.character)}) in der Geschichte:"
-            )
-            messages.append({"role": "user", "content": char_requ_prompt})
-            for character in game_data.story_context.character:
-                messages.append({"role": "user", "content": character.summary})
+        else:
             start_requ_prompt = game_data.story_context.start.prompt
-            messages.append({"role": "user", "content": start_requ_prompt})
+        messages.append({"role": "user", "content": start_requ_prompt})
 
-        case StartCondition.OWN_1:
-            char_requ_prompt = "Um den folgende Charaktere geht es in der Geschichte:"
-            messages.append({"role": "user", "content": char_requ_prompt})
-            messages.append(
-                {
-                    "role": "user",
-                    "content": game_data.story_context.character[0].summary,
-                }
+    elif start_condition is StartCondition.S_ZOMBIE and len(game_data.story_context.character) == 1:
+        char_requ_prompt = "Um den folgende Charaktere geht es in der Geschichte:"
+        messages.append({"role": "user", "content": char_requ_prompt})
+        messages.append(
+            {
+                "role": "user",
+                "content": game_data.story_context.character[0].summary,
+            }
+        )
+        if game_data.story_context.start.prompt == "":
+            start_requ_prompt = (
+                f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
+                + "Wörter) bei der sich der Charakter in einer Stadt namens "
+                + f"{game_data.story_context.start.city} aufhält und dort versucht "
+                + "zu überleben."
             )
+        else:
             start_requ_prompt = game_data.story_context.start.prompt
-            messages.append({"role": "user", "content": start_requ_prompt})
+        messages.append({"role": "user", "content": start_requ_prompt})
 
-        case _:
-            config.logger.error(
-                f"Start condition {game_data.story_context.start.condition} not defined."
-            )
+    elif start_condition is StartCondition.OWN and len(game_data.story_context.character) > 1:
+        char_requ_prompt = (
+            "Es sind die folgenden Charaktere (Anzahl: "
+            + f"{len(game_data.story_context.character)}) in der Geschichte:"
+        )
+        messages.append({"role": "user", "content": char_requ_prompt})
+        for character in game_data.story_context.character:
+            messages.append({"role": "user", "content": character.summary})
+        start_requ_prompt = game_data.story_context.start.prompt
+        messages.append({"role": "user", "content": start_requ_prompt})
+
+    elif start_condition is StartCondition.OWN and len(game_data.story_context.character) == 1:
+        char_requ_prompt = "Um den folgende Charaktere geht es in der Geschichte:"
+        messages.append({"role": "user", "content": char_requ_prompt})
+        messages.append(
+            {
+                "role": "user",
+                "content": game_data.story_context.character[0].summary,
+            }
+        )
+        start_requ_prompt = game_data.story_context.start.prompt
+        messages.append({"role": "user", "content": start_requ_prompt})
+    else:
+        config.logger.error(
+            f"Start condition {game_data.story_context.start.condition} not defined."
+        )
     return messages

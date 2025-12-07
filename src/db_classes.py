@@ -65,10 +65,8 @@ class StartCondition(Enum):
     """
     Enum to define type of start condition and map an emoji.
     """
-    S_ZOMBIE_X = 0, "🧟‍♀️", "Standard zombie tale X Player"
-    S_ZOMBIE_1 = 1, "🧟‍♂️", "Standard zombie tale 1 Player"
-    OWN_X = 2, "✍️", "Your own prompt X Player"
-    OWN_1 = 2, "✍️", "Your own prompt 1 Player"
+    S_ZOMBIE = 0, "🧟‍♀️", "Standard zombie tale"
+    OWN = 1, "✍️", "Your own prompt"
 
     def __init__(self, value, icon, text):
         self._value_ = value
@@ -141,7 +139,6 @@ class GENRE(Base):
     storytelling_style: Mapped[str] = mapped_column(String(100), nullable=True)
     atmosphere: Mapped[str] = mapped_column(String(100), nullable=True)
     language: Mapped[str] = mapped_column(String(100), nullable=False)
-    # TODO: Neuen allgemeinen Command mit buttons, dass man genre inaktiv setzen kann
     active: Mapped[bool] = mapped_column(default=True)
     inspirational_words: Mapped[list["INSPIRATIONALWORD"]] = relationship()  # 1:N
     events: Mapped[list["EVENT"]] = relationship()  # 1:N
@@ -166,13 +163,24 @@ class STORY(Base):
         AlchemyEnum(StoryType, native_enum=False, validate_strings=True),
         default=StoryType.FICTION,
     )
-    timestamp: Mapped[datetime] = mapped_column(nullable=True)
-    message_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    messages: Mapped[list["MESSAGE"]] = relationship()  # 1:N
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"))  # 1:N
     tale: Mapped["TALE"] = relationship(back_populates="stories")  # 1:N
 
     def __repr__(self) -> str:
         return f"Story(id={self.id}, type={self.story_type})"
+
+
+class MESSAGE(Base):
+    """
+    Class definition for messages that send to Discord channel for a story.
+    """
+    __tablename__ = "messages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message_id: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    story_id: Mapped[int] = mapped_column(ForeignKey("stories.id"))  # 1:N
+    story: Mapped["STORY"] = relationship(back_populates="messages")  # 1:N
 
 
 class TALE(Base):
@@ -222,6 +230,7 @@ class GAME(Base):
     __tablename__ = "games"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
+    description: Mapped[str] = mapped_column(String(500), nullable=True)
     status = mapped_column(
         AlchemyEnum(GameStatus, native_enum=False, validate_strings=True),
         default=GameStatus.CREATED,

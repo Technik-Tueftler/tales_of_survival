@@ -6,7 +6,7 @@ The bot is implemented using the discord.py library and provides a simple comman
 import discord
 from discord.ext import commands
 from .configuration import Configuration
-from .game import create_game, keep_telling_schedule, select_character, setup_game
+from .game import create_game, keep_telling_schedule, select_character, setup_game, reset_game
 from .file_utils import import_data
 
 
@@ -93,7 +93,7 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command for reset game."
             )
-            await setup_game(interaction, self.config)
+            await reset_game(interaction, self.config)
 
         self.bot.tree.command(
             name="create_game", description="Create a new game and set the parameters."

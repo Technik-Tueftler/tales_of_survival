@@ -4,10 +4,10 @@ This module contains all view for game creation and general game handling.
 
 import sys
 import discord
-
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
 from .configuration import Configuration, ProcessInput
 from .file_utils import limit_text
+from .constants import DC_DESCRIPTION_MAX_CHAR
 
 
 class CharacterSelectView(discord.ui.View):
@@ -82,10 +82,17 @@ class GameSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        selected_value = self.values[0]
+        selected_option = [
+            option for option in self.options if option.value == selected_value
+        ]
         self.config.logger.debug(f"Selected game id: {self.values[0]}")
         self.process_data.game_context.selected_game_id = int(self.values[0])
+        label = selected_option[0].label
+        self.disabled = True
         await interaction.response.edit_message(
-            content=f"You have chosen the game with ID: {self.values[0]}",
+            content=f"You have chosen the game {label}",
+            view=self.view
         )
         self.view.stop()
 
@@ -105,9 +112,11 @@ class GenreSelect(discord.ui.Select):
     Select class to select a genre for a new game.
     """
 
-    def __init__(self, config, game_data: dict, genres: list[GENRE]):
+    def __init__(
+        self, config: Configuration, process_data: ProcessInput, genres: list[GENRE]
+    ):
         self.config = config
-        self.game_data = game_data
+        self.process_data = process_data
         options = []
         for genre in genres:
             description = (
@@ -130,8 +139,9 @@ class GenreSelect(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        self.game_data["genre_id"] = self.values[0]
-        game_info_view = GameInfoModal(self.game_data)
+        self.process_data.game_context.start.selected_genre = self.values[0]
+        self.config.logger.debug(f"Selected genre: {self.values[0]}")
+        game_info_view = GameInfoModal(self.config, self.process_data)
         await interaction.response.send_modal(game_info_view)
         await game_info_view.wait()
         self.view.stop()
@@ -142,9 +152,9 @@ class GenreSelectView(discord.ui.View):
     View class to select a genre for a new game.
     """
 
-    def __init__(self, config, game_data: dict, genres: list[GENRE]):
+    def __init__(self, config, process_data: ProcessInput, genres: list[GENRE]):
         super().__init__()
-        self.add_item(GenreSelect(config, game_data, genres))
+        self.add_item(GenreSelect(config, process_data, genres))
 
 
 class GameInfoModal(discord.ui.Modal, title="Please enter the last game information"):
@@ -152,13 +162,18 @@ class GameInfoModal(discord.ui.Modal, title="Please enter the last game informat
     Modal class to enter general game information.
     """
 
-    def __init__(self, game_data: dict):
+    def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
-        self.game_data = game_data
+        self.config = config
+        self.process_data = process_data
         self.game_name_input = discord.ui.TextInput(
-            label="Game name", required=True, max_length=100
+            label="Game name", required=True, max_length=DC_DESCRIPTION_MAX_CHAR
+        )
+        self.game_descr_input = discord.ui.TextInput(
+            label="Game description", required=False, max_length=DC_DESCRIPTION_MAX_CHAR
         )
         self.add_item(self.game_name_input)
+        self.add_item(self.game_descr_input)
 
     async def on_submit(
         self, interaction: discord.Interaction
@@ -166,7 +181,14 @@ class GameInfoModal(discord.ui.Modal, title="Please enter the last game informat
         """
         Callback function when the modal is submitted.
         """
-        self.game_data["game_name"] = self.game_name_input.value
+        self.process_data.game_context.start.game_name = self.game_name_input.value
+        self.process_data.game_context.start.game_description = (
+            self.game_descr_input.value
+        )
+        self.config.logger.debug(f"Selected game name: {self.game_name_input.value}")
+        self.config.logger.debug(
+            f"Selected game description: {self.game_descr_input.value}"
+        )
         await interaction.response.edit_message(
             content="All other game information has been entered.",
         )
@@ -177,10 +199,10 @@ class UserSelectView(discord.ui.View):
     View class to select user for a new game.
     """
 
-    def __init__(self, config, game_data: dict):
+    def __init__(self, config, process_data: ProcessInput):
         super().__init__()
         self.config = config
-        self.game_data = game_data
+        self.process_data = process_data
 
     @discord.ui.select(
         cls=discord.ui.UserSelect,
@@ -194,7 +216,7 @@ class UserSelectView(discord.ui.View):
         """
         Callback function when a user is selected.
         """
-        self.game_data["user"] = select.values
+        self.process_data.game_context.start.selected_user = select.values
         await interaction.response.edit_message(
             content="You have chosen the player for the new game.",
         )
@@ -381,83 +403,44 @@ class StartTaleButtonView(discord.ui.View):
     to start the story. It is only used during game switch status from
     CREATED to RUNNING.
     """
-
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
         self.config = config
 
     @discord.ui.button(
-        label=StartCondition.S_ZOMBIE_X.text,
+        label=StartCondition.S_ZOMBIE.text,
         style=discord.ButtonStyle.green,
-        emoji=StartCondition.S_ZOMBIE_X.icon,
+        emoji=StartCondition.S_ZOMBIE.icon,
     )
-    async def button_callback_x(
+    async def button_callback_sz(
         self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
         """
         Callback function when button for standard zombie tale with more then 1 player is clicked.
         """
-        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_X
+        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE
         self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}"
+            f"Start tale type selected: {StartCondition.S_ZOMBIE.text}"
         )
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
 
     @discord.ui.button(
-        label=StartCondition.S_ZOMBIE_1.text,
+        label=StartCondition.OWN.text,
         style=discord.ButtonStyle.green,
-        emoji=StartCondition.S_ZOMBIE_1.icon,
+        emoji=StartCondition.OWN.icon,
     )
-    async def button_callback_1(
-        self, button: discord.ui.button, _: discord.interactions.Interaction
-    ):
-        """
-        Callback function when button for standard zombie tale with one player is clicked.
-        """
-        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_1
-        self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}"
-        )
-        event_view = StZombieTaleStartModal(self, self.process_data, self.config)
-        await button.response.send_modal(event_view)
-        await event_view.wait()
-
-    @discord.ui.button(
-        label=StartCondition.OWN_X.text,
-        style=discord.ButtonStyle.green,
-        emoji=StartCondition.OWN_X.icon,
-    )
-    async def button_callback_ox(
+    async def button_callback_ow(
         self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
         """
         Callback function when button for own tale with more then 1 player is clicked.
         """
-        self.process_data.story_context.start.condition = StartCondition.OWN_X
+        self.process_data.story_context.start.condition = StartCondition.OWN
         self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.OWN_X.text}"
-        )
-        event_view = OwnTaleStartModal(self, self.process_data, self.config)
-        await button.response.send_modal(event_view)
-        await event_view.wait()
-
-    @discord.ui.button(
-        label=StartCondition.OWN_1.text,
-        style=discord.ButtonStyle.green,
-        emoji=StartCondition.OWN_1.icon,
-    )
-    async def button_callback_o1(
-        self, button: discord.ui.button, _: discord.interactions.Interaction
-    ):
-        """
-        Callback function when button for own tale with one player is clicked.
-        """
-        self.process_data.story_context.start.condition = StartCondition.OWN_1
-        self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.OWN_1.text}"
+            f"Start tale type selected: {StartCondition.OWN.text}"
         )
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)

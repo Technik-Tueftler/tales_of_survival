@@ -7,7 +7,12 @@ from datetime import datetime, timezone
 import asyncio
 import discord
 from discord import Interaction
-from .discord_utils import send_channel_message
+from .discord_utils import (
+    send_channel_message,
+    update_embed_message,
+    interface_select_game,
+    delete_channel_messages,
+)
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai
 from .db_classes import StoryType, GameStatus
@@ -19,6 +24,7 @@ from .db_classes import (
     UserGameCharacterAssociation,
     CHARACTER,
     STORY,
+    MESSAGE,
 )
 from .db import (
     get_all_active_genre,
@@ -37,10 +43,11 @@ from .db import (
     get_character_from_game_id,
     get_stories_messages_for_ai,
     channel_id_exist,
+    check_only_init_stories,
+    delete_init_stories,
 )
 from .game_views import (
     CharacterSelectView,
-    GameSelectView,
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
@@ -52,53 +59,53 @@ from .game_start import (
     get_second_phase_prompt,
 )
 from .game_telling import telling_event, telling_fiction
+from .constants import DC_EMBED_DESCRIPTION
 
 
 async def collect_all_game_contexts(
-    interaction: Interaction, config: Configuration
-) -> dict:
+    interaction: Interaction, config: Configuration, process_data: ProcessInput
+):
     """
     Function to collect all necessary game contexts from user interactions.
 
     Args:
         interaction (Interaction): Interaction object from Discord
         config (Configuration): App configuration
-
-    Returns:
-        dict: game data collected from user interactions
+        process_data (ProcessInput): Input collection object
     """
     try:
-        game_data = {}
-        user_view = UserSelectView(config, game_data)
+        user_view = UserSelectView(config, process_data)
         await interaction.response.send_message(
             "Please select all players for the new story.",
             view=user_view,
             ephemeral=True,
         )
         await user_view.wait()
-
+        config.logger.trace("Player selected.")
         genres = await get_all_active_genre(config)
-        genre_view = GenreSelectView(config, game_data, genres)
+        if not genres:
+            await interaction.followup.send(
+                "No genres are available. No game can be created. Please contact a mod or admin.",
+                ephemeral=True,
+            )
+            return
+        config.logger.debug(f"All active genre: {[genre.id for genre in genres]}")
+        genre_view = GenreSelectView(config, process_data, genres)
         await interaction.followup.send(
             "Please select the genre for the new story.",
             view=genre_view,
             ephemeral=True,
         )
         await genre_view.wait()
-        game_data["Valid"] = True
-        return game_data
+
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
-        return game_data
     except discord.HTTPException:
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
-        return game_data
     except (TypeError, ValueError):
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
-        return game_data
     except asyncio.TimeoutError:
         config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
-        return game_data
 
 
 async def send_game_information(
@@ -122,10 +129,13 @@ async def send_game_information(
         discord.Message: Discord message object
     """
     try:
+        game_description = (
+            game.description if game.description else DC_EMBED_DESCRIPTION
+        )
         embed = discord.Embed(
             title=game.name,
-            description=f"A new story is being told! (ID: {game.id})",
-            color=discord.Color.green(),
+            description=game_description,
+            color=discord.Color.yellow(),
         )
         embed.add_field(name="Genre", value=genre.name, inline=False)
         embed.add_field(name="Language", value=genre.language, inline=True)
@@ -136,6 +146,7 @@ async def send_game_information(
             value=", ".join([f"<@{user.dc_id}>" for user in users]),
             inline=False,
         )
+        embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
 
         message = await interaction.followup.send(embed=embed)
         return message
@@ -214,12 +225,23 @@ async def create_game(interaction: Interaction, config: Configuration):
                 ephemeral=True,
             )
             return
-        game_data = await collect_all_game_contexts(interaction, config)
-        genre = await get_genre_double_cond(config, game_data["genre_id"])
-        processed_user_list = await process_player(config, game_data["user"])
+        process_data = ProcessInput()
+        await collect_all_game_contexts(interaction, config, process_data)
+        if process_data.game_context.start.selected_genre == 0:
+            config.logger.trace(
+                "No genre can been selected. Game creation will be canceled."
+            )
+            return
+        genre = await get_genre_double_cond(
+            config, process_data.game_context.start.selected_genre
+        )
+        processed_user_list = await process_player(
+            config, process_data.game_context.start.selected_user
+        )
         tale = TALE(genre=genre)
         game = GAME(
-            name=game_data["game_name"],
+            name=process_data.game_context.start.game_name,
+            description=process_data.game_context.start.game_description,
             start_date=datetime.now(timezone.utc),
             tale=tale,
         )
@@ -239,7 +261,9 @@ async def create_game(interaction: Interaction, config: Configuration):
         )
         await update_db_objs(config, [game])
         message_link = await create_dc_message_link(config, message, interaction)
-        await inform_players(config, game_data["user"], message_link)
+        await inform_players(
+            config, process_data.game_context.start.selected_user, message_link
+        )
 
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
@@ -267,21 +291,11 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
     try:
         process_data = ProcessInput()
         await get_all_running_games(config, process_data)
-        if not await process_data.game_context.input_valid_game():
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
             return
-        game_view = GameSelectView(config, process_data)
-        await interaction.response.send_message(
-            "Please select the game for keep telling",
-            view=game_view,
-            ephemeral=True,
-        )
-        await game_view.wait()
-
         process_data.story_context.tale = await get_tale_from_game_id(
             config, process_data.game_context.selected_game_id
-        )
-        process_data.game_context.selected_game = await get_object_by_id(
-            config, GAME, process_data.game_context.selected_game_id
         )
         telling_view = KeepTellingButtonView(config, process_data)
 
@@ -293,7 +307,7 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
             and process_data.story_context.events_available()
         ):
             await process_data.story_context.get_random_event_weighted()
-            await telling_event(config, process_data)
+            await telling_event(config, process_data, interaction)
 
         elif process_data.story_context.story_type is StoryType.FICTION:
             await telling_fiction(config, process_data)
@@ -337,19 +351,19 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
                 "for any game. Please contact the admin.",
                 ephemeral=True,
             )
+            config.logger.debug(
+                f"User: {interaction.user.id} wants to select a character, "
+                + "but has not been asked to do so in any game."
+            )
             return
-        game_view = GameSelectView(config, process_data)
-        await interaction.response.send_message(
-            "Please select the game for set character",
-            view=game_view,
-            ephemeral=True,
-        )
-        await game_view.wait()
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
         process_data.user_context.available_chars = await get_available_characters(
             config
         )
         if not await process_data.user_context.input_valid_char():
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "An error occurred while retrieving character. There are no selectable characters. "
                 "Please contact the admin.",
                 ephemeral=True,
@@ -406,7 +420,9 @@ async def start_game_schedule(
     """
     await collect_start_input(interaction, config, game_data)
 
-    tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
+    tale = await get_tale_from_game_id(
+        config, game_data.game_context.selected_game.id
+    )
     game_character = await get_character_from_game_id(
         config, game_data.game_context.selected_game.id
     )
@@ -416,7 +432,7 @@ async def start_game_schedule(
     messages = await get_first_phase_prompt(config, game_data)
 
     response_world = await request_openai(config, messages)
-    await send_channel_message(
+    msg_ids_world = await send_channel_message(
         config, game_data.game_context.selected_game.channel_id, response_world
     )
     stories = [
@@ -424,7 +440,12 @@ async def start_game_schedule(
         for story in messages
     ]
     stories.append(
-        STORY(response=response_world, story_type=StoryType.INIT, tale_id=tale.id)
+        STORY(
+            response=response_world,
+            story_type=StoryType.INIT,
+            tale_id=tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
+        )
     )
     await update_db_objs(config=config, objs=stories)
 
@@ -435,18 +456,25 @@ async def start_game_schedule(
 
     for msg in messages_second_phase:
         stories.append(
-            STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+            STORY(
+                request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
+            )
         )
 
     messages.extend(messages_second_phase)
     response_start = await request_openai(config, messages)
 
-    await send_channel_message(
+    msg_ids_start = await send_channel_message(
         config, game_data.game_context.selected_game.channel_id, response_start
     )
 
     stories.append(
-        STORY(response=response_start, story_type=StoryType.INIT, tale_id=tale.id)
+        STORY(
+            response=response_start,
+            story_type=StoryType.INIT,
+            tale_id=tale.id,
+            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
+        )
     )
     await update_db_objs(config=config, objs=stories)
 
@@ -476,16 +504,9 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
                 ephemeral=True,
             )
             return
-        select_view = GameSelectView(config, process_data)
-        await interaction.response.send_message(
-            "Which game would you like to change the status of?",
-            view=select_view,
-            ephemeral=True,
-        )
-        await select_view.wait()
-        process_data.game_context.selected_game = await get_object_by_id(
-            config, GAME, process_data.game_context.selected_game_id
-        )
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
         game_select_view = NewGameStatusSelectView(config, process_data)
         await interaction.followup.send(
             "Select now the new status for game with id: "
@@ -517,6 +538,7 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             process_data.game_context.new_game_status
         )
         await update_db_objs(config, [process_data.game_context.selected_game])
+        await update_embed_message(config, process_data.game_context.selected_game)
 
     except discord.Forbidden:
         config.logger.opt(exception=sys.exc_info()).error(
@@ -532,3 +554,40 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
+
+
+async def reset_game(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function resets a game and generates a new start story.
+    Only possible if stories in the game with the status INIT.
+
+    Args:
+        interaction (Interaction): Discrod interaction
+        config (Configuration): App configuration
+    """
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config, [GameStatus.PAUSED, GameStatus.RUNNING]
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return
+    process_data.story_context.tale = await get_tale_from_game_id(
+        config, process_data.game_context.selected_game.id
+    )
+    if not await check_only_init_stories(
+        config, process_data.story_context.tale.id
+    ):
+        await interaction.followup.send(
+            "The story has already been passed on and cannot be reset.",
+            ephemeral=True,
+        )
+        return
+    dc_message_ids = await delete_init_stories(
+        config,
+        process_data.story_context.tale.id,
+        process_data.game_context.selected_game.id,
+    )
+    await delete_channel_messages(
+        config, process_data.game_context.selected_game, dc_message_ids
+    )
