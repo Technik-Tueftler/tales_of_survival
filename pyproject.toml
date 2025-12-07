@@ -29,5 +29,5 @@ dev = [
     "sphinx>=8.2.3",
     "sphinx-copybutton>=0.5.2",
     "sphinx-mermaid>=0.0.8",
-    "sphinx-toolbox>=4.0.0",
+    "sphinx-toolbox>=4.1.0",
 ]
