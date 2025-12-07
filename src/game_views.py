@@ -409,76 +409,38 @@ class StartTaleButtonView(discord.ui.View):
         self.config = config
 
     @discord.ui.button(
-        label=StartCondition.S_ZOMBIE_X.text,
+        label=StartCondition.S_ZOMBIE.text,
         style=discord.ButtonStyle.green,
-        emoji=StartCondition.S_ZOMBIE_X.icon,
+        emoji=StartCondition.S_ZOMBIE.icon,
     )
-    async def button_callback_x(
+    async def button_callback_sz(
         self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
         """
         Callback function when button for standard zombie tale with more then 1 player is clicked.
         """
-        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_X
+        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE
         self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.S_ZOMBIE_X.text}"
+            f"Start tale type selected: {StartCondition.S_ZOMBIE.text}"
         )
         event_view = StZombieTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
 
     @discord.ui.button(
-        label=StartCondition.S_ZOMBIE_1.text,
+        label=StartCondition.OWN.text,
         style=discord.ButtonStyle.green,
-        emoji=StartCondition.S_ZOMBIE_1.icon,
+        emoji=StartCondition.OWN.icon,
     )
-    async def button_callback_1(
-        self, button: discord.ui.button, _: discord.interactions.Interaction
-    ):
-        """
-        Callback function when button for standard zombie tale with one player is clicked.
-        """
-        self.process_data.story_context.start.condition = StartCondition.S_ZOMBIE_1
-        self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.S_ZOMBIE_1.text}"
-        )
-        event_view = StZombieTaleStartModal(self, self.process_data, self.config)
-        await button.response.send_modal(event_view)
-        await event_view.wait()
-
-    @discord.ui.button(
-        label=StartCondition.OWN_X.text,
-        style=discord.ButtonStyle.green,
-        emoji=StartCondition.OWN_X.icon,
-    )
-    async def button_callback_ox(
+    async def button_callback_ow(
         self, button: discord.ui.button, _: discord.interactions.Interaction
     ):
         """
         Callback function when button for own tale with more then 1 player is clicked.
         """
-        self.process_data.story_context.start.condition = StartCondition.OWN_X
+        self.process_data.story_context.start.condition = StartCondition.OWN
         self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.OWN_X.text}"
-        )
-        event_view = OwnTaleStartModal(self, self.process_data, self.config)
-        await button.response.send_modal(event_view)
-        await event_view.wait()
-
-    @discord.ui.button(
-        label=StartCondition.OWN_1.text,
-        style=discord.ButtonStyle.green,
-        emoji=StartCondition.OWN_1.icon,
-    )
-    async def button_callback_o1(
-        self, button: discord.ui.button, _: discord.interactions.Interaction
-    ):
-        """
-        Callback function when button for own tale with one player is clicked.
-        """
-        self.process_data.story_context.start.condition = StartCondition.OWN_1
-        self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.OWN_1.text}"
+            f"Start tale type selected: {StartCondition.OWN.text}"
         )
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)

@@ -65,10 +65,8 @@ class StartCondition(Enum):
     """
     Enum to define type of start condition and map an emoji.
     """
-    S_ZOMBIE_X = 0, "🧟‍♀️", "Standard zombie tale X Player"
-    S_ZOMBIE_1 = 1, "🧟‍♂️", "Standard zombie tale 1 Player"
-    OWN_X = 2, "✍️", "Your own prompt X Player"
-    OWN_1 = 2, "✍️", "Your own prompt 1 Player"
+    S_ZOMBIE = 0, "🧟‍♀️", "Standard zombie tale"
+    OWN = 1, "✍️", "Your own prompt"
 
     def __init__(self, value, icon, text):
         self._value_ = value

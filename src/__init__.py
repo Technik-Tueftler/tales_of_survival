@@ -15,6 +15,6 @@ from .tetue_generic import __gen_version__
 from .tetue_generic.generic_requests import *
 from .tetue_generic.watcher import *
 
-__version__ = "v0.1.0"
+__version__ = "v0.1.2"
 __repository__ = "https://github.com/Technik-Tueftler/tales_of_survival"
 MODE_DEVELOP = False
