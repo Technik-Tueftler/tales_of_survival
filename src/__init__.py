@@ -18,3 +18,4 @@ from .tetue_generic.watcher import *
 __version__ = "v0.1.2"
 __repository__ = "https://github.com/Technik-Tueftler/tales_of_survival"
 MODE_DEVELOP = False
+# uv run -- sphinx-build -b html docs docs/_build/html
