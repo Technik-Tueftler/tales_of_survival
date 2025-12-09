@@ -1,24 +1,18 @@
 TeTue Generic
 ==========================
 
-.. note::
-
-   This page should be the starting point to expand and customize the generic parts in the 
-   future and also to be a guide to create the main application.
+This chapter documents the generic, which can be used as a 
+template and start directory for your own projects. For 
+further information, see: `TeTueGeneric`_. The `documentation`_ 
+also shows how to adapt it to your own project.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents
 
-   main_schedule
    default_env_var
    generic_requests
    watcher
-   workflow
 
-.. toctree::
-   :maxdepth: 2
-   :caption: User Guide
-
-   module
-   configuration   
+.. _TeTueGeneric: https://github.com/Technik-Tueftler/TeTueGeneric
+.. _documentation: https://technik-tueftler.github.io/TeTueGeneric/generic/index.html

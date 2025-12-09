@@ -3,13 +3,13 @@ Help
 
 .. note::
 
-   This page should be a collection for instruction focusing on important workflows 
-   and commands for working in the repository. An example, the creation of the 
-   documentation on sphinx in VS Code. 
+   This chapter provides all the help you need to install the bot, 
+   load it onto your own Discord, and configure it. There is also 
+   a chapter on creating tales with the bot.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Basics
+   :caption: Installation
 
-   start_w_repo
-   create_docu
+   local_python
+   local_docker
