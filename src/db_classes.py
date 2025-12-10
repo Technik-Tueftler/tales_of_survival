@@ -164,6 +164,7 @@ class STORY(Base):
         default=StoryType.FICTION,
     )
     timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    discarded: Mapped[bool] = mapped_column(default=False)
     messages: Mapped[list["MESSAGE"]] = relationship()  # 1:N
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"))  # 1:N
     tale: Mapped["TALE"] = relationship(back_populates="stories")  # 1:N
