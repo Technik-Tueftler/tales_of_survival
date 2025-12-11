@@ -6,7 +6,13 @@ The bot is implemented using the discord.py library and provides a simple comman
 import discord
 from discord.ext import commands
 from .configuration import Configuration
-from .game import create_game, keep_telling_schedule, select_character, setup_game, reset_game
+from .game import (
+    create_game,
+    keep_telling_schedule,
+    select_character,
+    setup_game,
+    reset_game,
+)
 from .file_utils import import_data
 
 
