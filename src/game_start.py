@@ -4,9 +4,25 @@ user input and generating initial prompts.
 """
 
 from discord import Interaction
-from .configuration import Configuration, ProcessInput, StartCondition
+from .configuration import (
+    Configuration,
+    ProcessInput,
+    StartCondition,
+    DelimitedTemplate,
+)
 from .game_views import StartTaleButtonView
-from .constants import PROMPT_MAX_WORDS_DESCRIPTION, PROMPT_MAX_WORDS_START
+from .constants import (
+    PROMPT_MAX_WORDS_DESCRIPTION,
+    PROMPT_MAX_WORDS_START,
+    NEW_TALE_FIRST_PHASE_PROMPT_PART_1,
+    NEW_TALE_FIRST_PHASE_PROMPT_PART_2,
+    NEW_TALE_FIRST_PHASE_PROMPT_PART_3,
+    NEW_TALE_FIRST_PHASE_PROMPT_PART_4,
+    NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1,
+    NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2,
+    NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1,
+    NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2
+)
 
 
 async def collect_start_input(
@@ -43,24 +59,33 @@ async def get_first_phase_prompt(
         "Generating first phase prompt for game start for tale id: "
         + f"{game_data.story_context.tale.id}"
     )
-    system_requ_prompt = (
-        f"Du bist ein Geschichtenerzähler für ein/e {game_data.story_context.tale.genre.name}. "
-        + f"Die Antworten nur in {game_data.story_context.tale.genre.language}."
+    system_requ_prompt = DelimitedTemplate(
+        NEW_TALE_FIRST_PHASE_PROMPT_PART_1
+    ).substitute(
+        GenreName=game_data.story_context.tale.genre.name,
+        GenreLanguage=game_data.story_context.tale.genre.language,
     )
+
     system_requ_prompt += (
-        f" Der Erzählstil sollte: {game_data.story_context.tale.genre.storytelling_style} sein."
+        DelimitedTemplate(NEW_TALE_FIRST_PHASE_PROMPT_PART_2).substitute(
+            GenreStorytellingStyle=game_data.story_context.tale.genre.storytelling_style
+        )
         if game_data.story_context.tale.genre.storytelling_style is not None
         else ""
     )
+
     system_requ_prompt += (
-        f" Die Atmosphäre der Geschichte ist: {game_data.story_context.tale.genre.atmosphere}."
+        DelimitedTemplate(NEW_TALE_FIRST_PHASE_PROMPT_PART_3).substitute(
+            GenreAtmosphere=game_data.story_context.tale.genre.atmosphere
+        )
         if game_data.story_context.tale.genre.atmosphere is not None
         else ""
     )
-    user_requ_prompt = (
-        "Beschreibe mir die Welt in der die Menschen jetzt "
-        + f"leben müssen mit (maximal {PROMPT_MAX_WORDS_DESCRIPTION} Wörter)"
+    config.logger.trace(f"System prompt part 1: {system_requ_prompt}")
+    user_requ_prompt = DelimitedTemplate(NEW_TALE_FIRST_PHASE_PROMPT_PART_4).substitute(
+        MaxWords=PROMPT_MAX_WORDS_DESCRIPTION
     )
+    config.logger.trace(f"User prompt part 1: {user_requ_prompt}")
     messages = [
         {"role": "user", "content": system_requ_prompt},
         {"role": "user", "content": user_requ_prompt},
@@ -88,69 +113,81 @@ async def get_second_phase_prompt(
     )
     messages = []
     start_condition = game_data.story_context.start.condition
-    if start_condition is StartCondition.S_ZOMBIE and len(game_data.story_context.character) > 1:
-        char_requ_prompt = (
-            "Es sind die folgenden Charaktere (Anzahl: "
-            + f"{len(game_data.story_context.character)}) in der Geschichte:"
+    if (
+        start_condition is StartCondition.S_ZOMBIE
+        and len(game_data.story_context.character) > 1
+    ):
+        config.logger.debug(
+            "Generating S_ZOMBIE start condition prompt for multiple characters "
+            + f"Count: {len(game_data.story_context.character)}"
         )
+        char_requ_prompt = DelimitedTemplate(
+            NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1
+        ).substitute(MaxWords=len(game_data.story_context.character))
+        config.logger.trace(f"Charakter prompt part 2: {char_requ_prompt}")
+
         messages.append({"role": "user", "content": char_requ_prompt})
+
         for character in game_data.story_context.character:
+            config.logger.trace(f"Charakter-ID for part 2: {character.id}")
             messages.append({"role": "user", "content": character.summary})
+
         if game_data.story_context.start.prompt == "":
-            start_requ_prompt = (
-                f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
-                + "Wörter) bei der sich die Charaktere in einer Stadt namens "
-                + f"{game_data.story_context.start.city} treffen und beschließen eine "
-                + "Gemeinschaft zu bilden."
+            start_requ_prompt = DelimitedTemplate(
+                NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2
+            ).substitute(
+                MaxWords=PROMPT_MAX_WORDS_START, City=game_data.story_context.start.city
             )
         else:
             start_requ_prompt = game_data.story_context.start.prompt
+        config.logger.trace(f"Start prompt part 2: {start_requ_prompt}")
         messages.append({"role": "user", "content": start_requ_prompt})
 
-    elif start_condition is StartCondition.S_ZOMBIE and len(game_data.story_context.character) == 1:
-        char_requ_prompt = "Um den folgende Charaktere geht es in der Geschichte:"
-        messages.append({"role": "user", "content": char_requ_prompt})
-        messages.append(
-            {
-                "role": "user",
-                "content": game_data.story_context.character[0].summary,
-            }
+    elif (
+        start_condition is StartCondition.S_ZOMBIE
+        and len(game_data.story_context.character) == 1
+    ):
+        config.logger.debug(
+            "Generating S_ZOMBIE start condition prompt for one characters "
+            + f"Count: {len(game_data.story_context.character)}"
         )
+        char_requ_prompt = DelimitedTemplate(
+            NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1
+        ).substitute(CharacterSummary=game_data.story_context.character[0].summary)
+        config.logger.trace(f"Charakter prompt part 2: {char_requ_prompt}")
+        messages.append({"role": "user", "content": char_requ_prompt})
+
         if game_data.story_context.start.prompt == "":
-            start_requ_prompt = (
-                f"Erzähl mir den Start der Geschichte (maximal {PROMPT_MAX_WORDS_START} "
-                + "Wörter) bei der sich der Charakter in einer Stadt namens "
-                + f"{game_data.story_context.start.city} aufhält und dort versucht "
-                + "zu überleben."
-            )
+            start_requ_prompt = DelimitedTemplate(
+                NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2
+            ).substitute(MaxWords=PROMPT_MAX_WORDS_START, City=game_data.story_context.start.city)
         else:
             start_requ_prompt = game_data.story_context.start.prompt
+        config.logger.trace(f"Start prompt part 2: {start_requ_prompt}")
         messages.append({"role": "user", "content": start_requ_prompt})
 
-    elif start_condition is StartCondition.OWN and len(game_data.story_context.character) > 1:
-        char_requ_prompt = (
-            "Es sind die folgenden Charaktere (Anzahl: "
-            + f"{len(game_data.story_context.character)}) in der Geschichte:"
-        )
-        messages.append({"role": "user", "content": char_requ_prompt})
-        for character in game_data.story_context.character:
-            messages.append({"role": "user", "content": character.summary})
-        start_requ_prompt = game_data.story_context.start.prompt
-        messages.append({"role": "user", "content": start_requ_prompt})
+    elif start_condition is StartCondition.OWN:
+        if len(game_data.story_context.character) > 1:
+            char_requ_prompt = DelimitedTemplate(
+                NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1
+            ).substitute(NumberCharacters=len(game_data.story_context.character))
+            config.logger.trace(f"Charakter prompt part 2: {char_requ_prompt}")
+            messages.append({"role": "user", "content": char_requ_prompt})
+            for character in game_data.story_context.character:
+                config.logger.trace(f"Charakter-ID for part 2: {character.id}")
+                messages.append({"role": "user", "content": character.summary})
+        else:
+            char_requ_prompt = DelimitedTemplate(
+                NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1
+            ).substitute(CharacterSummary=game_data.story_context.character[0].summary)
+            config.logger.trace(f"Charakter prompt part 2: {char_requ_prompt}")
+            messages.append({"role": "user", "content": char_requ_prompt})
 
-    elif start_condition is StartCondition.OWN and len(game_data.story_context.character) == 1:
-        char_requ_prompt = "Um den folgende Charaktere geht es in der Geschichte:"
-        messages.append({"role": "user", "content": char_requ_prompt})
-        messages.append(
-            {
-                "role": "user",
-                "content": game_data.story_context.character[0].summary,
-            }
-        )
         start_requ_prompt = game_data.story_context.start.prompt
+        config.logger.trace(f"Start prompt part 2: {start_requ_prompt}")
         messages.append({"role": "user", "content": start_requ_prompt})
     else:
-        config.logger.error(
+        config.logger.critical(
             f"Start condition {game_data.story_context.start.condition} not defined."
         )
     return messages
