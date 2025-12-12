@@ -123,7 +123,7 @@ async def get_second_phase_prompt(
         )
         char_requ_prompt = DelimitedTemplate(
             NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1
-        ).substitute(MaxWords=len(game_data.story_context.character))
+        ).substitute(NumberCharacters=len(game_data.story_context.character))
         config.logger.trace(f"Charakter prompt part 2: {char_requ_prompt}")
 
         messages.append({"role": "user", "content": char_requ_prompt})

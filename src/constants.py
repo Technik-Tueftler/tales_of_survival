@@ -46,7 +46,9 @@ NEW_TALE_FIRST_PHASE_PROMPT_PART_4: str = (
 """Prompt template for world description in the first phase of a new tale."""
 
 NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1: str = (
-    "Es sind die folgenden Charaktere (Anzahl: #NumberCharacters) in der Geschichte:"
+    "Es sind die nachfolgenden Charaktere (Anzahl: #NumberCharacters) in der Geschichte. "
+    + "Achte darauf, dass du keine neuen Charaktere hinzufügst, außer es wird ausdrücklich "
+    + "in einem neuen prompt beschrieben."
 )
 """Prompt template for number of characters in the second phase of a new tale."""
 
@@ -64,7 +66,6 @@ NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1: str = (
     + "Um den folgende Charaktere geht es in der Geschichte: #CharacterSummary"
 )
 """Prompt template for single character summary in the second phase of a new tale."""
-
 
 NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2: str = (
     "Erzähl mir den Start der Geschichte (maximal #MaxWords Wörter) bei der sich der "
