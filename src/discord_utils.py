@@ -144,7 +144,7 @@ async def update_embed_message(config: Configuration, game: GAME) -> None:
         embed.color = discord.Color.green()
         config.logger.trace("General Embed fields updated.")
         for i, field in enumerate(fields):
-            if field.name == "The Players:":
+            if field.name in ("The Players:", "The Player:"):
                 field_name = "The Players:" if len(users) > 1 else "The Player:"
                 player = ", ".join([f"<@{user.dc_id}>" for user in users])
                 embed.set_field_at(
