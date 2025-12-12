@@ -116,6 +116,47 @@ async def delete_channel_messages(
         )
 
 
+async def update_embed_message_color(
+    config: Configuration, game: GAME, discord_color: discord.colour.Colour
+) -> None:
+    """
+    This function updates the color of a game embed message.
+
+    Args:
+        config (Configuration): App configuration
+        game (GAME): Game object to udpate the embed message
+        discord_color (discord.colour.Colour): New color for the embed message
+    """
+    try:
+        users: list[USER] = await get_active_user_from_game(config, game.id)
+        config.logger.debug(
+            f"All active user in game <id>: {game.id}. <user>: {[user.name for user in users]}"
+        )
+        channel: TextChannel = config.dc_bot.get_channel(game.channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(game.channel_id)
+        embed_message = await channel.fetch_message(game.message_id)
+        embed: Embed = embed_message.embeds[0]
+        print(type(discord_color))
+        embed.color = discord_color
+        await embed_message.edit(embed=embed)
+
+    except discord.errors.NotFound:
+        config.logger.error(f"Channel ID {game.channel_id} not found.")
+    except discord.errors.Forbidden:
+        config.logger.error(f"No permission to write to channel {game.channel_id}.")
+    except discord.errors.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "HTTP-Error during update embed message"
+        )
+    except KeyError:
+        config.logger.error("The message is missing the content key.")
+    except TypeError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Type-Error during update embed message"
+        )
+
+
 async def update_embed_message(config: Configuration, game: GAME) -> None:
     """
     This function updates a game embed with the start information and current players.

@@ -12,6 +12,7 @@ from .discord_utils import (
     update_embed_message,
     interface_select_game,
     delete_channel_messages,
+    update_embed_message_color,
 )
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai, OpenAiContext
@@ -601,4 +602,7 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
     )
     await delete_channel_messages(
         config, process_data.game_context.selected_game, dc_message_ids
+    )
+    await update_embed_message_color(
+        config, process_data.game_context.selected_game, discord.Color.yellow()
     )
