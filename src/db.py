@@ -719,7 +719,6 @@ async def delete_init_stories(
     Returns:
         list[int]: List of Discord message IDs that were associated with the deleted stories
     """
-    # ToDo: Dont delete stories, just mark them as discarded
     async with config.session() as session, session.begin():
         statement_stories = (
             select(STORY)

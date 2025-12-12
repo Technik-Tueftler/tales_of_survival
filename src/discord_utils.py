@@ -137,7 +137,6 @@ async def update_embed_message_color(
             channel = await config.dc_bot.fetch_channel(game.channel_id)
         embed_message = await channel.fetch_message(game.message_id)
         embed: Embed = embed_message.embeds[0]
-        print(type(discord_color))
         embed.color = discord_color
         await embed_message.edit(embed=embed)
 
