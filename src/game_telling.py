@@ -47,12 +47,18 @@ async def telling_event(
         )
     )
     response_event = await request_openai(config, messages)
-    config.logger.trace(f"Event response: {response_event}")
+    if not await response_event.error_free():
+        await interaction.followup.send(
+            f"The following error occurred during the AI request: {response_event.error}",
+            ephemeral=True,
+        )
+        return False
+    config.logger.trace(f"Event response: {response_event.response}")
 
     msg_ids_event = await send_channel_message(
         config,
         process_data.game_context.selected_game.channel_id,
-        response_event,
+        response_event.response,
     )
 
     event_message = (
@@ -62,7 +68,7 @@ async def telling_event(
 
     commit_stories.append(
         STORY(
-            response=response_event,
+            response=response_event.response,
             story_type=StoryType.EVENT,
             tale_id=process_data.story_context.tale.id,
             messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_event],
@@ -71,7 +77,9 @@ async def telling_event(
     await update_db_objs(config, commit_stories)
 
 
-async def telling_fiction(config: Configuration, process_data: ProcessInput):
+async def telling_fiction(
+    config: Configuration, process_data: ProcessInput, interaction: Interaction
+):
     """
     This function handles the telling of story based on an fiction input.
 
@@ -102,17 +110,23 @@ async def telling_fiction(config: Configuration, process_data: ProcessInput):
         )
     )
     response_fiction = await request_openai(config, messages)
-    config.logger.trace(f"Fiction response: {response_fiction}")
+    if not await response_fiction.error_free():
+        await interaction.followup.send(
+            f"The following error occurred during the AI request: {response_fiction.error}",
+            ephemeral=True,
+        )
+        return False
+    config.logger.trace(f"Fiction response: {response_fiction.response}")
 
     msg_ids_fiction = await send_channel_message(
         config,
         process_data.game_context.selected_game.channel_id,
-        response_fiction,
+        response_fiction.response,
     )
 
     commit_stories.append(
         STORY(
-            response=response_fiction,
+            response=response_fiction.response,
             story_type=StoryType.FICTION,
             tale_id=process_data.story_context.tale.id,
             messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_fiction],

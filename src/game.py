@@ -14,7 +14,7 @@ from .discord_utils import (
     delete_channel_messages,
 )
 from .configuration import Configuration, ProcessInput
-from .llm_handler import request_openai
+from .llm_handler import request_openai, OpenAiContext
 from .db_classes import StoryType, GameStatus
 from .db_classes import (
     GAME,
@@ -310,7 +310,7 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
             await telling_event(config, process_data, interaction)
 
         elif process_data.story_context.story_type is StoryType.FICTION:
-            await telling_fiction(config, process_data)
+            await telling_fiction(config, process_data, interaction)
         else:
             config.logger.error(
                 f"Story type: {process_data.story_context.story_type} is not defined."
@@ -406,7 +406,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
 
 async def start_game_schedule(
     interaction: Interaction, config: Configuration, game_data: ProcessInput
-):
+) -> bool:
     """
     This function the schedule to start a new game. It collects all necessary
     inputs from the user, gets the tale and character data from the database,
@@ -417,12 +417,13 @@ async def start_game_schedule(
         interaction (Interaction): Interaction object
         config (Configuration): App configuration
         game_data (ProcessInput): Game data object
+
+    Returns:
+        bool: Success status of the game start process
     """
     await collect_start_input(interaction, config, game_data)
 
-    tale = await get_tale_from_game_id(
-        config, game_data.game_context.selected_game.id
-    )
+    tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
     game_character = await get_character_from_game_id(
         config, game_data.game_context.selected_game.id
     )
@@ -431,9 +432,15 @@ async def start_game_schedule(
 
     messages = await get_first_phase_prompt(config, game_data)
 
-    response_world = await request_openai(config, messages)
+    response_world: OpenAiContext = await request_openai(config, messages)
+    if not await response_world.error_free():
+        await interaction.followup.send(
+            f"The following error occurred during the AI request: {response_world.error}",
+            ephemeral=True,
+        )
+        return False
     msg_ids_world = await send_channel_message(
-        config, game_data.game_context.selected_game.channel_id, response_world
+        config, game_data.game_context.selected_game.channel_id, response_world.response
     )
     stories = [
         STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
@@ -441,7 +448,7 @@ async def start_game_schedule(
     ]
     stories.append(
         STORY(
-            response=response_world,
+            response=response_world.response,
             story_type=StoryType.INIT,
             tale_id=tale.id,
             messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
@@ -456,27 +463,31 @@ async def start_game_schedule(
 
     for msg in messages_second_phase:
         stories.append(
-            STORY(
-                request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
-            )
+            STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
         )
 
     messages.extend(messages_second_phase)
     response_start = await request_openai(config, messages)
-
+    if not await response_start.error_free():
+        await interaction.followup.send(
+            f"The following error occurred during the AI request: {response_start.error}",
+            ephemeral=True,
+        )
+        return False
     msg_ids_start = await send_channel_message(
-        config, game_data.game_context.selected_game.channel_id, response_start
+        config, game_data.game_context.selected_game.channel_id, response_start.response
     )
 
     stories.append(
         STORY(
-            response=response_start,
+            response=response_start.response,
             story_type=StoryType.INIT,
             tale_id=tale.id,
             messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
         )
     )
     await update_db_objs(config=config, objs=stories)
+    return True
 
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
@@ -533,7 +544,9 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
                 + "will be started.",
                 ephemeral=True,
             )
-            await start_game_schedule(interaction, config, process_data)
+            status = await start_game_schedule(interaction, config, process_data)
+            if not status:
+                return False
         process_data.game_context.selected_game.status = (
             process_data.game_context.new_game_status
         )
@@ -575,9 +588,7 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
     process_data.story_context.tale = await get_tale_from_game_id(
         config, process_data.game_context.selected_game.id
     )
-    if not await check_only_init_stories(
-        config, process_data.story_context.tale.id
-    ):
+    if not await check_only_init_stories(config, process_data.story_context.tale.id):
         await interaction.followup.send(
             "The story has already been passed on and cannot be reset.",
             ephemeral=True,
