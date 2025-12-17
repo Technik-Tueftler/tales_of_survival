@@ -741,10 +741,34 @@ async def delete_init_stories(
             await session.delete(message)
         config.logger.debug(f"Deleted {len(messages)} messages.")
 
-        statement_messages = update(STORY).where(STORY.id.in_(story_ids)).values(discarded=True)
+        statement_messages = (
+            update(STORY).where(STORY.id.in_(story_ids)).values(discarded=True)
+        )
         await session.execute(statement_messages)
         config.logger.debug(f"Discard {len(messages)} stories.")
         statement_game = select(GAME).where(GAME.id == game_id)
         game = (await session.execute(statement_game)).scalar_one_or_none()
         game.status = GameStatus.CREATED
         return dc_message_ids
+
+
+async def get_active_genre(config: Configuration) -> list[GENRE]:
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.active.is_(True))
+            return (await session.execute(statement)).scalars().all()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return []
+
+
+async def deactivate_genre_with_id(config: Configuration, genre_id: int) -> None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.id == genre_id)
+            genre = (await session.execute(statement)).scalar_one_or_none()
+            if genre:
+                genre.active = False
+                config.logger.debug(f"Deactivated genre with ID: {genre_id}")
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")

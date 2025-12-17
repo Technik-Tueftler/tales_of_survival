@@ -4,6 +4,7 @@ The bot is implemented using the discord.py library and provides a simple comman
 """
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from .configuration import Configuration
 from .game import (
@@ -14,6 +15,7 @@ from .game import (
     reset_game,
 )
 from .file_utils import import_data
+from .genre import deactivate_genre
 
 
 class DiscordBot:
@@ -122,10 +124,37 @@ class DiscordBot:
 
         self.bot.tree.command(
             name="setup_game",
-            description="Switch game state to specific status like running, paused, finished, etc.",
+            description="Switch game state to specific status like running, paused, etc.",
         )(wrapped_setup_game)
 
         self.bot.tree.command(
             name="reset_game",
             description="Restart a Tale and create new start prompt.",
         )(wrapped_reset_game)
+
+        genre_group = app_commands.Group(
+            name="genre", description="Genre administration"
+        )
+
+        async def wrapped_genre_deactivate(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for genre deactivation."
+            )
+            await deactivate_genre(interaction, self.config)
+
+        async def wrapped_genre_activate(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for genre activation."
+            )
+            await interaction.response.send_message(
+                "Activate noch nicht implementiert.", ephemeral=True
+            )
+
+        genre_group.command(name="deactivate", description="Deactivate genre")(
+            wrapped_genre_deactivate
+        )
+        genre_group.command(name="activate", description="Activate genre")(
+            wrapped_genre_activate
+        )
+
+        self.bot.tree.add_command(genre_group)

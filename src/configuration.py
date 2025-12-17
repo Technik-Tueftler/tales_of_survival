@@ -24,6 +24,7 @@ from .db_classes import (
     GameStatus,
     StartCondition,
     INSPIRATIONALWORD,
+    GENRE,
 )
 
 
@@ -40,6 +41,28 @@ class DelimitedTemplate(Template):
     """
 
     delimiter = "#"
+
+
+class GenreContext:
+    """
+    Class to specify the genre context for processing.
+    """
+
+    def __init__(self):
+        self.available_genre: List[GENRE] = []
+        self.selected_genre_id: int = 0
+        self.selected_genre: GENRE = None
+
+    async def input_valid_genre(self) -> bool:
+        """
+        Checks if games are available for selection.
+
+        Returns:
+            bool: Games available
+        """
+        if len(self.available_genre) <= 0:
+            return False
+        return True
 
 
 class UserContext:
