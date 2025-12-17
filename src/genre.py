@@ -1,6 +1,11 @@
 import discord
 from discord import Interaction
-from .db import get_active_genre, deactivate_genre_with_id
+from .db import (
+    get_active_genre,
+    deactivate_genre_with_id,
+    get_inactive_genre,
+    activate_genre_with_id,
+)
 from .file_utils import limit_text
 from .configuration import Configuration, GenreContext
 
@@ -87,6 +92,42 @@ async def deactivate_genre(interaction: Interaction, config: Configuration):
         await deactivate_genre_with_id(config, process_data.selected_genre_id)
         await interaction.followup.send(
             "Genre is deactivated successfully.",
+            ephemeral=True,
+        )
+
+    except Exception as err:
+        print(type(err), err)
+
+
+async def activate_genre(interaction: Interaction, config: Configuration):
+    try:
+        process_data = GenreContext()
+        process_data.available_genre = await get_inactive_genre(config)
+
+        if not await process_data.input_valid_genre():
+            await interaction.response.send_message(
+                "No inactive genre is available, please contact a Mod.",
+                ephemeral=True,
+            )
+            return
+
+        genre_select_view = GenreSelectView(config, process_data)
+        await interaction.response.send_message(
+            "Please select the genre you want to activate",
+            view=genre_select_view,
+            ephemeral=True,
+        )
+        await genre_select_view.wait()
+
+        if process_data.selected_genre_id == 0:
+            await interaction.followup.send(
+                "No genre was selected, cancelling activation.",
+                ephemeral=True,
+            )
+            return
+        await activate_genre_with_id(config, process_data.selected_genre_id)
+        await interaction.followup.send(
+            "Genre is activated successfully.",
             ephemeral=True,
         )
 

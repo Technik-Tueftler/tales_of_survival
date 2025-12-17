@@ -15,7 +15,7 @@ from .game import (
     reset_game,
 )
 from .file_utils import import_data
-from .genre import deactivate_genre
+from .genre import deactivate_genre, activate_genre
 
 
 class DiscordBot:
@@ -146,9 +146,7 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute sub-command for genre activation."
             )
-            await interaction.response.send_message(
-                "Activate noch nicht implementiert.", ephemeral=True
-            )
+            await activate_genre(interaction, self.config)
 
         genre_group.command(name="deactivate", description="Deactivate genre")(
             wrapped_genre_deactivate

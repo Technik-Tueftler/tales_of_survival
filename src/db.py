@@ -772,3 +772,25 @@ async def deactivate_genre_with_id(config: Configuration, genre_id: int) -> None
                 config.logger.debug(f"Deactivated genre with ID: {genre_id}")
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+
+
+async def get_inactive_genre(config: Configuration) -> list[GENRE]:
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.active.is_(False))
+            return (await session.execute(statement)).scalars().all()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return []
+
+
+async def activate_genre_with_id(config: Configuration, genre_id: int) -> None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.id == genre_id)
+            genre = (await session.execute(statement)).scalar_one_or_none()
+            if genre:
+                genre.active = True
+                config.logger.debug(f"Deactivated genre with ID: {genre_id}")
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
