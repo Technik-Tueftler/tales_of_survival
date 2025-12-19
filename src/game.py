@@ -23,7 +23,6 @@ from .db_classes import (
     TALE,
     USER,
     UserGameCharacterAssociation,
-    CHARACTER,
     STORY,
     MESSAGE,
 )
@@ -32,14 +31,9 @@ from .db import (
     get_genre_double_cond,
     process_player,
     update_db_objs,
-    get_available_characters,
-    get_object_by_id,
     get_all_running_games,
-    get_all_user_games,
     get_tale_from_game_id,
     get_games_w_status,
-    get_user_from_dc_id,
-    get_mapped_ugc_association,
     count_regist_char_from_game,
     get_character_from_game_id,
     get_stories_messages_for_ai,
@@ -48,7 +42,6 @@ from .db import (
     delete_init_stories,
 )
 from .game_views import (
-    CharacterSelectView,
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
@@ -317,77 +310,6 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
                 f"Story type: {process_data.story_context.story_type} is not defined."
             )
             return
-
-    except discord.Forbidden:
-        config.logger.opt(exception=sys.exc_info()).error(
-            "Cannot send message, permission denied."
-        )
-    except discord.HTTPException:
-        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
-    except (TypeError, ValueError):
-        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
-    except asyncio.TimeoutError:
-        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
-    except KeyError:
-        config.logger.opt(exception=sys.exc_info()).error(
-            "Missing key in game data or for DB object."
-        )
-
-
-async def select_character(interaction: Interaction, config: Configuration) -> None:
-    """
-    This function allows the user to select a character for a specific game.
-
-    Args:
-        interaction (Interaction): Interaction object
-        config (Configuration): App configuration
-    """
-    try:
-        process_data = ProcessInput()
-        process_data.user_context.user_dc_id = str(interaction.user.id)
-        await get_all_user_games(config, process_data)
-        if not await process_data.game_context.input_valid_game():
-            await interaction.response.send_message(
-                "An error occurred while retrieving your games. Your not registered "
-                "for any game. Please contact the admin.",
-                ephemeral=True,
-            )
-            config.logger.debug(
-                f"User: {interaction.user.id} wants to select a character, "
-                + "but has not been asked to do so in any game."
-            )
-            return
-        select_success = await interface_select_game(interaction, config, process_data)
-        if not select_success:
-            return
-        process_data.user_context.available_chars = await get_available_characters(
-            config
-        )
-        if not await process_data.user_context.input_valid_char():
-            await interaction.followup.send(
-                "An error occurred while retrieving character. There are no selectable characters. "
-                "Please contact the admin.",
-                ephemeral=True,
-            )
-            return
-        character_view = CharacterSelectView(config, process_data)
-        await interaction.followup.send(
-            "Please select now the character for the game.",
-            view=character_view,
-            ephemeral=True,
-        )
-        await character_view.wait()
-        user = await get_user_from_dc_id(config, process_data.user_context.user_dc_id)
-        association = await get_mapped_ugc_association(
-            config, process_data.game_context.selected_game_id, user.id
-        )
-        selected_character = await get_object_by_id(
-            config, CHARACTER, process_data.user_context.selected_char
-        )
-        selected_character.user_id = association.user_id
-        selected_character.start_date = datetime.now(timezone.utc)
-        association.character_id = process_data.user_context.selected_char
-        await update_db_objs(config, [association, selected_character])
 
     except discord.Forbidden:
         config.logger.opt(exception=sys.exc_info()).error(

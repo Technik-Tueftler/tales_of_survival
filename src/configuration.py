@@ -43,6 +43,28 @@ class DelimitedTemplate(Template):
     delimiter = "#"
 
 
+class CharacterContext:
+    """
+    Class to specify the character context for processing.
+    """
+
+    def __init__(self):
+        self.available_character: List[CHARACTER] = []
+        self.selected_character_id: int = 0
+        self.selected_character: CHARACTER = None
+
+    async def input_valid_genre(self) -> bool:
+        """
+        Checks if character are available for selection.
+
+        Returns:
+            bool: Character available
+        """
+        if len(self.available_character) <= 0:
+            return False
+        return True
+
+
 class GenreContext:
     """
     Class to specify the genre context for processing.
@@ -55,10 +77,10 @@ class GenreContext:
 
     async def input_valid_genre(self) -> bool:
         """
-        Checks if games are available for selection.
+        Checks if genre are available for selection.
 
         Returns:
-            bool: Games available
+            bool: Genre available
         """
         if len(self.available_genre) <= 0:
             return False

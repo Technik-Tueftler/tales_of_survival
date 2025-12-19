@@ -10,10 +10,10 @@ from .configuration import Configuration
 from .game import (
     create_game,
     keep_telling_schedule,
-    select_character,
     setup_game,
     reset_game,
 )
+from .character import select_character
 from .file_utils import import_data
 from .genre import deactivate_genre, activate_genre
 
@@ -85,12 +85,6 @@ class DiscordBot:
             )
             await import_data(interaction, self.config)
 
-        async def wrapped_select_char(interaction: discord.Interaction):
-            self.config.logger.trace(
-                f"User: {interaction.user.id} execute command for character selection."
-            )
-            await select_character(interaction, self.config)
-
         async def wrapped_setup_game(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command for setup game."
@@ -116,11 +110,6 @@ class DiscordBot:
             name="import_data",
             description="Import game data from a YAML file.",
         )(wrapped_import_data)
-
-        self.bot.tree.command(
-            name="select_character",
-            description="Select a character for a game.",
-        )(wrapped_select_char)
 
         self.bot.tree.command(
             name="setup_game",
@@ -156,3 +145,28 @@ class DiscordBot:
         )
 
         self.bot.tree.add_command(genre_group)
+
+        character_group = app_commands.Group(
+            name="character", description="Character administration"
+        )
+
+        async def wrapped_character_select(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for character selection."
+            )
+            await select_character(interaction, self.config)
+
+        async def wrapped_character_show(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for genre activation."
+            )
+
+        character_group.command(
+            name="select", description="Select a character for a game."
+        )(wrapped_character_select)
+
+        character_group.command(
+            name="show", description="Show available character with her background."
+        )(wrapped_character_show)
+
+        self.bot.tree.add_command(character_group)
