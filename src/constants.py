@@ -2,6 +2,16 @@
 Constants for organizing various fixed values used across the application.
 """
 
+DEFAULT_TALE_THUMBNAIL_URL: str = (
+    "https://raw.githubusercontent.com/Technik-Tueftler/tales_of_survival/refs/heads/main/files/thumbnail_tale.png"
+)
+"""Default URL for the tale thumbnail image used in embeds."""
+
+DEFAULT_CHARACTER_THUMBNAIL_URL: str = (
+    "https://raw.githubusercontent.com/Technik-Tueftler/tales_of_survival/refs/heads/main/files/thumbnail_character.png"
+)
+"""Default URL for character thumbnail image used in embeds."""
+
 PROMPT_MAX_WORDS_DESCRIPTION: int = 200
 """Maximum number of words for describing the world of the tale."""
 

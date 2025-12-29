@@ -7,9 +7,9 @@ import asyncio
 import discord
 from discord import TextChannel, Embed, Interaction
 from .configuration import Configuration, ProcessInput
-from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION
+from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION, DEFAULT_CHARACTER_THUMBNAIL_URL
 from .db import get_active_user_from_game, get_object_by_id
-from .db_classes import GAME, USER
+from .db_classes import GAME, USER, CHARACTER
 from .game_views import GameSelectView
 
 
@@ -258,3 +258,30 @@ async def interface_select_game(
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
+
+async def send_character_embed(
+    interaction: Interaction,
+    config: Configuration,
+    character: CHARACTER,
+) -> None:
+    try:
+        embed = discord.Embed(
+            title=character.name,
+            description=character.background,
+            color=discord.Color.dark_blue(),
+        )
+        embed.add_field(name="Description", value=character.description, inline=False)
+        embed.add_field(name="Pos-Trait", value=character.pos_trait, inline=True)
+        embed.add_field(name="Neg-Trait", value=character.neg_trait, inline=True)
+        embed.set_thumbnail(
+            url=DEFAULT_CHARACTER_THUMBNAIL_URL
+        )
+
+        message = await interaction.followup.send(embed=embed, ephemeral=True)
+        return message
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")

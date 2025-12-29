@@ -13,7 +13,7 @@ from .game import (
     setup_game,
     reset_game,
 )
-from .character import select_character
+from .character import select_character, show_character
 from .file_utils import import_data
 from .genre import deactivate_genre, activate_genre
 
@@ -158,15 +158,17 @@ class DiscordBot:
 
         async def wrapped_character_show(interaction: discord.Interaction):
             self.config.logger.trace(
-                f"User: {interaction.user.id} execute sub-command for genre activation."
+                f"User: {interaction.user.id} execute sub-command to show character."
             )
+            await show_character(interaction, self.config)
 
         character_group.command(
             name="select", description="Select a character for a game."
         )(wrapped_character_select)
 
         character_group.command(
-            name="show", description="Show available character with her background."
+            name="show",
+            description="Show available character and select one with background and traits.",
         )(wrapped_character_show)
 
         self.bot.tree.add_command(character_group)

@@ -12,7 +12,7 @@ from .db import (
     update_db_objs,
 )
 from .db_classes import CHARACTER
-from .discord_utils import interface_select_game
+from .discord_utils import interface_select_game, send_character_embed
 from .file_utils import limit_text
 from .configuration import Configuration, CharacterContext, ProcessInput
 
@@ -139,3 +139,32 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
+
+async def show_character(interaction: Interaction, config: Configuration) -> None:
+    char_context = ProcessInput()
+    char_context.user_context.available_chars = await get_available_characters(
+        config
+    )
+    if not await char_context.user_context.input_valid_char():
+        await interaction.followup.send(
+            "An error occurred while retrieving character. There are no selectable characters. "
+            "Please contact the admin.",
+            ephemeral=True,
+        )
+        return
+    character_view = CharacterSelectView(config, char_context)
+    await interaction.response.send_message(
+        "Please select now the character to inspect.",
+        view=character_view,
+        ephemeral=True,
+    )
+    await character_view.wait()
+    selected_character = await get_object_by_id(
+        config, CHARACTER, char_context.user_context.selected_char
+    )
+    await send_character_embed(interaction, config, selected_character)
+
+
+async def show_all_character(interaction: Interaction, config: Configuration) -> None:
+    # TODO: Es werden nur 25 Optionen angezeigt in einem SELECT Manü. Macht diese Option dann berhaupt Sinn?
+    ...
