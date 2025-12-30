@@ -6,6 +6,7 @@ import random
 import asyncio
 from string import Template
 from typing import List
+from enum import Enum
 import environ
 from dotenv import load_dotenv
 import loguru
@@ -43,6 +44,12 @@ class DelimitedTemplate(Template):
     delimiter = "#"
 
 
+class DcRole(Enum):
+    HISTORIAN = 0
+    STORYTELLER = 1
+    EVERYONE = 2
+
+
 class CharacterContext:
     """
     Class to specify the character context for processing.
@@ -53,7 +60,7 @@ class CharacterContext:
         self.selected_character_id: int = 0
         self.selected_character: CHARACTER = None
 
-    async def input_valid_genre(self) -> bool:
+    async def input_valid_character(self) -> bool:
         """
         Checks if character are available for selection.
 
@@ -257,6 +264,9 @@ class DcConfiguration:
     """
 
     bot_token: str = environ.var(converter=str)
+    historian_role_id: int = environ.var(0, converter=int)
+    storyteller_role_id: int = environ.var(0, converter=int)
+    everyone_role_id: int = environ.var(0, converter=int)
 
 
 @environ.config(prefix="TT")
