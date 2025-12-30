@@ -356,6 +356,7 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
             if result is None or len(result) == 0:
                 config.logger.debug("No available characters found in the database")
                 return []
+            config.logger.trace("Available characters retrieved from database")
             return result
 
     except (AttributeError, SQLAlchemyError, TypeError):

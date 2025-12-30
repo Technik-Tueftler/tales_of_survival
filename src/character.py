@@ -13,8 +13,7 @@ from .db import (
 )
 from .db_classes import CHARACTER
 from .discord_utils import interface_select_game, send_character_embed
-from .file_utils import limit_text
-from .configuration import Configuration, CharacterContext, ProcessInput
+from .configuration import Configuration, ProcessInput
 
 
 class CharacterSelectView(discord.ui.View):
@@ -140,6 +139,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
             "Missing key in game data or for DB object."
         )
 
+
 async def show_character(interaction: Interaction, config: Configuration) -> None:
     char_context = ProcessInput()
     char_context.user_context.available_chars = await get_available_characters(
@@ -163,8 +163,3 @@ async def show_character(interaction: Interaction, config: Configuration) -> Non
         config, CHARACTER, char_context.user_context.selected_char
     )
     await send_character_embed(interaction, config, selected_character)
-
-
-async def show_all_character(interaction: Interaction, config: Configuration) -> None:
-    # TODO: Es werden nur 25 Optionen angezeigt in einem SELECT Manü. Macht diese Option dann berhaupt Sinn?
-    ...
