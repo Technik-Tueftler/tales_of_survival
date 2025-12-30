@@ -7,6 +7,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from .configuration import Configuration
+from .discord_permissions import check_permissions_historian
 from .game import (
     create_game,
     keep_telling_schedule,
@@ -71,30 +72,39 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command for game creation."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await create_game(interaction, self.config)
 
         async def wrapped_keep_telling(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command to continue telling a story."
             )
+            # TODO: check permissions here: user is in game or has >= storyteller role
             await keep_telling_schedule(interaction, self.config)
 
         async def wrapped_import_data(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command import game data."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await import_data(interaction, self.config)
 
         async def wrapped_setup_game(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command for setup game."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await setup_game(interaction, self.config)
 
         async def wrapped_reset_game(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command for reset game."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await reset_game(interaction, self.config)
 
         self.bot.tree.command(
@@ -129,12 +139,16 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute sub-command for genre deactivation."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await deactivate_genre(interaction, self.config)
 
         async def wrapped_genre_activate(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute sub-command for genre activation."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await activate_genre(interaction, self.config)
 
         genre_group.command(name="deactivate", description="Deactivate genre")(
