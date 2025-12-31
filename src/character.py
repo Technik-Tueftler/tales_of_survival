@@ -1,3 +1,4 @@
+"""Module for character selection and display in Discord bot."""
 import sys
 from datetime import datetime, timezone
 import asyncio
@@ -141,6 +142,13 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
 
 
 async def show_character(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function allows the user to show a character's details.
+
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
+    """
     char_context = ProcessInput()
     char_context.user_context.available_chars = await get_available_characters(
         config

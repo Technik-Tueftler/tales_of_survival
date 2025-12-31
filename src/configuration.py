@@ -6,7 +6,6 @@ import random
 import asyncio
 from string import Template
 from typing import List
-from enum import Enum
 import environ
 from dotenv import load_dotenv
 import loguru

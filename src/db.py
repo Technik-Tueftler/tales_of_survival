@@ -754,6 +754,15 @@ async def delete_init_stories(
 
 
 async def get_active_genre(config: Configuration) -> list[GENRE]:
+    """
+    This function retrieves all active genres from the database.
+
+    Args:
+        config (Configuration): App configuration
+
+    Returns:
+        list[GENRE]: List with all active genres
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(GENRE).where(GENRE.active.is_(True))
@@ -764,6 +773,13 @@ async def get_active_genre(config: Configuration) -> list[GENRE]:
 
 
 async def deactivate_genre_with_id(config: Configuration, genre_id: int) -> None:
+    """
+    This function deactivates a genre based on the handed over genre id.
+
+    Args:
+        config (Configuration): App configuration
+        genre_id (int): Genre id to deactivate
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(GENRE).where(GENRE.id == genre_id)
@@ -776,6 +792,15 @@ async def deactivate_genre_with_id(config: Configuration, genre_id: int) -> None
 
 
 async def get_inactive_genre(config: Configuration) -> list[GENRE]:
+    """
+    This function retrieves all inactive genres from the database.
+
+    Args:
+        config (Configuration): App configuration
+
+    Returns:
+        list[GENRE]: List with all inactive genres
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(GENRE).where(GENRE.active.is_(False))
@@ -786,6 +811,13 @@ async def get_inactive_genre(config: Configuration) -> list[GENRE]:
 
 
 async def activate_genre_with_id(config: Configuration, genre_id: int) -> None:
+    """
+    This function activates a genre based on the handed over genre id.
+
+    Args:
+        config (Configuration): App configuration
+        genre_id (int): Genre id to activate
+    """
     try:
         async with config.session() as session, session.begin():
             statement = select(GENRE).where(GENRE.id == genre_id)

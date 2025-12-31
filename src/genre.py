@@ -1,3 +1,6 @@
+"""This module handles all genre related operations for the Discord bot."""
+import sys
+import asyncio
 import discord
 from discord import Interaction
 from .db import (
@@ -63,7 +66,14 @@ class GenreSelect(discord.ui.Select):
         self.view.stop()
 
 
-async def deactivate_genre(interaction: Interaction, config: Configuration):
+async def deactivate_genre(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function allows the user to deactivate a genre.
+
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
+    """
     try:
         process_data = GenreContext()
         process_data.available_genre = await get_active_genre(config)
@@ -94,12 +104,26 @@ async def deactivate_genre(interaction: Interaction, config: Configuration):
             "Genre is deactivated successfully.",
             ephemeral=True,
         )
+    except discord.Forbidden:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Cannot send message, permission denied."
+        )
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
 
-    except Exception as err:
-        print(type(err), err)
 
+async def activate_genre(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function allows the user to activate a genre.
 
-async def activate_genre(interaction: Interaction, config: Configuration):
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
+    """
     try:
         process_data = GenreContext()
         process_data.available_genre = await get_inactive_genre(config)
@@ -130,6 +154,9 @@ async def activate_genre(interaction: Interaction, config: Configuration):
             "Genre is activated successfully.",
             ephemeral=True,
         )
-
-    except Exception as err:
-        print(type(err), err)
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except asyncio.TimeoutError:
+        config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")

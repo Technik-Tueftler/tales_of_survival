@@ -3,7 +3,6 @@ Module to handle game creation and management
 """
 
 import sys
-from urllib.parse import urljoin
 from datetime import datetime, timezone
 import asyncio
 import discord
@@ -14,15 +13,14 @@ from .discord_utils import (
     interface_select_game,
     delete_channel_messages,
     update_embed_message_color,
+    send_game_embed
 )
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai, OpenAiContext
 from .db_classes import StoryType, GameStatus
 from .db_classes import (
     GAME,
-    GENRE,
     TALE,
-    USER,
     UserGameCharacterAssociation,
     STORY,
     MESSAGE,
@@ -54,7 +52,6 @@ from .game_start import (
     get_second_phase_prompt,
 )
 from .game_telling import telling_event, telling_fiction
-from .constants import DC_EMBED_DESCRIPTION, DEFAULT_TALE_THUMBNAIL, DEFAULT_THUMBNAIL_URL
 
 
 async def collect_all_game_contexts(
@@ -101,61 +98,6 @@ async def collect_all_game_contexts(
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
     except asyncio.TimeoutError:
         config.logger.opt(exception=sys.exc_info()).error("Timeout error occurred.")
-
-
-async def send_game_information(
-    interaction: Interaction,
-    config: Configuration,
-    game: GAME,
-    genre: GENRE,
-    users: list[USER],
-) -> discord.Message:
-    """
-    Functions create and send a Discord message with game information to a channel.
-
-    Args:
-        interaction (Interaction): Interaction object from Discord
-        config (Configuration): App configuration
-        game (GAME): Game object
-        genre (GENRE): Genre object from game
-        users (list[USER]): All player of the game
-
-    Returns:
-        discord.Message: Discord message object
-    """
-    try:
-        # TODO: Embed send verschieben nach discord_utils
-        game_description = (
-            game.description if game.description else DC_EMBED_DESCRIPTION
-        )
-        embed = discord.Embed(
-            title=game.name,
-            description=game_description,
-            color=discord.Color.yellow(),
-        )
-        embed.add_field(name="Genre", value=genre.name, inline=False)
-        embed.add_field(name="Language", value=genre.language, inline=True)
-        embed.add_field(name="Style", value=genre.storytelling_style, inline=True)
-        embed.add_field(name="Atmosphere", value=genre.atmosphere, inline=True)
-        embed.add_field(
-            name="The Players:",
-            value=", ".join([f"<@{user.dc_id}>" for user in users]),
-            inline=False,
-        )
-
-        embed.set_thumbnail(
-            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL)
-        )
-        embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
-
-        message = await interaction.followup.send(embed=embed)
-        return message
-    except discord.Forbidden:
-        config.logger.error("Cannot send message, permission denied.")
-    except discord.HTTPException:
-        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
-    except (TypeError, ValueError):
-        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
 
 
 async def inform_players(
@@ -251,7 +193,7 @@ async def create_game(interaction: Interaction, config: Configuration):
             for user in processed_user_list
         ]
         await update_db_objs(config, associations)
-        message = await send_game_information(
+        message = await send_game_embed(
             interaction, config, game, genre, processed_user_list
         )
         game.message_id = message.id
