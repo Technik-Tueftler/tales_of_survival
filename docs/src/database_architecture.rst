@@ -15,6 +15,7 @@ Context classes
         GAME }|--|{ UserGameCharacterAssociation : "N:M"
         CHARACTER ||--|| UserGameCharacterAssociation : "1:1"
         USER }|--|{ UserGameCharacterAssociation : "N:M"
+        STORY ||--|{ MESSAGE : "1:N"
 
         style GENRE fill:#f9f,stroke:#333,stroke-width:4px
         style CHARACTER fill:#f9f,stroke:#333,stroke-width:4px
@@ -47,6 +48,7 @@ Context classes
         GAME {
             int id
             string name
+            string description
             GameStatus status
             datetime start_timestamp
             datetime end_timestamp
@@ -64,6 +66,8 @@ Context classes
             string response
             string summary
             StoryType story_type
+            datetime timestamp
+            boolean discarded
             int tale_id
         }
         USER {
@@ -77,6 +81,7 @@ Context classes
             string storytelling_style
             string atmosphere
             string language
+            boolean active
         }
         INSPIRATIONALWORD {
             string id
@@ -89,6 +94,11 @@ Context classes
             string text
             int chance
             int genre_id
+        }
+        MESSAGE {
+            string id
+            int message_id
+            int story_id
         }
 
 .. note::

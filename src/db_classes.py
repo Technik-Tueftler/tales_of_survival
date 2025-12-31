@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 import environ
 from sqlalchemy import Enum as AlchemyEnum
 from sqlalchemy.ext.asyncio import AsyncEngine
-from sqlalchemy import ForeignKey, String, BigInteger
+from sqlalchemy import ForeignKey, BigInteger, TEXT, String
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -102,7 +102,7 @@ class INSPIRATIONALWORD(Base):
 
     __tablename__ = "inspirational_words"
     id: Mapped[int] = mapped_column(primary_key=True)
-    text: Mapped[str] = mapped_column(String(1000), nullable=False)
+    text: Mapped[str] = mapped_column(TEXT, nullable=False)
     chance: Mapped[int] = mapped_column(nullable=False)
     genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"))  # 1:N
     genres: Mapped["GENRE"] = relationship(back_populates="inspirational_words")  # 1:N
@@ -118,7 +118,7 @@ class EVENT(Base):
 
     __tablename__ = "events"
     id: Mapped[int] = mapped_column(primary_key=True)
-    text: Mapped[str] = mapped_column(String(2000), nullable=False)
+    text: Mapped[str] = mapped_column(TEXT, nullable=False)
     chance: Mapped[int] = mapped_column(nullable=False)
     genre_id: Mapped[int] = mapped_column(ForeignKey("genres.id"))  # 1:N
     genre: Mapped["GENRE"] = relationship(back_populates="events")  # 1:N
@@ -156,14 +156,15 @@ class STORY(Base):
 
     __tablename__ = "stories"
     id: Mapped[int] = mapped_column(primary_key=True)
-    request: Mapped[str] = mapped_column(String(2000), nullable=True)
-    response: Mapped[str] = mapped_column(String(2000), nullable=True)
-    summary: Mapped[str] = mapped_column(String(2000), nullable=True)
+    request: Mapped[str] = mapped_column(TEXT, nullable=True)
+    response: Mapped[str] = mapped_column(TEXT, nullable=True)
+    summary: Mapped[str] = mapped_column(TEXT, nullable=True)
     story_type = mapped_column(
         AlchemyEnum(StoryType, native_enum=False, validate_strings=True),
         default=StoryType.FICTION,
     )
     timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    discarded: Mapped[bool] = mapped_column(default=False)
     messages: Mapped[list["MESSAGE"]] = relationship()  # 1:N
     tale_id: Mapped[int] = mapped_column(ForeignKey("tales.id"))  # 1:N
     tale: Mapped["TALE"] = relationship(back_populates="stories")  # 1:N
@@ -230,7 +231,7 @@ class GAME(Base):
     __tablename__ = "games"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    description: Mapped[str] = mapped_column(String(500), nullable=True)
+    description: Mapped[str] = mapped_column(TEXT, nullable=True)
     status = mapped_column(
         AlchemyEnum(GameStatus, native_enum=False, validate_strings=True),
         default=GameStatus.CREATED,
@@ -272,11 +273,11 @@ class CHARACTER(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     age: Mapped[int] = mapped_column(nullable=False)
-    background: Mapped[str] = mapped_column(String(2000), nullable=False)
-    description: Mapped[str] = mapped_column(String(2000), nullable=False)
-    pos_trait: Mapped[str] = mapped_column(String(2000), nullable=True)
-    neg_trait: Mapped[str] = mapped_column(String(2000), nullable=True)
-    summary: Mapped[str] = mapped_column(String(2000), nullable=False)
+    background: Mapped[str] = mapped_column(TEXT, nullable=False)
+    description: Mapped[str] = mapped_column(TEXT, nullable=False)
+    pos_trait: Mapped[str] = mapped_column(TEXT, nullable=True)
+    neg_trait: Mapped[str] = mapped_column(TEXT, nullable=True)
+    summary: Mapped[str] = mapped_column(TEXT, nullable=False)
     alive: Mapped[bool] = mapped_column(default=True)
     start_date: Mapped[datetime] = mapped_column(nullable=True)
     end_date: Mapped[datetime] = mapped_column(nullable=True)

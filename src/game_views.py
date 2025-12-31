@@ -10,53 +10,6 @@ from .file_utils import limit_text
 from .constants import DC_DESCRIPTION_MAX_CHAR
 
 
-class CharacterSelectView(discord.ui.View):
-    """
-    View class to select a character for a game.
-    """
-
-    def __init__(self, config, process_data: ProcessInput):
-        super().__init__()
-        self.add_item(CharacterSelect(config, process_data))
-
-
-class CharacterSelect(discord.ui.Select):
-    """
-    Select class to select a character for a game.
-    """
-
-    def __init__(self, config, process_data: ProcessInput):
-        self.config = config
-        self.process_data = process_data
-        options = [
-            discord.SelectOption(
-                label=f"{char.id}: {char.name}",
-                value=f"{char.id}",
-                description=(
-                    f"{char.background[:97]}..."
-                    if len(char.background) > 100
-                    else char.background
-                ),
-            )
-            for char in process_data.user_context.available_chars
-        ]
-
-        super().__init__(
-            placeholder="Select a character...",
-            min_values=1,
-            max_values=1,
-            options=options,
-        )
-
-    async def callback(self, interaction: discord.Interaction):
-        self.config.logger.debug(f"Selected character id: {self.values[0]}")
-        self.process_data.user_context.selected_char = int(self.values[0])
-        await interaction.response.edit_message(
-            content=f"You have chosen the character with ID: {self.values[0]}",
-        )
-        self.view.stop()
-
-
 class GameSelect(discord.ui.Select):
     """
     Select class to select a game to set new character.

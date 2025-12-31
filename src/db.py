@@ -7,7 +7,7 @@ import sys
 from dataclasses import dataclass
 
 import discord
-from sqlalchemy import select, func, exists
+from sqlalchemy import select, func, exists, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import selectinload, joinedload
 
@@ -356,6 +356,7 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
             if result is None or len(result) == 0:
                 config.logger.debug("No available characters found in the database")
                 return []
+            config.logger.trace("Available characters retrieved from database")
             return result
 
     except (AttributeError, SQLAlchemyError, TypeError):
@@ -633,7 +634,12 @@ async def get_stories_messages_for_ai(
     """
     try:
         async with config.session() as session, session.begin():
-            statement = select(STORY).where(STORY.tale_id == tale_id).order_by(STORY.id)
+            statement = (
+                select(STORY)
+                .where(STORY.tale_id == tale_id)
+                .where(STORY.discarded.is_(False))
+                .order_by(STORY.id)
+            )
             stories = (await session.execute(statement)).scalars().all()
         if stories is None or len(stories) == 0:
             config.logger.debug(f"No stories found for tale id: {tale_id}")
@@ -691,6 +697,7 @@ async def check_only_init_stories(config: Configuration, tale_id: int) -> bool:
             select(STORY)
             .where(STORY.tale_id == tale_id)
             .where(STORY.story_type != StoryType.INIT)
+            .where(STORY.discarded.is_(False))
         )
         stories = (await session.execute(statement)).scalars().all()
     if len(stories) <= 0:
@@ -714,28 +721,109 @@ async def delete_init_stories(
         list[int]: List of Discord message IDs that were associated with the deleted stories
     """
     async with config.session() as session, session.begin():
-        statement_stories = select(STORY).where(STORY.tale_id == tale_id)
+        statement_stories = (
+            select(STORY)
+            .where(STORY.tale_id == tale_id)
+            .where(STORY.discarded.is_(False))
+        )
         stories = (await session.execute(statement_stories)).scalars().all()
         story_ids = [story.id for story in stories]
-        config.logger.debug(f"Select stories with IDs: {story_ids} for deleting.")
+        config.logger.debug(f"Select stories with IDs: {story_ids} for discarding.")
         statement_messages = select(MESSAGE).where(MESSAGE.story_id.in_(story_ids))
         messages = (await session.execute(statement_messages)).scalars().all()
         config.logger.debug(
             f"Select messages with IDs: {[message.id for message in messages]} for deleting."
         )
         dc_message_ids = [
-            message.message_id
-            for message in messages
-            if message.message_id is not None
+            message.message_id for message in messages if message.message_id is not None
         ]
         config.logger.debug(f"DC messages IDs to delete: {dc_message_ids}")
         for message in messages:
             await session.delete(message)
         config.logger.debug(f"Deleted {len(messages)} messages.")
-        for story in stories:
-            await session.delete(story)
-        config.logger.debug(f"Deleted {len(messages)} stories.")
+
+        statement_messages = (
+            update(STORY).where(STORY.id.in_(story_ids)).values(discarded=True)
+        )
+        await session.execute(statement_messages)
+        config.logger.debug(f"Discard {len(messages)} stories.")
         statement_game = select(GAME).where(GAME.id == game_id)
         game = (await session.execute(statement_game)).scalar_one_or_none()
         game.status = GameStatus.CREATED
         return dc_message_ids
+
+
+async def get_active_genre(config: Configuration) -> list[GENRE]:
+    """
+    This function retrieves all active genres from the database.
+
+    Args:
+        config (Configuration): App configuration
+
+    Returns:
+        list[GENRE]: List with all active genres
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.active.is_(True))
+            return (await session.execute(statement)).scalars().all()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return []
+
+
+async def deactivate_genre_with_id(config: Configuration, genre_id: int) -> None:
+    """
+    This function deactivates a genre based on the handed over genre id.
+
+    Args:
+        config (Configuration): App configuration
+        genre_id (int): Genre id to deactivate
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.id == genre_id)
+            genre = (await session.execute(statement)).scalar_one_or_none()
+            if genre:
+                genre.active = False
+                config.logger.debug(f"Deactivated genre with ID: {genre_id}")
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+
+
+async def get_inactive_genre(config: Configuration) -> list[GENRE]:
+    """
+    This function retrieves all inactive genres from the database.
+
+    Args:
+        config (Configuration): App configuration
+
+    Returns:
+        list[GENRE]: List with all inactive genres
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.active.is_(False))
+            return (await session.execute(statement)).scalars().all()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return []
+
+
+async def activate_genre_with_id(config: Configuration, genre_id: int) -> None:
+    """
+    This function activates a genre based on the handed over genre id.
+
+    Args:
+        config (Configuration): App configuration
+        genre_id (int): Genre id to activate
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = select(GENRE).where(GENRE.id == genre_id)
+            genre = (await session.execute(statement)).scalar_one_or_none()
+            if genre:
+                genre.active = True
+                config.logger.debug(f"Deactivated genre with ID: {genre_id}")
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")

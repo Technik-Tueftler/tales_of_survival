@@ -4,6 +4,7 @@ Load environment variables and validation of project configurations from user
 
 import random
 import asyncio
+from string import Template
 from typing import List
 import environ
 from dotenv import load_dotenv
@@ -22,7 +23,8 @@ from .db_classes import (
     CHARACTER,
     GameStatus,
     StartCondition,
-    INSPIRATIONALWORD
+    INSPIRATIONALWORD,
+    GENRE,
 )
 
 
@@ -30,11 +32,67 @@ load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
 
 
+class DelimitedTemplate(Template):
+    """This class allow the creation of a template with a user defined separator.
+    The package is there to define templates for texts and then substitute them
+    with certain values.
+    Args:
+        Template (_type_): Basic class that is inherited
+    """
+
+    delimiter = "#"
+
+
+class CharacterContext:
+    """
+    Class to specify the character context for processing.
+    """
+
+    def __init__(self):
+        self.available_character: List[CHARACTER] = []
+        self.selected_character_id: int = 0
+        self.selected_character: CHARACTER = None
+
+    async def input_valid_character(self) -> bool:
+        """
+        Checks if character are available for selection.
+
+        Returns:
+            bool: Character available
+        """
+        if len(self.available_character) <= 0:
+            return False
+        return True
+
+
+class GenreContext:
+    """
+    Class to specify the genre context for processing.
+    """
+
+    def __init__(self):
+        self.available_genre: List[GENRE] = []
+        self.selected_genre_id: int = 0
+        self.selected_genre: GENRE = None
+
+    async def input_valid_genre(self) -> bool:
+        """
+        Checks if genre are available for selection.
+
+        Returns:
+            bool: Genre available
+        """
+        if len(self.available_genre) <= 0:
+            return False
+        return True
+
+
 class UserContext:
     """
     Class to specify the user context and input data
     for processing.
     """
+
     def __init__(self):
         self.user_dc_id: str = "0"
         self.available_chars: List[CHARACTER] = []
@@ -57,6 +115,7 @@ class GameContext:
     Class to specify the game context and input data
     for processing.
     """
+
     def __init__(self):
         self.available_games: List[GAME] = []
         self.selected_game_id: int = 0
@@ -93,6 +152,7 @@ class StoryContext:
     Class to specify the story context and input data
     for processing.
     """
+
     def __init__(self):
         self.story_type: StoryType = None
         self.fiction_prompt: str = ""
@@ -134,7 +194,7 @@ class StoryContext:
 
     def insp_words_not_available(self) -> bool:
         """
-        Function checks 
+        Function checks
 
         Returns:
             bool: _description_
@@ -159,6 +219,7 @@ class StoryStartContext:
     Class to specify the story start context and input data
     for processing.
     """
+
     def __init__(self):
         self.condition: StartCondition = None
         self.city: str = ""
@@ -170,6 +231,7 @@ class GameStartContext:
     Class to specify the game start context and input data
     for processing.
     """
+
     def __init__(self):
         self.selected_genre: int = 0
         self.game_name: str = ""
@@ -181,6 +243,7 @@ class ProcessInput:
     """
     Combined class to hold all context and input data for processing.
     """
+
     def __init__(self):
         self.user_context = UserContext()
         self.game_context = GameContext()
@@ -194,6 +257,9 @@ class DcConfiguration:
     """
 
     bot_token: str = environ.var(converter=str)
+    historian_role_id: int = environ.var(0, converter=int)
+    storyteller_role_id: int = environ.var(0, converter=int)
+    everyone_role_id: int = environ.var(0, converter=int)
 
 
 @environ.config(prefix="TT")

@@ -3,13 +3,20 @@ This module contains utility functions for interacting with Discord.
 """
 
 import sys
+from urllib.parse import urljoin
 import asyncio
 import discord
 from discord import TextChannel, Embed, Interaction
 from .configuration import Configuration, ProcessInput
-from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION
+from .constants import (
+    DC_MAX_CHAR_MESSAGE,
+    DC_EMBED_DESCRIPTION,
+    DEFAULT_CHARACTER_THUMBNAIL,
+    DEFAULT_THUMBNAIL_URL,
+    DEFAULT_TALE_THUMBNAIL
+)
 from .db import get_active_user_from_game, get_object_by_id
-from .db_classes import GAME, USER
+from .db_classes import GAME, USER, CHARACTER, GENRE
 from .game_views import GameSelectView
 
 
@@ -116,6 +123,46 @@ async def delete_channel_messages(
         )
 
 
+async def update_embed_message_color(
+    config: Configuration, game: GAME, discord_color: discord.colour.Colour
+) -> None:
+    """
+    This function updates the color of a game embed message.
+
+    Args:
+        config (Configuration): App configuration
+        game (GAME): Game object to udpate the embed message
+        discord_color (discord.colour.Colour): New color for the embed message
+    """
+    try:
+        users: list[USER] = await get_active_user_from_game(config, game.id)
+        config.logger.debug(
+            f"All active user in game <id>: {game.id}. <user>: {[user.name for user in users]}"
+        )
+        channel: TextChannel = config.dc_bot.get_channel(game.channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(game.channel_id)
+        embed_message = await channel.fetch_message(game.message_id)
+        embed: Embed = embed_message.embeds[0]
+        embed.color = discord_color
+        await embed_message.edit(embed=embed)
+
+    except discord.errors.NotFound:
+        config.logger.error(f"Channel ID {game.channel_id} not found.")
+    except discord.errors.Forbidden:
+        config.logger.error(f"No permission to write to channel {game.channel_id}.")
+    except discord.errors.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "HTTP-Error during update embed message"
+        )
+    except KeyError:
+        config.logger.error("The message is missing the content key.")
+    except TypeError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Type-Error during update embed message"
+        )
+
+
 async def update_embed_message(config: Configuration, game: GAME) -> None:
     """
     This function updates a game embed with the start information and current players.
@@ -144,7 +191,7 @@ async def update_embed_message(config: Configuration, game: GAME) -> None:
         embed.color = discord.Color.green()
         config.logger.trace("General Embed fields updated.")
         for i, field in enumerate(fields):
-            if field.name == "The Players:":
+            if field.name in ("The Players:", "The Player:"):
                 field_name = "The Players:" if len(users) > 1 else "The Player:"
                 player = ", ".join([f"<@{user.dc_id}>" for user in users])
                 embed.set_field_at(
@@ -218,3 +265,96 @@ async def interface_select_game(
         config.logger.opt(exception=sys.exc_info()).error(
             "Missing key in game data or for DB object."
         )
+
+
+async def send_character_embed(
+    interaction: Interaction,
+    config: Configuration,
+    character: CHARACTER,
+) -> None:
+    """
+    Function to send an embed message with character information.
+
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
+        character (CHARACTER): Character object with all information
+
+    Returns:
+        _type_: _description_
+    """
+    try:
+        print(urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL))
+        embed = discord.Embed(
+            title=character.name,
+            description=character.background,
+            color=discord.Color.dark_blue(),
+        )
+        embed.add_field(name="Description", value=character.description, inline=False)
+        embed.add_field(name="Pos-Trait", value=character.pos_trait, inline=True)
+        embed.add_field(name="Neg-Trait", value=character.neg_trait, inline=True)
+        embed.set_thumbnail(
+            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)
+        )
+
+        message = await interaction.followup.send(embed=embed, ephemeral=True)
+        return message
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+
+async def send_game_embed(
+    interaction: Interaction,
+    config: Configuration,
+    game: GAME,
+    genre: GENRE,
+    users: list[USER],
+) -> discord.Message:
+    """
+    Functions create and send a Discord message with game information to a channel.
+
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+        game (GAME): Game object
+        genre (GENRE): Genre object from game
+        users (list[USER]): All player of the game
+
+    Returns:
+        discord.Message: Discord message object
+    """
+    try:
+        game_description = (
+            game.description if game.description else DC_EMBED_DESCRIPTION
+        )
+        embed = discord.Embed(
+            title=game.name,
+            description=game_description,
+            color=discord.Color.yellow(),
+        )
+        embed.add_field(name="Genre", value=genre.name, inline=False)
+        embed.add_field(name="Language", value=genre.language, inline=True)
+        embed.add_field(name="Style", value=genre.storytelling_style, inline=True)
+        embed.add_field(name="Atmosphere", value=genre.atmosphere, inline=True)
+        embed.add_field(
+            name="The Players:",
+            value=", ".join([f"<@{user.dc_id}>" for user in users]),
+            inline=False,
+        )
+
+        embed.set_thumbnail(
+            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL)
+        )
+        embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
+
+        message = await interaction.followup.send(embed=embed)
+        return message
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")

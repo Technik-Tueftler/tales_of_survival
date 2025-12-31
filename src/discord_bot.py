@@ -4,10 +4,19 @@ The bot is implemented using the discord.py library and provides a simple comman
 """
 
 import discord
+from discord import app_commands
 from discord.ext import commands
 from .configuration import Configuration
-from .game import create_game, keep_telling_schedule, select_character, setup_game, reset_game
+from .discord_permissions import check_permissions_historian
+from .game import (
+    create_game,
+    keep_telling_schedule,
+    setup_game,
+    reset_game,
+)
+from .character import select_character, show_character
 from .file_utils import import_data
+from .genre import deactivate_genre, activate_genre
 
 
 class DiscordBot:
@@ -59,12 +68,6 @@ class DiscordBot:
         constructor to register the commands.
         """
 
-        async def wrapped_create_game(interaction: discord.Interaction):
-            self.config.logger.trace(
-                f"User: {interaction.user.id} execute command for game creation."
-            )
-            await create_game(interaction, self.config)
-
         async def wrapped_keep_telling(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command to continue telling a story."
@@ -75,29 +78,9 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command import game data."
             )
+            if not await check_permissions_historian(self.config, interaction):
+                return
             await import_data(interaction, self.config)
-
-        async def wrapped_select_char(interaction: discord.Interaction):
-            self.config.logger.trace(
-                f"User: {interaction.user.id} execute command for character selection."
-            )
-            await select_character(interaction, self.config)
-
-        async def wrapped_setup_game(interaction: discord.Interaction):
-            self.config.logger.trace(
-                f"User: {interaction.user.id} execute command for setup game."
-            )
-            await setup_game(interaction, self.config)
-
-        async def wrapped_reset_game(interaction: discord.Interaction):
-            self.config.logger.trace(
-                f"User: {interaction.user.id} execute command for reset game."
-            )
-            await reset_game(interaction, self.config)
-
-        self.bot.tree.command(
-            name="create_game", description="Create a new game and set the parameters."
-        )(wrapped_create_game)
 
         self.bot.tree.command(
             name="keep_telling",
@@ -109,17 +92,99 @@ class DiscordBot:
             description="Import game data from a YAML file.",
         )(wrapped_import_data)
 
-        self.bot.tree.command(
-            name="select_character",
-            description="Select a character for a game.",
-        )(wrapped_select_char)
+        game_group = app_commands.Group(name="game", description="Game administration")
 
-        self.bot.tree.command(
-            name="setup_game",
-            description="Switch game state to specific status like running, paused, finished, etc.",
+        async def wrapped_create_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for game creation."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await create_game(interaction, self.config)
+
+        async def wrapped_setup_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for setup game."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await setup_game(interaction, self.config)
+
+        async def wrapped_reset_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for reset game."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await reset_game(interaction, self.config)
+
+        game_group.command(
+            name="create", description="Create a new game and set the parameters."
+        )(wrapped_create_game)
+
+        game_group.command(
+            name="setup",
+            description="Switch game state to specific status like running, paused, etc.",
         )(wrapped_setup_game)
 
-        self.bot.tree.command(
-            name="reset_game",
-            description="Restart a Tale and create new start prompt.",
+        game_group.command(
+            name="reset", description="Restart a Tale and create new start prompt."
         )(wrapped_reset_game)
+
+        self.bot.tree.add_command(game_group)
+
+        genre_group = app_commands.Group(
+            name="genre", description="Genre administration"
+        )
+
+        async def wrapped_genre_deactivate(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for genre deactivation."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await deactivate_genre(interaction, self.config)
+
+        async def wrapped_genre_activate(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for genre activation."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await activate_genre(interaction, self.config)
+
+        genre_group.command(name="deactivate", description="Deactivate genre")(
+            wrapped_genre_deactivate
+        )
+        genre_group.command(name="activate", description="Activate genre")(
+            wrapped_genre_activate
+        )
+
+        self.bot.tree.add_command(genre_group)
+
+        character_group = app_commands.Group(
+            name="character", description="Character administration"
+        )
+
+        async def wrapped_character_select(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command for character selection."
+            )
+            await select_character(interaction, self.config)
+
+        async def wrapped_character_show(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command to show character."
+            )
+            await show_character(interaction, self.config)
+
+        character_group.command(
+            name="select", description="Select a character for a game."
+        )(wrapped_character_select)
+
+        character_group.command(
+            name="show",
+            description="Show available character and select one with background and traits.",
+        )(wrapped_character_show)
+
+        self.bot.tree.add_command(character_group)

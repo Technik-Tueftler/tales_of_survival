@@ -13,3 +13,10 @@ Help
 
    local_python
    local_docker
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Commands
+
+   cmds_overview
+   cmds_administration
