@@ -3,11 +3,12 @@ This module contains utility functions for interacting with Discord.
 """
 
 import sys
+from urllib.parse import urljoin
 import asyncio
 import discord
 from discord import TextChannel, Embed, Interaction
 from .configuration import Configuration, ProcessInput
-from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION, DEFAULT_CHARACTER_THUMBNAIL_URL
+from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION, DEFAULT_CHARACTER_THUMBNAIL, DEFAULT_TALE_THUMBNAIL
 from .db import get_active_user_from_game, get_object_by_id
 from .db_classes import GAME, USER, CHARACTER
 from .game_views import GameSelectView
@@ -264,6 +265,17 @@ async def send_character_embed(
     config: Configuration,
     character: CHARACTER,
 ) -> None:
+    """
+    Function to send an embed message with character information.
+
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
+        character (CHARACTER): Character object with all information
+
+    Returns:
+        _type_: _description_
+    """
     try:
         embed = discord.Embed(
             title=character.name,
@@ -274,7 +286,7 @@ async def send_character_embed(
         embed.add_field(name="Pos-Trait", value=character.pos_trait, inline=True)
         embed.add_field(name="Neg-Trait", value=character.neg_trait, inline=True)
         embed.set_thumbnail(
-            url=DEFAULT_CHARACTER_THUMBNAIL_URL
+            url=urljoin(DEFAULT_TALE_THUMBNAIL, DEFAULT_CHARACTER_THUMBNAIL)
         )
 
         message = await interaction.followup.send(embed=embed, ephemeral=True)

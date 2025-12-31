@@ -3,6 +3,7 @@ Module to handle game creation and management
 """
 
 import sys
+from urllib.parse import urljoin
 from datetime import datetime, timezone
 import asyncio
 import discord
@@ -53,7 +54,7 @@ from .game_start import (
     get_second_phase_prompt,
 )
 from .game_telling import telling_event, telling_fiction
-from .constants import DC_EMBED_DESCRIPTION
+from .constants import DC_EMBED_DESCRIPTION, DEFAULT_TALE_THUMBNAIL, DEFAULT_THUMBNAIL_URL
 
 
 async def collect_all_game_contexts(
@@ -123,6 +124,7 @@ async def send_game_information(
         discord.Message: Discord message object
     """
     try:
+        # TODO: Embed send verschieben nach discord_utils
         game_description = (
             game.description if game.description else DC_EMBED_DESCRIPTION
         )
@@ -139,6 +141,10 @@ async def send_game_information(
             name="The Players:",
             value=", ".join([f"<@{user.dc_id}>" for user in users]),
             inline=False,
+        )
+
+        embed.set_thumbnail(
+            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL)
         )
         embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
 
