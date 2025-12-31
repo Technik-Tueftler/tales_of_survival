@@ -44,12 +44,6 @@ class DelimitedTemplate(Template):
     delimiter = "#"
 
 
-class DcRole(Enum):
-    HISTORIAN = 0
-    STORYTELLER = 1
-    EVERYONE = 2
-
-
 class CharacterContext:
     """
     Class to specify the character context for processing.
