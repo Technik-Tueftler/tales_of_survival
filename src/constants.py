@@ -3,7 +3,7 @@ Constants for organizing various fixed values used across the application.
 """
 
 DEFAULT_THUMBNAIL_URL: str = (
-    "https://raw.githubusercontent.com/Technik-Tueftler/tales_of_survival/refs/heads/main/files"
+    "https://raw.githubusercontent.com/Technik-Tueftler/tales_of_survival/refs/heads/main/files/"
 )
 """Default folder URL for thumbnail images used in embeds."""
 

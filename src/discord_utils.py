@@ -8,7 +8,7 @@ import asyncio
 import discord
 from discord import TextChannel, Embed, Interaction
 from .configuration import Configuration, ProcessInput
-from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION, DEFAULT_CHARACTER_THUMBNAIL, DEFAULT_TALE_THUMBNAIL
+from .constants import DC_MAX_CHAR_MESSAGE, DC_EMBED_DESCRIPTION, DEFAULT_CHARACTER_THUMBNAIL, DEFAULT_THUMBNAIL_URL
 from .db import get_active_user_from_game, get_object_by_id
 from .db_classes import GAME, USER, CHARACTER
 from .game_views import GameSelectView
@@ -277,6 +277,7 @@ async def send_character_embed(
         _type_: _description_
     """
     try:
+        print(urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL))
         embed = discord.Embed(
             title=character.name,
             description=character.background,
@@ -286,7 +287,7 @@ async def send_character_embed(
         embed.add_field(name="Pos-Trait", value=character.pos_trait, inline=True)
         embed.add_field(name="Neg-Trait", value=character.neg_trait, inline=True)
         embed.set_thumbnail(
-            url=urljoin(DEFAULT_TALE_THUMBNAIL, DEFAULT_CHARACTER_THUMBNAIL)
+            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)
         )
 
         message = await interaction.followup.send(embed=embed, ephemeral=True)
