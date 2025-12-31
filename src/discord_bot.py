@@ -68,19 +68,10 @@ class DiscordBot:
         constructor to register the commands.
         """
 
-        async def wrapped_create_game(interaction: discord.Interaction):
-            self.config.logger.trace(
-                f"User: {interaction.user.id} execute command for game creation."
-            )
-            if not await check_permissions_historian(self.config, interaction):
-                return
-            await create_game(interaction, self.config)
-
         async def wrapped_keep_telling(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command to continue telling a story."
             )
-            # TODO: check permissions here: user is in game or has >= storyteller role
             await keep_telling_schedule(interaction, self.config)
 
         async def wrapped_import_data(interaction: discord.Interaction):
@@ -90,6 +81,26 @@ class DiscordBot:
             if not await check_permissions_historian(self.config, interaction):
                 return
             await import_data(interaction, self.config)
+
+        self.bot.tree.command(
+            name="keep_telling",
+            description="Continue the story of a game.",
+        )(wrapped_keep_telling)
+
+        self.bot.tree.command(
+            name="import_data",
+            description="Import game data from a YAML file.",
+        )(wrapped_import_data)
+
+        game_group = app_commands.Group(name="game", description="Game administration")
+
+        async def wrapped_create_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for game creation."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await create_game(interaction, self.config)
 
         async def wrapped_setup_game(interaction: discord.Interaction):
             self.config.logger.trace(
@@ -107,29 +118,20 @@ class DiscordBot:
                 return
             await reset_game(interaction, self.config)
 
-        self.bot.tree.command(
-            name="create_game", description="Create a new game and set the parameters."
+        game_group.command(
+            name="create", description="Create a new game and set the parameters."
         )(wrapped_create_game)
 
-        self.bot.tree.command(
-            name="keep_telling",
-            description="Continue the story of a game.",
-        )(wrapped_keep_telling)
-
-        self.bot.tree.command(
-            name="import_data",
-            description="Import game data from a YAML file.",
-        )(wrapped_import_data)
-
-        self.bot.tree.command(
-            name="setup_game",
+        game_group.command(
+            name="setup",
             description="Switch game state to specific status like running, paused, etc.",
         )(wrapped_setup_game)
 
-        self.bot.tree.command(
-            name="reset_game",
-            description="Restart a Tale and create new start prompt.",
+        game_group.command(
+            name="reset", description="Restart a Tale and create new start prompt."
         )(wrapped_reset_game)
+
+        self.bot.tree.add_command(game_group)
 
         genre_group = app_commands.Group(
             name="genre", description="Genre administration"
