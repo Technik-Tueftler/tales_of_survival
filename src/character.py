@@ -5,7 +5,7 @@ import asyncio
 import discord
 from discord import Interaction
 from .db import (
-    get_all_user_games,
+    get_all_open_user_games,
     get_available_characters,
     get_user_from_dc_id,
     get_mapped_ugc_association,
@@ -81,7 +81,7 @@ async def select_character(interaction: Interaction, config: Configuration) -> N
     try:
         process_data = ProcessInput()
         process_data.user_context.user_dc_id = str(interaction.user.id)
-        await get_all_user_games(config, process_data)
+        await get_all_open_user_games(config, process_data)
         if not await process_data.game_context.input_valid_game():
             await interaction.response.send_message(
                 "An error occurred while retrieving your games. Your not registered "
