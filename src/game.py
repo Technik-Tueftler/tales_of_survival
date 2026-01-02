@@ -15,6 +15,7 @@ from .discord_utils import (
     update_embed_message_color,
     send_game_embed
 )
+from .discord_permissions import check_permissions_storyteller
 from .configuration import Configuration, ProcessInput
 from .llm_handler import request_openai, OpenAiContext
 from .db_classes import StoryType, GameStatus
@@ -31,6 +32,7 @@ from .db import (
     process_player,
     update_db_objs,
     get_all_running_games,
+    get_all_running_user_games,
     get_tale_from_game_id,
     get_games_w_status,
     count_regist_char_from_game,
@@ -232,7 +234,11 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
     """
     try:
         process_data = ProcessInput()
-        await get_all_running_games(config, process_data)
+        process_data.user_context.user_dc_id = str(interaction.user.id)
+        if await check_permissions_storyteller(config, interaction):
+            await get_all_running_games(config, process_data)
+        else:
+            await get_all_running_user_games(config, process_data)
         select_success = await interface_select_game(interaction, config, process_data)
         if not select_success:
             return
@@ -417,12 +423,12 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             )
             status = await start_game_schedule(interaction, config, process_data)
             if not status:
-                return False
+                return
+            await update_embed_message(config, process_data.game_context.selected_game)
         process_data.game_context.selected_game.status = (
             process_data.game_context.new_game_status
         )
         await update_db_objs(config, [process_data.game_context.selected_game])
-        await update_embed_message(config, process_data.game_context.selected_game)
 
     except discord.Forbidden:
         config.logger.opt(exception=sys.exc_info()).error(
