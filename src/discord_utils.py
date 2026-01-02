@@ -242,7 +242,7 @@ async def interface_select_game(
 
         select_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
-            "Which game would you like to change the status of?",
+            "Which game would you like to select?",
             view=select_view,
             ephemeral=True,
         )
