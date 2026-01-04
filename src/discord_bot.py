@@ -13,8 +13,9 @@ from .game import (
     keep_telling_schedule,
     setup_game,
     reset_game,
+    finish_game,
 )
-from .character import select_character, show_character
+from .character import select_character, show_character, show_own_character
 from .file_utils import import_data
 from .genre import deactivate_genre, activate_genre
 
@@ -118,6 +119,14 @@ class DiscordBot:
                 return
             await reset_game(interaction, self.config)
 
+        async def wrapped_finish_game(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command for finish game."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await finish_game(interaction, self.config)
+
         game_group.command(
             name="create", description="Create a new game and set the parameters."
         )(wrapped_create_game)
@@ -130,6 +139,10 @@ class DiscordBot:
         game_group.command(
             name="reset", description="Restart a Tale and create new start prompt."
         )(wrapped_reset_game)
+
+        game_group.command(
+            name="finish", description="Finish a Tale and print the story as PDF."
+        )(wrapped_finish_game)
 
         self.bot.tree.add_command(game_group)
 
@@ -178,13 +191,24 @@ class DiscordBot:
             )
             await show_character(interaction, self.config)
 
+        async def wrapped_character_own(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute sub-command to show own character."
+            )
+            await show_own_character(interaction, self.config)
+
         character_group.command(
-            name="select", description="Select a character for a game."
+            name="select", description="Join a game by selecting a character."
         )(wrapped_character_select)
 
         character_group.command(
             name="show",
             description="Show available character and select one with background and traits.",
         )(wrapped_character_show)
+
+        character_group.command(
+            name="own",
+            description="Show all characters selected by the player in games",
+        )(wrapped_character_own)
 
         self.bot.tree.add_command(character_group)

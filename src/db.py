@@ -362,9 +362,48 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
         return []
+    
+
+async def get_all_owned_characters(config: Configuration, user: USER) -> list[CHARACTER]:
+    """
+    Function to get all characters from the database which are assigned to a user and
+    assigned to a not finished game.
+
+    Args:
+        config (Configuration): App configuration
+        user (USER): User object
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(CHARACTER)
+                .join(CHARACTER.game_assignments)
+                .join(UserGameCharacterAssociation.game)
+                .join(UserGameCharacterAssociation.user)
+                .where(
+                    USER.id == user.id,
+                    GAME.end_date.is_(None),
+                    CHARACTER.alive.is_(True),
+                    CHARACTER.end_date.is_(None),
+                )
+                .distinct()
+            )
+            result = (await session.execute(statement)).scalars().all()
+
+            if result is None or len(result) == 0:
+                config.logger.debug("No available characters found in the database")
+                return []
+            config.logger.trace("Available characters retrieved from database")
+            return result
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return []
 
 
-async def get_all_user_games(config: Configuration, process_data: ProcessInput) -> None:
+async def get_all_open_user_games(
+    config: Configuration, process_data: ProcessInput
+) -> None:
     """
     Function get all games loaded with user participations from the database from a user.
 
@@ -827,3 +866,33 @@ async def activate_genre_with_id(config: Configuration, genre_id: int) -> None:
                 config.logger.debug(f"Deactivated genre with ID: {genre_id}")
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+
+
+async def get_all_running_user_games(
+    config: Configuration, process_data: ProcessInput
+) -> None:
+    """
+    Function get all running games loaded with user participations from the database from a user.
+
+    Args:
+        config (Configuration): App configuration
+        process_data (ProcessInput): Process input data structure
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(GAME)
+                .join(GAME.user_participations)
+                .join(UserGameCharacterAssociation.user)
+                .where(GAME.end_date.is_(None))
+                .where(GAME.status == GameStatus.RUNNING)
+                .where(USER.dc_id == process_data.user_context.user_dc_id)
+                .where(UserGameCharacterAssociation.character_id.isnot(None))
+            )
+            process_data.game_context.available_games = (
+                (await session.execute(statement)).scalars().all()
+            )
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return
