@@ -13,7 +13,7 @@ from .constants import (
     DC_EMBED_DESCRIPTION,
     DEFAULT_CHARACTER_THUMBNAIL,
     DEFAULT_THUMBNAIL_URL,
-    DEFAULT_TALE_THUMBNAIL
+    DEFAULT_TALE_THUMBNAIL,
 )
 from .db import get_active_user_from_game, get_object_by_id
 from .db_classes import GAME, USER, CHARACTER, GENRE
@@ -279,12 +279,11 @@ async def send_character_embed(
         interaction (Interaction): Discord interaction object
         config (Configuration): App configuration
         character (CHARACTER): Character object with all information
-
-    Returns:
-        _type_: _description_
     """
     try:
-        print(urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL))
+        config.logger.trace(
+            f"Thumbnail URL: {urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)}"
+        )
         embed = discord.Embed(
             title=character.name,
             description=character.background,
@@ -305,6 +304,7 @@ async def send_character_embed(
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
     except (TypeError, ValueError):
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+
 
 async def send_game_embed(
     interaction: Interaction,
@@ -345,9 +345,7 @@ async def send_game_embed(
             inline=False,
         )
 
-        embed.set_thumbnail(
-            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL)
-        )
+        embed.set_thumbnail(url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL))
         embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
 
         message = await interaction.followup.send(embed=embed)
