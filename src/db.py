@@ -362,6 +362,43 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
         return []
+    
+
+async def get_all_owned_characters(config: Configuration, user: USER) -> list[CHARACTER]:
+    """
+    Function to get all characters from the database which are assigned to a user and
+    assigned to a not finished game.
+
+    Args:
+        config (Configuration): App configuration
+        user (USER): User object
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(CHARACTER)
+                .join(CHARACTER.game_assignments)
+                .join(UserGameCharacterAssociation.game)
+                .join(UserGameCharacterAssociation.user)
+                .where(
+                    USER.id == user.id,
+                    GAME.end_date.is_(None),
+                    CHARACTER.alive.is_(True),
+                    CHARACTER.end_date.is_(None),
+                )
+                .distinct()
+            )
+            result = (await session.execute(statement)).scalars().all()
+
+            if result is None or len(result) == 0:
+                config.logger.debug("No available characters found in the database")
+                return []
+            config.logger.trace("Available characters retrieved from database")
+            return result
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return []
 
 
 async def get_all_open_user_games(
