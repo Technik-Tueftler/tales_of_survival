@@ -16,7 +16,7 @@ from .game import (
     finish_game,
 )
 from .character import select_character, show_character, show_own_character
-from .file_utils import import_data
+from .file_utils import import_data, update_genre
 from .genre import deactivate_genre, activate_genre
 
 
@@ -75,6 +75,13 @@ class DiscordBot:
             )
             await keep_telling_schedule(interaction, self.config)
 
+        self.bot.tree.command(
+            name="keep_telling",
+            description="Continue the story of a game.",
+        )(wrapped_keep_telling)
+
+        content_group = app_commands.Group(name="content", description="Content administration")
+
         async def wrapped_import_data(interaction: discord.Interaction):
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command import game data."
@@ -83,15 +90,25 @@ class DiscordBot:
                 return
             await import_data(interaction, self.config)
 
-        self.bot.tree.command(
-            name="keep_telling",
-            description="Continue the story of a game.",
-        )(wrapped_keep_telling)
+        async def wrapped_update_genre(interaction: discord.Interaction):
+            self.config.logger.trace(
+                f"User: {interaction.user.id} execute command to update genre content."
+            )
+            if not await check_permissions_historian(self.config, interaction):
+                return
+            await update_genre(interaction, self.config)
 
-        self.bot.tree.command(
-            name="import_data",
+        content_group.command(
+            name="import-data",
             description="Import game data from a YAML file.",
         )(wrapped_import_data)
+
+        content_group.command(
+            name="update-genre",
+            description="Update events and inspirational words for genres from external source.",
+        )(wrapped_update_genre)
+
+        self.bot.tree.add_command(content_group)
 
         game_group = app_commands.Group(name="game", description="Game administration")
 
@@ -165,6 +182,7 @@ class DiscordBot:
             if not await check_permissions_historian(self.config, interaction):
                 return
             await activate_genre(interaction, self.config)
+
 
         genre_group.command(name="deactivate", description="Deactivate genre")(
             wrapped_genre_deactivate

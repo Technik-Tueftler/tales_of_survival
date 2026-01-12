@@ -482,3 +482,10 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
     await update_embed_message_color(
         config, process_data.game_context.selected_game, discord.Color.yellow()
     )
+
+async def finish_game(interaction: Interaction, config: Configuration) -> None:
+    # 1. Abfrage ob wirklich beendet werden soll
+    # 2. Alle Story-Teile abrufen und in PDF formatieren
+    # 3. Status setzen für Tale, Game und Associations
+    # 4. PDF in Discord Kanal posten
+    ...
