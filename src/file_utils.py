@@ -111,6 +111,48 @@ async def import_data(interaction: Interaction, config: Configuration):
         )
 
 
+async def update_genre(interaction: Interaction, config: Configuration):
+    """
+    This function updates the genre content for events and inspirational words. This only updates 
+    chance from existing events/words or add new ones. Existing events/words that are not in the
+    file are not removed.
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+    """
+    try:
+        result_genre = ImportResult(data=None, file_path="files/genre.yml")
+        await load_yaml(config, result_genre)
+        if result_genre.data:
+            await create_genre_from_input(config, result_genre)
+
+        message = "Update process completed."
+        await interaction.response.send_message(
+            limit_text(message, DC_MAX_CHAR_MESSAGE), ephemeral=True
+        )
+    except FileNotFoundError:
+        config.logger.opt(exception=sys.exc_info()).error("File not found.")
+        await interaction.response.send_message(
+            "A required file was not found.", ephemeral=True
+        )
+    except yaml.YAMLError:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error parsing the YAML file."
+        )
+        await interaction.response.send_message(
+            "Error parsing the YAML file", ephemeral=True
+        )
+    except PermissionError:
+        config.logger.opt(exception=sys.exc_info()).error("No access rights.")
+        await interaction.response.send_message(
+            "Access rights to a file are missing.", ephemeral=True
+        )
+    except HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error in Discord communication."
+        )
+
+
 def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
     """
     The function limits a text to a certain number of characters.

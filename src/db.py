@@ -185,6 +185,36 @@ async def create_genre_from_input(config: Configuration, result: ImportResult):
         )
 
 
+async def update_genre_from_input(config: Configuration, result: ImportResult):
+    """
+    Function to update genre from imported file. This only updates 
+    chance from existing events/words or add new ones.
+
+    Args:
+        config (Configuration): App configuration
+        result (ImportResult): Result class from importing a file
+    """
+    try:
+        updated_events = []
+        updated_words = []
+        for genre in result.data:
+            # Prüfen ob es ein neues Genre ist: get_unique_genre()
+                ## Nein
+                    ### Über alle Events laufen und prüfen ob der Text existiert
+                        #### Ja -> Chance updaten
+                        #### Nein -> Neues Event anlegen und zum Genre hinzufügen
+                    ### Über alle Insp. Wörter laufen und prüfen ob der Text existiert
+                        #### Ja -> Chance updaten
+                        #### Nein -> Neues Insp. Wort anlegen und zum Genre hinzufügen
+                ## Ja
+                    ### Neues Genre anlegen, wie in der Funktion ursprünglich
+            ...
+    except (KeyError, IntegrityError):
+        config.logger.opt(exception=sys.exc_info()).error(
+            "Error while import genre file."
+        )
+
+
 async def create_character_from_input(config: Configuration, result: ImportResult):
     """
     Function to create character from imported file.
@@ -362,7 +392,7 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
         return []
-    
+
 
 async def get_all_owned_characters(config: Configuration, user: USER) -> list[CHARACTER]:
     """
@@ -386,7 +416,7 @@ async def get_all_owned_characters(config: Configuration, user: USER) -> list[CH
                     CHARACTER.alive.is_(True),
                     CHARACTER.end_date.is_(None),
                 )
-                .distinct()
+                .distinct(USER.id)
             )
             result = (await session.execute(statement)).scalars().all()
 
