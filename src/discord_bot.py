@@ -16,8 +16,8 @@ from .game import (
     finish_game,
 )
 from .character import select_character, show_character, show_own_character
-from .file_utils import import_data, update_genre
-from .genre import deactivate_genre, activate_genre
+from .file_utils import import_data
+from .genre import deactivate_genre, activate_genre, update_genre_with_content
 
 
 class DiscordBot:
@@ -96,7 +96,7 @@ class DiscordBot:
             )
             if not await check_permissions_historian(self.config, interaction):
                 return
-            await update_genre(interaction, self.config)
+            await update_genre_with_content(interaction, self.config)
 
         content_group.command(
             name="import-data",

@@ -89,6 +89,67 @@ async def get_genre_double_cond(
         return None
 
 
+async def get_unique_genre_from_content(
+    config: Configuration, genre: dict
+) -> GENRE | None:
+    """
+    Function to get a unique genre based on the content of the genre.
+
+    Args:
+        config (Configuration): App configuration
+        genre (dict): Genre content
+
+    Returns:
+        GENRE | None: Found genre or None in case of not found
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(GENRE)
+                .where(GENRE.name == genre["name"])
+                .where(GENRE.storytelling_style == genre["storytelling-type"])
+                .where(GENRE.atmosphere == genre["atmosphere"])
+                .where(GENRE.language == genre["language"])
+                .options(selectinload(GENRE.inspirational_words))
+                .options(selectinload(GENRE.events))
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return None
+
+
+async def get_unique_event_from_content(
+    config: Configuration, text: str, chance: int, genre_id: int
+) -> EVENT | None:
+    """
+        Function to get a unique event based on the event content.
+
+    Args:
+        config (Configuration): App configuration
+        text (str): Event test
+        chance (int): Event chance
+        genre_id (int): Genre id from event
+
+    Returns:
+        EVENT | None: Found genre or None in case of not found
+    """
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(EVENT)
+                .where(EVENT.text == text)
+                .where(EVENT.chance == chance)
+                .where(EVENT.genre_id == genre_id)
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return None
+
+
 async def check_exist_unique_character(config: Configuration, character: dict) -> bool:
     """
     Function checks whether the character passed is unique.
@@ -185,36 +246,6 @@ async def create_genre_from_input(config: Configuration, result: ImportResult):
         )
 
 
-async def update_genre_from_input(config: Configuration, result: ImportResult):
-    """
-    Function to update genre from imported file. This only updates 
-    chance from existing events/words or add new ones.
-
-    Args:
-        config (Configuration): App configuration
-        result (ImportResult): Result class from importing a file
-    """
-    try:
-        updated_events = []
-        updated_words = []
-        for genre in result.data:
-            # Prüfen ob es ein neues Genre ist: get_unique_genre()
-                ## Nein
-                    ### Über alle Events laufen und prüfen ob der Text existiert
-                        #### Ja -> Chance updaten
-                        #### Nein -> Neues Event anlegen und zum Genre hinzufügen
-                    ### Über alle Insp. Wörter laufen und prüfen ob der Text existiert
-                        #### Ja -> Chance updaten
-                        #### Nein -> Neues Insp. Wort anlegen und zum Genre hinzufügen
-                ## Ja
-                    ### Neues Genre anlegen, wie in der Funktion ursprünglich
-            ...
-    except (KeyError, IntegrityError):
-        config.logger.opt(exception=sys.exc_info()).error(
-            "Error while import genre file."
-        )
-
-
 async def create_character_from_input(config: Configuration, result: ImportResult):
     """
     Function to create character from imported file.
@@ -296,6 +327,24 @@ async def get_object_by_id(
         return (
             await session.execute(select(obj_type).where(obj_type.id == obj_id))
         ).scalar_one_or_none()
+
+
+async def get_loaded_genre_from_id(
+    config: Configuration, genre_id: int
+) -> GENRE | None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(GENRE)
+                .where(GENRE.id == genre_id)
+                .options(selectinload(GENRE.inspirational_words))
+                .options(selectinload(GENRE.events))
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return None
 
 
 async def get_all_active_genre(config: Configuration) -> list[GENRE]:
@@ -394,7 +443,9 @@ async def get_available_characters(config: Configuration) -> list[CHARACTER]:
         return []
 
 
-async def get_all_owned_characters(config: Configuration, user: USER) -> list[CHARACTER]:
+async def get_all_owned_characters(
+    config: Configuration, user: USER
+) -> list[CHARACTER]:
     """
     Function to get all characters from the database which are assigned to a user and
     assigned to a not finished game.

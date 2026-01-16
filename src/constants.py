@@ -35,6 +35,18 @@ DC_MAX_CHAR_MESSAGE: int = 2000
 DC_DESCRIPTION_MAX_CHAR: int = 100
 """Maximum number of characters for Discord input."""
 
+DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR: int = 200
+"""Maximum number of characters for event text in Discord modal input."""
+
+DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR: int = 20
+"""Minimum number of characters for event text in Discord modal input."""
+
+DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR: int = 20
+"""Maximum number of characters for a word in Discord modal input."""
+
+DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR: int = 1
+"""Minimum number of characters for a word in Discord modal input."""
+
 DC_EMBED_DESCRIPTION: str = "A new story is being told!"
 """Default tale description in game embed."""
 
