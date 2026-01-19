@@ -332,6 +332,17 @@ async def get_object_by_id(
 async def get_loaded_genre_from_id(
     config: Configuration, genre_id: int
 ) -> GENRE | None:
+    """
+    This function returns the genre object with the passed ID. If the ID 
+    does not exist, None is returned.
+
+    Args:
+        config (Configuration): App configuration
+        genre_id (int): Genre ID to load object
+
+    Returns:
+        GENRE | None: Found genre or NONE
+    """
     try:
         async with config.session() as session, session.begin():
             statement = (

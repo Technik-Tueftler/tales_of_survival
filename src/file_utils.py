@@ -13,8 +13,6 @@ from .db import (
     ImportResult,
     create_character_from_input,
     create_genre_from_input,
-    get_unique_genre_from_content,
-    get_unique_event_from_content
 )
 from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE
 

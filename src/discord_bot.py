@@ -63,7 +63,7 @@ class DiscordBot:
             ),
         )
 
-    def register_commands(self):
+    def register_commands(self): # pylint: disable=too-many-locals, too-many-statements
         """
         Function to register the commands for the bot. This function is called in the
         constructor to register the commands.
