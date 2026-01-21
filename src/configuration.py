@@ -32,6 +32,12 @@ load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
 
 
+class IdError(Exception):
+    """
+    Exception to log ID errors.
+    """
+
+
 class DelimitedTemplate(Template):
     """This class allow the creation of a template with a user defined separator.
     The package is there to define templates for texts and then substitute them
