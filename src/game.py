@@ -13,7 +13,8 @@ from .discord_utils import (
     interface_select_game,
     delete_channel_messages,
     update_embed_message_color,
-    send_game_embed
+    send_game_embed,
+    create_dc_message_link
 )
 from .discord_permissions import check_permissions_storyteller
 from .configuration import Configuration, ProcessInput, IdError
@@ -127,28 +128,6 @@ async def inform_players(
         config.logger.opt(exception=sys.exc_info()).error(
             f"Failed to send message to {user.name}."
         )
-
-
-async def create_dc_message_link(
-    config: Configuration, message: discord.Message, interaction: Interaction
-) -> str:
-    """
-    Function to create a link to a specific Discord message.
-
-    Args:
-        config (Configuration): App configuration
-        message (discord.Message): General message object to collect ids
-        interaction (Interaction): Last interaction to collect guild id
-
-    Returns:
-        str: Message link in the format
-    """
-    message_link = (
-        f"https://discord.com/channels/{interaction.guild.id}"
-        f"/{message.channel.id}/{message.id}"
-    )
-    config.logger.debug(f"Create message link: {message_link}")
-    return message_link
 
 
 async def create_game(interaction: Interaction, config: Configuration):
