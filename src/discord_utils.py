@@ -123,6 +123,28 @@ async def delete_channel_messages(
         )
 
 
+async def create_dc_message_link(
+    config: Configuration, message: discord.Message, interaction: Interaction
+) -> str:
+    """
+    Function to create a link to a specific Discord message.
+
+    Args:
+        config (Configuration): App configuration
+        message (discord.Message): General message object to collect ids
+        interaction (Interaction): Last interaction to collect guild id
+
+    Returns:
+        str: Message link in the format
+    """
+    message_link = (
+        f"https://discord.com/channels/{interaction.guild.id}"
+        f"/{message.channel.id}/{message.id}"
+    )
+    config.logger.debug(f"Create message link: {message_link}")
+    return message_link
+
+
 async def update_embed_message_color(
     config: Configuration, game: GAME, discord_color: discord.colour.Colour
 ) -> None:
@@ -356,3 +378,67 @@ async def send_game_embed(
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
     except (TypeError, ValueError):
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+
+
+async def send_public_event_ephemeral(
+    config: Configuration, interaction: Interaction, process_data: ProcessInput
+):
+    event_message = (
+        "An event has been triggered:\nEvent: "
+        + f"{process_data.story_context.event.text}"
+    )
+    await interaction.followup.send(event_message, ephemeral=True)
+
+
+async def send_public_event_embed(
+    config: Configuration, interaction: Interaction, process_data: ProcessInput, message_id: int
+):
+    try:
+        if config.env.dc.public_event_channel_id == 0:
+            await send_public_event_ephemeral(config, interaction, process_data)
+            config.logger.debug(
+                "Public event channel does not configured. Event message "
+                + "is send ephemeral in tale channel."
+            )
+            return
+
+        channel = config.dc_bot.get_channel(config.env.dc.public_event_channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(
+                config.env.dc.public_event_channel_id
+            )
+        if channel is None:
+            await send_public_event_ephemeral(config, interaction, process_data)
+            config.logger.warning(
+                "Public event channel does not exist. Event message "
+                + "is send ephemeral in tale channel."
+            )
+            return
+
+        message_link = (
+            f"https://discord.com/channels/{interaction.guild.id}"
+            f"/{process_data.game_context.selected_game.channel_id}/{message_id}"
+        )
+        config.logger.debug(f"Create message link: {message_link}")
+        embed = discord.Embed(
+            title="Public Event",
+            description=process_data.story_context.event.text,
+            color=discord.Color.purple(),
+        )
+        embed.add_field(name="Game", value=message_link, inline=False)
+        embed.add_field(
+            name="Chance", value=process_data.story_context.event.chance, inline=True
+        )
+        # TODO: Neues Thumbnail dafür erstellen
+        embed.set_thumbnail(url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL))
+
+        await channel.send(embed=embed)
+
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+    except Exception:
+        config.logger.opt(exception=sys.exc_info()).error("Unknown error occurred.")

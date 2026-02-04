@@ -266,6 +266,7 @@ class DcConfiguration:
     historian_role_id: int = environ.var(0, converter=int)
     storyteller_role_id: int = environ.var(0, converter=int)
     everyone_role_id: int = environ.var(0, converter=int)
+    public_event_channel_id: int = environ.var(0, converter=int)
 
 
 @environ.config(prefix="TT")

@@ -3,7 +3,7 @@ Module for handling the telling of story command.
 """
 
 from discord import Interaction
-from .discord_utils import send_channel_message
+from .discord_utils import send_channel_message, send_public_event_embed
 from .configuration import Configuration, ProcessInput, DelimitedTemplate, IdError
 from .db import get_stories_messages_for_ai, update_db_objs
 from .db_classes import STORY, StoryType, MESSAGE
@@ -68,10 +68,7 @@ async def telling_event(
                 + "is not available on the DC server. No stories are being created."
             )
 
-        event_message = (
-            f"An event has been triggered:\nEvent: {process_data.story_context.event.text}"
-        )
-        await interaction.followup.send(event_message, ephemeral=True)
+        await send_public_event_embed(config, interaction, process_data, msg_ids_event[0])
 
         commit_stories.append(
             STORY(
