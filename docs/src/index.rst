@@ -14,6 +14,7 @@ App
    :maxdepth: 2
    :caption: Discord Bot:
 
+   discord_general
    discord_bot
    discord_utils
 

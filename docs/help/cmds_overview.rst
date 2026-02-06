@@ -1,8 +1,9 @@
 Overview
 ==========================
+The commands are divided into different subcategories to ensure easy rights management.
 
-Generel
------------------
+Top level
+---------
 
 .. list-table::
    :header-rows: 1
@@ -10,11 +11,13 @@ Generel
 
    * - Command
      - Description
-   * - ``/create_game``
-     - Create a new game with interface for input
-   * - ``/select_character``
-     - Select a character for the game
-   * - ``/setup_game``
-     - Change the game status (running, paused, etc.)
-   * - ``/reset_game``
-     - Game reset and generate a new tale
+   * - ``/game``
+     - Main command to address all game-related commands.
+   * - ``/character``
+     - Main command to address all character-related commands.
+   * - ``/genre``
+     - Main command to address all genre-related commands.
+   * - ``/content``
+     - Main command to address all content-related commands.
+   * - ``/keep_telling``
+     - Continue telling a tale. After selecting the game, you can specify whether the story should be continued with your own prompt or a random word, or whether an event should be triggered.
