@@ -275,7 +275,7 @@ async def create_character_from_input(config: Configuration, result: ImportResul
             )
             final_character.append(temp_character)
             config.logger.debug(
-                    f"The following character is created: {temp_character["name"]}"
+                    f"The following character is created: {temp_character.name}"
                 )
         async with config.write_lock, config.session() as session, session.begin():
             session.add_all(final_character)
