@@ -14,6 +14,7 @@ from .constants import (
     DEFAULT_CHARACTER_THUMBNAIL,
     DEFAULT_THUMBNAIL_URL,
     DEFAULT_TALE_THUMBNAIL,
+    DEFAULT_EVENT_THUMBNAIL,
 )
 from .db import get_active_user_from_game, get_object_by_id
 from .db_classes import GAME, USER, CHARACTER, GENRE
@@ -381,8 +382,16 @@ async def send_game_embed(
 
 
 async def send_public_event_ephemeral(
-    config: Configuration, interaction: Interaction, process_data: ProcessInput
-):
+    interaction: Interaction, process_data: ProcessInput
+) -> None:
+    """
+    General function to send an event message as an ephemeral message in the tale channel 
+    if no public channel is configured or available.
+
+    Args:
+        interaction (Interaction): Dicord interaction object
+        process_data (ProcessInput): Data with all required information for message
+    """
     event_message = (
         "An event has been triggered:\nEvent: "
         + f"{process_data.story_context.event.text}"
@@ -391,11 +400,23 @@ async def send_public_event_ephemeral(
 
 
 async def send_public_event_embed(
-    config: Configuration, interaction: Interaction, process_data: ProcessInput, message_id: int
+    config: Configuration,
+    interaction: Interaction,
+    process_data: ProcessInput,
+    message_id: int,
 ):
+    """
+    Function to send an embed message with event information to a public configured channel.
+
+    Args:
+        config (Configuration): App configuration
+        interaction (Interaction): Discord interaction object
+        process_data (ProcessInput): Data with all required information for message
+        message_id (int): Message ID of the original tale message to link the event to
+    """
     try:
         if config.env.dc.public_event_channel_id == 0:
-            await send_public_event_ephemeral(config, interaction, process_data)
+            await send_public_event_ephemeral(interaction, process_data)
             config.logger.debug(
                 "Public event channel does not configured. Event message "
                 + "is send ephemeral in tale channel."
@@ -408,7 +429,7 @@ async def send_public_event_embed(
                 config.env.dc.public_event_channel_id
             )
         if channel is None:
-            await send_public_event_ephemeral(config, interaction, process_data)
+            await send_public_event_ephemeral(interaction, process_data)
             config.logger.warning(
                 "Public event channel does not exist. Event message "
                 + "is send ephemeral in tale channel."
@@ -429,8 +450,7 @@ async def send_public_event_embed(
         embed.add_field(
             name="Chance", value=process_data.story_context.event.chance, inline=True
         )
-        # TODO: Neues Thumbnail dafür erstellen
-        embed.set_thumbnail(url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL))
+        embed.set_thumbnail(url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_EVENT_THUMBNAIL))
 
         await channel.send(embed=embed)
 
@@ -440,5 +460,3 @@ async def send_public_event_embed(
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
     except (TypeError, ValueError):
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
-    except Exception:
-        config.logger.opt(exception=sys.exc_info()).error("Unknown error occurred.")
