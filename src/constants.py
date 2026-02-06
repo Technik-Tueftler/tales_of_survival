@@ -8,12 +8,12 @@ DEFAULT_THUMBNAIL_URL: str = (
 """Default folder URL for thumbnail images used in embeds."""
 
 DEFAULT_TALE_THUMBNAIL: str = (
-    "thumbnail_tale.png"
+    "icon_tale_small.png"
 )
 """Default name for tale thumbnail image used in embeds."""
 
 DEFAULT_CHARACTER_THUMBNAIL: str = (
-    "thumbnail_character.png"
+    "icon_character_small.png"
 )
 """Default name for character thumbnail image used in embeds."""
 
