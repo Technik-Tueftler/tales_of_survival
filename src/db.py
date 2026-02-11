@@ -991,3 +991,17 @@ async def get_all_running_user_games(
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
         return
+
+
+async def get_game_id_from_character_id(config: Configuration, character_id: int) -> int | None:
+    try:
+        async with config.session() as session, session.begin():
+            statement = (
+                select(UserGameCharacterAssociation.game_id)
+                .where(UserGameCharacterAssociation.character_id == character_id)
+                .where(UserGameCharacterAssociation.end_date.is_(None))
+            )
+            return (await session.execute(statement)).scalar_one_or_none()
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return None

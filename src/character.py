@@ -12,6 +12,7 @@ from .db import (
     get_mapped_ugc_association,
     get_object_by_id,
     update_db_objs,
+    get_game_id_from_character_id,
 )
 from .db_classes import CHARACTER
 from .discord_utils import interface_select_game, send_character_embed
@@ -150,29 +151,33 @@ async def show_character(interaction: Interaction, config: Configuration) -> Non
         interaction (Interaction): Discord interaction object
         config (Configuration): App configuration
     """
-    char_context = ProcessInput()
-    char_context.user_context.available_chars = await get_available_characters(
-        config
-    )
-    if not await char_context.user_context.input_valid_char():
+    try:
+        char_context = ProcessInput()
+        char_context.user_context.available_chars = await get_available_characters(
+            config
+        )
+        if not await char_context.user_context.input_valid_char():
+            await interaction.response.send_message(
+                "An error occurred while retrieving character. There are no selectable characters. "
+                "Please contact a admin or mod and follow the creation guideline in "
+                "the documentation.",
+                ephemeral=True,
+            )
+            return
+        character_view = CharacterSelectView(config, char_context)
         await interaction.response.send_message(
-            "An error occurred while retrieving character. There are no selectable characters. "
-            "Please contact a admin or mod and follow the creation guideline in "
-            "the documentation.",
+            "Please select now the character to inspect.",
+            view=character_view,
             ephemeral=True,
         )
-        return
-    character_view = CharacterSelectView(config, char_context)
-    await interaction.response.send_message(
-        "Please select now the character to inspect.",
-        view=character_view,
-        ephemeral=True,
-    )
-    await character_view.wait()
-    selected_character = await get_object_by_id(
-        config, CHARACTER, char_context.user_context.selected_char
-    )
-    await send_character_embed(interaction, config, selected_character)
+        await character_view.wait()
+        selected_character = await get_object_by_id(
+            config, CHARACTER, char_context.user_context.selected_char
+        )
+        await send_character_embed(interaction, config, selected_character)
+    except Exception as err:
+        print(err)
+
 
 async def show_own_character(interaction: Interaction, config: Configuration) -> None:
     """
@@ -188,7 +193,7 @@ async def show_own_character(interaction: Interaction, config: Configuration) ->
         config, user
     )
     if not await char_context.user_context.input_valid_char():
-        await interaction.followup.send(
+        await interaction.response.send_message(
             "An error occurred while retrieving character. There are no selectable characters. "
             "Please contact the admin.",
             ephemeral=True,
@@ -204,4 +209,5 @@ async def show_own_character(interaction: Interaction, config: Configuration) ->
     selected_character = await get_object_by_id(
         config, CHARACTER, char_context.user_context.selected_char
     )
-    await send_character_embed(interaction, config, selected_character)
+    game_id = await get_game_id_from_character_id(config, selected_character.id)
+    await send_character_embed(interaction, config, selected_character, True, game_id)

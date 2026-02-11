@@ -294,6 +294,8 @@ async def send_character_embed(
     interaction: Interaction,
     config: Configuration,
     character: CHARACTER,
+    owned_characters_info: bool = False,
+    game_id: int | None = None,
 ) -> None:
     """
     Function to send an embed message with character information.
@@ -307,18 +309,23 @@ async def send_character_embed(
         config.logger.trace(
             f"Thumbnail URL: {urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)}"
         )
+        char_alive = True
         embed = discord.Embed(
             title=character.name,
             description=character.background,
-            color=discord.Color.dark_blue(),
+            color=discord.Color.dark_blue() if char_alive else discord.Color.dark_red(),
         )
         embed.add_field(name="Description", value=character.description, inline=False)
         embed.add_field(name="Pos-Trait", value=character.pos_trait, inline=True)
         embed.add_field(name="Neg-Trait", value=character.neg_trait, inline=True)
+        if owned_characters_info:
+            alive_info = "Alive" if character.alive else "Dead"
+            embed.add_field(name="", value="", inline=False)
+            embed.add_field(name="Status", value=alive_info, inline=True)
+            embed.add_field(name="Game-ID", value=game_id, inline=True)
         embed.set_thumbnail(
             url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)
         )
-
         message = await interaction.followup.send(embed=embed, ephemeral=True)
         return message
     except discord.Forbidden:
