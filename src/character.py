@@ -155,9 +155,10 @@ async def show_character(interaction: Interaction, config: Configuration) -> Non
         config
     )
     if not await char_context.user_context.input_valid_char():
-        await interaction.followup.send(
+        await interaction.response.send_message(
             "An error occurred while retrieving character. There are no selectable characters. "
-            "Please contact the admin.",
+            "Please contact a admin or mod and follow the creation guideline in "
+            "the documentation.",
             ephemeral=True,
         )
         return
