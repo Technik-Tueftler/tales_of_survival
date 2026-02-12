@@ -14,7 +14,7 @@ from .discord_utils import (
     delete_channel_messages,
     update_embed_message_color,
     send_game_embed,
-    create_dc_message_link
+    create_dc_message_link,
 )
 from .discord_permissions import check_permissions_storyteller
 from .configuration import Configuration, ProcessInput, IdError
@@ -279,7 +279,9 @@ async def start_game_schedule(
     try:
         await collect_start_input(interaction, config, game_data)
 
-        tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
+        tale = await get_tale_from_game_id(
+            config, game_data.game_context.selected_game.id
+        )
         game_character = await get_character_from_game_id(
             config, game_data.game_context.selected_game.id
         )
@@ -296,7 +298,9 @@ async def start_game_schedule(
             )
             return False
         msg_ids_world = await send_channel_message(
-            config, game_data.game_context.selected_game.channel_id, response_world.response
+            config,
+            game_data.game_context.selected_game.channel_id,
+            response_world.response,
         )
 
         if not msg_ids_world:
@@ -326,7 +330,9 @@ async def start_game_schedule(
 
         for msg in messages_second_phase:
             stories.append(
-                STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+                STORY(
+                    request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
+                )
             )
 
         messages.extend(messages_second_phase)
@@ -338,7 +344,9 @@ async def start_game_schedule(
             )
             return False
         msg_ids_start = await send_channel_message(
-            config, game_data.game_context.selected_game.channel_id, response_start.response
+            config,
+            game_data.game_context.selected_game.channel_id,
+            response_start.response,
         )
         if not msg_ids_start:
             raise IdError(
@@ -477,6 +485,7 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
         config, process_data.game_context.selected_game, discord.Color.yellow()
     )
 
+
 async def finish_game() -> None:
     """
     Test function
@@ -485,6 +494,7 @@ async def finish_game() -> None:
     # 2. Alle Story-Teile abrufen und in PDF formatieren
     # 3. Status setzen für Tale, Game und Associations
     # 4. PDF in Discord Kanal posten
+
 
 async def info_game(interaction: Interaction, config: Configuration) -> None:
     """
@@ -498,3 +508,18 @@ async def info_game(interaction: Interaction, config: Configuration) -> None:
     # Welcher Spieler nutzt welchen Char
     # Wie viele Story-Teile gibt es schon
     # Wann wurde das Spiel gestartet
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config,
+        [
+            GameStatus.CREATED,
+            GameStatus.PAUSED,
+            GameStatus.RUNNING,
+            GameStatus.STOPPED,
+            GameStatus.FINISHED,
+            GameStatus.FAILURE,
+        ],
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return

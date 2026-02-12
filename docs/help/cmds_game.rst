@@ -19,6 +19,8 @@ Overview
      - Subcommand to create a new game and invite players.
    * - ``setup``
      - Subcommand to start a new game or change its status to pause, running or stopped.
+   * - ``info``
+     - Subcommand to get all infos about a game, such as the players, the genre, the characters, and the current status.
    * - ``reset``
      - Subcommand to reset a freshly started game.
    * - ``finish``

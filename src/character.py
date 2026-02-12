@@ -1,4 +1,5 @@
 """Module for character selection and display in Discord bot."""
+
 import sys
 from datetime import datetime, timezone
 import asyncio
@@ -151,32 +152,27 @@ async def show_character(interaction: Interaction, config: Configuration) -> Non
         interaction (Interaction): Discord interaction object
         config (Configuration): App configuration
     """
-    try:
-        char_context = ProcessInput()
-        char_context.user_context.available_chars = await get_available_characters(
-            config
-        )
-        if not await char_context.user_context.input_valid_char():
-            await interaction.response.send_message(
-                "An error occurred while retrieving character. There are no selectable characters. "
-                "Please contact a admin or mod and follow the creation guideline in "
-                "the documentation.",
-                ephemeral=True,
-            )
-            return
-        character_view = CharacterSelectView(config, char_context)
+    char_context = ProcessInput()
+    char_context.user_context.available_chars = await get_available_characters(config)
+    if not await char_context.user_context.input_valid_char():
         await interaction.response.send_message(
-            "Please select now the character to inspect.",
-            view=character_view,
+            "An error occurred while retrieving character. There are no selectable characters. "
+            "Please contact a admin or mod and follow the creation guideline in "
+            "the documentation.",
             ephemeral=True,
         )
-        await character_view.wait()
-        selected_character = await get_object_by_id(
-            config, CHARACTER, char_context.user_context.selected_char
-        )
-        await send_character_embed(interaction, config, selected_character)
-    except Exception as err:
-        print(err)
+        return
+    character_view = CharacterSelectView(config, char_context)
+    await interaction.response.send_message(
+        "Please select now the character to inspect.",
+        view=character_view,
+        ephemeral=True,
+    )
+    await character_view.wait()
+    selected_character = await get_object_by_id(
+        config, CHARACTER, char_context.user_context.selected_char
+    )
+    await send_character_embed(interaction, config, selected_character)
 
 
 async def show_own_character(interaction: Interaction, config: Configuration) -> None:
