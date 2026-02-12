@@ -5,12 +5,14 @@ import asyncio
 import discord
 from discord import Interaction
 from .db import (
+    update_db_objs,
+)
+from .db_genre import (
+    get_loaded_genre_from_id,
     get_active_genre,
     deactivate_genre_with_id,
     get_inactive_genre,
     activate_genre_with_id,
-    get_loaded_genre_from_id,
-    update_db_objs,
 )
 from .db_classes import EVENT, INSPIRATIONALWORD
 from .file_utils import limit_text
@@ -200,6 +202,7 @@ class AddEventToGenreModal(discord.ui.Modal, title="Define a new event for the g
         config (Configuration): App configuration
         genre_context (GenreContext): Genre context object
     """
+
     def __init__(
         self,
         parent_view: discord.ui.View,
@@ -270,6 +273,7 @@ class AddWordsToGenreModal(discord.ui.Modal, title="Define new words for the gen
         config (Configuration): App configuration
         genre_context (GenreContext): Genre context object
     """
+
     def __init__(
         self,
         parent_view: discord.ui.View,
@@ -374,6 +378,7 @@ class UpdateContentButtonView(discord.ui.View):
     """
     Button view class to update genre content with selected option.
     """
+
     def __init__(self, config: Configuration, genre_context: GenreContext):
         super().__init__()
         self.config = config

@@ -169,7 +169,7 @@ class DiscordBot:
             self.config.logger.trace(
                 f"User: {interaction.user.id} execute command for info game."
             )
-            await info_game()
+            await info_game(interaction, self.config)
 
         @genre_group.command(name="deactivate", description="Deactivate genre")
         async def wrapped_genre_deactivate(interaction: discord.Interaction):

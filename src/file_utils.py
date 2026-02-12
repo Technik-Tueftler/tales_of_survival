@@ -11,9 +11,9 @@ from discord import HTTPException, Interaction
 from .configuration import Configuration
 from .db import (
     ImportResult,
-    create_character_from_input,
-    create_genre_from_input,
+    create_character_from_input
 )
+from .db_genre import create_genre_from_input
 from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE
 
 

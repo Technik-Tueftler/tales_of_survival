@@ -28,8 +28,6 @@ from .db_classes import (
     MESSAGE,
 )
 from .db import (
-    get_all_active_genre,
-    get_genre_double_cond,
     process_player,
     update_db_objs,
     get_all_running_games,
@@ -43,6 +41,7 @@ from .db import (
     check_only_init_stories,
     delete_init_stories,
 )
+from .db_genre import get_genre_double_cond, get_all_active_genre
 from .game_views import (
     GenreSelectView,
     UserSelectView,
@@ -487,9 +486,13 @@ async def finish_game() -> None:
     # 3. Status setzen für Tale, Game und Associations
     # 4. PDF in Discord Kanal posten
 
-async def info_game() -> None:
+async def info_game(interaction: Interaction, config: Configuration) -> None:
     """
-    Test
+    This function prints information about a game like state, players, etc.
+
+    Args:
+        interaction (Interaction): Discrod interaction
+        config (Configuration): App configuration
     """
     # Ausgabe infos über das Spiel
     # Welcher Spieler nutzt welchen Char
