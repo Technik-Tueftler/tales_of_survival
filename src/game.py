@@ -486,3 +486,12 @@ async def finish_game() -> None:
     # 2. Alle Story-Teile abrufen und in PDF formatieren
     # 3. Status setzen für Tale, Game und Associations
     # 4. PDF in Discord Kanal posten
+
+async def info_game() -> None:
+    """
+    Test
+    """
+    # Ausgabe infos über das Spiel
+    # Welcher Spieler nutzt welchen Char
+    # Wie viele Story-Teile gibt es schon
+    # Wann wurde das Spiel gestartet
