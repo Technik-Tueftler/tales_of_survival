@@ -42,6 +42,7 @@ from .db import (
     delete_init_stories,
 )
 from .db_genre import get_genre_double_cond, get_all_active_genre
+from .db_game import GameInfo, get_all_game_related_infos
 from .game_views import (
     GenreSelectView,
     UserSelectView,
@@ -504,22 +505,28 @@ async def info_game(interaction: Interaction, config: Configuration) -> None:
         interaction (Interaction): Discrod interaction
         config (Configuration): App configuration
     """
-    # Ausgabe infos über das Spiel
     # Welcher Spieler nutzt welchen Char
     # Wie viele Story-Teile gibt es schon
     # Wann wurde das Spiel gestartet
-    process_data = ProcessInput()
-    process_data.game_context.available_games = await get_games_w_status(
-        config,
-        [
-            GameStatus.CREATED,
-            GameStatus.PAUSED,
-            GameStatus.RUNNING,
-            GameStatus.STOPPED,
-            GameStatus.FINISHED,
-            GameStatus.FAILURE,
-        ],
-    )
-    select_success = await interface_select_game(interaction, config, process_data)
-    if not select_success:
-        return
+    try:
+        process_data = ProcessInput()
+        process_data.game_context.available_games = await get_games_w_status(
+            config,
+            [
+                GameStatus.CREATED,
+                GameStatus.PAUSED,
+                GameStatus.RUNNING,
+                GameStatus.STOPPED,
+                GameStatus.FINISHED,
+                GameStatus.FAILURE,
+            ],
+        )
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
+        game_info =  GameInfo()
+        game_info.game = process_data.game_context.selected_game
+        await get_all_game_related_infos(config, game_info)
+
+    except Exception as err:
+        print(err)
