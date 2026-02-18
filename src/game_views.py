@@ -535,21 +535,18 @@ class GameFinishView(discord.ui.View):
         """
         Callback function when the yes button is clicked.
         """
-        try:
-            self.process_data.game_context.finish.finish_confirmed = True
-            for item in self.children:
-                item.disabled = True
-            await interaction.response.edit_message(
-                content="You finish the game with the ID "
-                + f"{self.process_data.game_context.selected_game_id}.",
-                view=self,
-            )
-            self.config.logger.debug(
-                f"Game with ID {self.process_data.game_context.selected_game_id} finished by user"
-            )
-            self.stop()
-        except Exception as err:
-            print(err)
+        self.process_data.game_context.finish.finish_confirmed = True
+        for item in self.children:
+            item.disabled = True
+        await interaction.response.edit_message(
+            content="You finish the game with the ID "
+            + f"{self.process_data.game_context.selected_game_id}.",
+            view=self,
+        )
+        self.config.logger.debug(
+            f"Game with ID {self.process_data.game_context.selected_game_id} finished by user"
+        )
+        self.stop()
 
     @discord.ui.button(
         label="No, continue the game",
@@ -562,18 +559,15 @@ class GameFinishView(discord.ui.View):
         """
         Callback function when the no button is clicked.
         """
-        try:
-            self.process_data.game_context.finish.finish_confirmed = False
-            for item in self.children:
-                item.disabled = True
-            await interaction.response.edit_message(
-                content="You have canceled the process. No game will be finished.",
-                view=self,
-            )
-            self.config.logger.debug(
-                "The user responded “no” to the prompt to exit game "
-                + f"{self.process_data.game_context.selected_game_id}"
-            )
-            self.stop()
-        except Exception as err:
-            print(err)
+        self.process_data.game_context.finish.finish_confirmed = False
+        for item in self.children:
+            item.disabled = True
+        await interaction.response.edit_message(
+            content="You have canceled the process. No game will be finished.",
+            view=self,
+        )
+        self.config.logger.debug(
+            "The user responded “no” to the prompt to exit game "
+            + f"{self.process_data.game_context.selected_game_id}"
+        )
+        self.stop()

@@ -3,27 +3,18 @@ This file contains the functions to interact with the database for game related 
 """
 
 import sys
-from dataclasses import dataclass
 from typing import List
 
-import discord
-from sqlalchemy import select, func, exists, update
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy import select, func
+from sqlalchemy.exc import SQLAlchemyError
 
-from .configuration import Configuration, ProcessInput
+from .configuration import Configuration
 from .db_classes import (
     CHARACTER,
-    EVENT,
     GAME,
-    GENRE,
-    TALE,
     USER,
     UserGameCharacterAssociation,
-    GameStatus,
     STORY,
-    StoryType,
-    MESSAGE,
 )
 
 class GameInfo:

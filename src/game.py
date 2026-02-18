@@ -498,34 +498,25 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
         interaction (Interaction): Discord interaction object
         config (Configuration): App configuration
     """
-    try:
-        process_data = ProcessInput()
-        process_data.game_context.available_games = await get_games_w_status(
-            config,
-            [
-                GameStatus.STOPPED,
-            ],
-        )
-        select_success = await interface_select_game(interaction, config, process_data)
-        if not select_success:
-            return
-        game_finish_view = GameFinishView(config, process_data)
-        await interaction.followup.send(
-            "Are you sure you want to finish the game with ID: "
-            + f"{process_data.game_context.selected_game_id}? "
-            + "It will not be possible to restart it!",
-            view=game_finish_view,
-            ephemeral=True,
-        )
-        await game_finish_view.wait()
-        print(process_data.game_context.finish.finish_confirmed)
-        print(process_data.game_context.selected_game_id)
-        # 1. Abfrage ob wirklich beendet werden soll
-        # 2. Alle Story-Teile abrufen und in PDF formatieren
-        # 3. Status setzen für Tale, Game und Associations
-        # 4. PDF in Discord Kanal posten
-    except Exception as err:
-        print(err)
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config,
+        [
+            GameStatus.STOPPED,
+        ],
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return
+    game_finish_view = GameFinishView(config, process_data)
+    await interaction.followup.send(
+        "Are you sure you want to finish the game with ID: "
+        + f"{process_data.game_context.selected_game_id}? "
+        + "It will not be possible to restart it!",
+        view=game_finish_view,
+        ephemeral=True,
+    )
+    await game_finish_view.wait()
 
 
 async def info_game(interaction: Interaction, config: Configuration) -> None:
@@ -536,29 +527,22 @@ async def info_game(interaction: Interaction, config: Configuration) -> None:
         interaction (Interaction): Discrod interaction
         config (Configuration): App configuration
     """
-    # Welcher Spieler nutzt welchen Char
-    # Wie viele Story-Teile gibt es schon
-    # Wann wurde das Spiel gestartet
-    try:
-        process_data = ProcessInput()
-        process_data.game_context.available_games = await get_games_w_status(
-            config,
-            [
-                GameStatus.CREATED,
-                GameStatus.PAUSED,
-                GameStatus.RUNNING,
-                GameStatus.STOPPED,
-                GameStatus.FINISHED,
-                GameStatus.FAILURE,
-            ],
-        )
-        select_success = await interface_select_game(interaction, config, process_data)
-        if not select_success:
-            return
-        game_info = GameInfo()
-        game_info.game = process_data.game_context.selected_game
-        await get_all_game_related_infos(config, game_info)
-        await send_game_info_embed(interaction, config, game_info)
-
-    except Exception as err:
-        print(err)
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config,
+        [
+            GameStatus.CREATED,
+            GameStatus.PAUSED,
+            GameStatus.RUNNING,
+            GameStatus.STOPPED,
+            GameStatus.FINISHED,
+            GameStatus.FAILURE,
+        ],
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return
+    game_info = GameInfo()
+    game_info.game = process_data.game_context.selected_game
+    await get_all_game_related_infos(config, game_info)
+    await send_game_info_embed(interaction, config, game_info)
