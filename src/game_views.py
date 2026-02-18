@@ -516,6 +516,9 @@ class StZombieTaleStartModal(
 
 
 class GameFinishView(discord.ui.View):
+    """
+        View class to confirm and process the finish of a game.
+    """
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data

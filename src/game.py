@@ -17,7 +17,7 @@ from .discord_utils import (
     create_dc_message_link,
 )
 from .discord_permissions import check_permissions_storyteller
-from .configuration import Configuration, GameFinishContext, ProcessInput, IdError
+from .configuration import Configuration, ProcessInput, IdError
 from .llm_handler import request_openai, OpenAiContext
 from .db_classes import StoryType, GameStatus
 from .db_classes import (
