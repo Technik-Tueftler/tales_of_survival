@@ -128,6 +128,7 @@ class GameContext:
         self.selected_game: GAME = None
         self.new_game_status: GameStatus = None
         self.start: GameStartContext = GameStartContext()
+        self.finish: GameFinishContext = GameFinishContext()
 
     async def input_valid_game(self) -> bool:
         """
@@ -243,6 +244,17 @@ class GameStartContext:
         self.game_name: str = ""
         self.game_description: str = ""
         self.selected_user: List[discord.member.Member] = []
+
+
+class GameFinishContext:
+    """
+    Class to specify the game finish context and input data
+    for processing.
+    """
+    def __init__(self):
+        self.finish_confirmed: bool = False
+        self.finish_prompt: str = ""
+        self.create_chapter: bool = False
 
 
 class ProcessInput:

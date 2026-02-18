@@ -34,7 +34,7 @@ class GameInfo:
     """
     def __init__(self):
         self.game: GAME = None
-        self.tale: TALE = None
+        self.num_stories: int = 0
         self.user_char_list: List[tuple[USER, CHARACTER]] = []
 
 
@@ -50,7 +50,7 @@ async def get_all_game_related_infos(
     """
     try:
         async with config.session() as session, session.begin():
-            statement = (
+            statement_user = (
                 select(USER, CHARACTER)
                 .join(
                     UserGameCharacterAssociation,
@@ -66,9 +66,23 @@ async def get_all_game_related_infos(
                 .where(UserGameCharacterAssociation.end_date.is_(None))
             )
             result_user = (
-                (await session.execute(statement))
+                (await session.execute(statement_user))
             ).all()
             game_info.user_char_list = [tuple(row) for row in result_user]
+
+            statement = (
+                select(
+                    func.count(  # pylint: disable=not-callable
+                        STORY.id
+                    )
+                )
+                .where(STORY.tale_id == game_info.game.tale_id)
+                .where(STORY.response.isnot(None))
+                .where(STORY.discarded.is_(False))
+            )
+            temp_return = (await session.execute(statement)).scalar_one_or_none()
+            config.logger.trace(f"Number of stories told: {temp_return}")
+            game_info.num_stories = temp_return if temp_return is not None else 0
 
     except (AttributeError, SQLAlchemyError, TypeError):
         config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
