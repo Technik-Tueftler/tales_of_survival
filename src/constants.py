@@ -17,6 +17,21 @@ DEFAULT_CHARACTER_THUMBNAIL: str = (
 )
 """Default name for character thumbnail image used in embeds."""
 
+DEFAULT_EVENT_THUMBNAIL: str = (
+    "icon_event_small.png"
+)
+"""Default name for event thumbnail image used in embeds."""
+
+DEFAULT_QUESTION_THUMBNAIL: str = (
+    "icon_question_small.png"
+)
+"""Default name for question thumbnail image used in embeds."""
+
+DEFAULT_FINISH_THUMBNAIL: str = (
+    "icon_finish_small.png"
+)
+"""Default name for finish game thumbnail image used in embeds."""
+
 PROMPT_MAX_WORDS_DESCRIPTION: int = 200
 """Maximum number of words for describing the world of the tale."""
 
