@@ -15,6 +15,7 @@ from .discord_utils import (
     update_embed_message_color,
     send_game_embed,
     create_dc_message_link,
+    send_game_info_embed,
 )
 from .discord_permissions import check_permissions_storyteller
 from .configuration import Configuration, ProcessInput, IdError
@@ -557,6 +558,7 @@ async def info_game(interaction: Interaction, config: Configuration) -> None:
         game_info = GameInfo()
         game_info.game = process_data.game_context.selected_game
         await get_all_game_related_infos(config, game_info)
+        await send_game_info_embed(interaction, config, game_info)
 
     except Exception as err:
         print(err)
