@@ -159,7 +159,7 @@ class DiscordBot:
             )
             if not await check_permissions_historian(self.config, interaction):
                 return
-            await finish_game()
+            await finish_game(interaction, self.config)
 
         @game_group.command(
             name="info",

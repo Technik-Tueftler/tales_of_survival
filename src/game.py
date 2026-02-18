@@ -17,7 +17,7 @@ from .discord_utils import (
     create_dc_message_link,
 )
 from .discord_permissions import check_permissions_storyteller
-from .configuration import Configuration, ProcessInput, IdError
+from .configuration import Configuration, GameFinishContext, ProcessInput, IdError
 from .llm_handler import request_openai, OpenAiContext
 from .db_classes import StoryType, GameStatus
 from .db_classes import (
@@ -48,6 +48,7 @@ from .game_views import (
     UserSelectView,
     KeepTellingButtonView,
     NewGameStatusSelectView,
+    GameFinishView,
 )
 from .game_start import (
     collect_start_input,
@@ -487,14 +488,43 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
     )
 
 
-async def finish_game() -> None:
+async def finish_game(interaction: Interaction, config: Configuration) -> None:
     """
-    Test function
+    This function finishes a game and generates a PDF with the story so far.
+    The game status will be set to finished. It is not possible to keep
+    telling a story after finishing the game.
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
     """
-    # 1. Abfrage ob wirklich beendet werden soll
-    # 2. Alle Story-Teile abrufen und in PDF formatieren
-    # 3. Status setzen für Tale, Game und Associations
-    # 4. PDF in Discord Kanal posten
+    try:
+        process_data = ProcessInput()
+        process_data.game_context.available_games = await get_games_w_status(
+            config,
+            [
+                GameStatus.STOPPED,
+            ],
+        )
+        select_success = await interface_select_game(interaction, config, process_data)
+        if not select_success:
+            return
+        game_finish_view = GameFinishView(config, process_data)
+        await interaction.followup.send(
+            "Are you sure you want to finish the game with ID: "
+            + f"{process_data.game_context.selected_game_id}? "
+            + "It will not be possible to restart it!",
+            view=game_finish_view,
+            ephemeral=True,
+        )
+        await game_finish_view.wait()
+        print(process_data.game_context.finish.finish_confirmed)
+        print(process_data.game_context.selected_game_id)
+        # 1. Abfrage ob wirklich beendet werden soll
+        # 2. Alle Story-Teile abrufen und in PDF formatieren
+        # 3. Status setzen für Tale, Game und Associations
+        # 4. PDF in Discord Kanal posten
+    except Exception as err:
+        print(err)
 
 
 async def info_game(interaction: Interaction, config: Configuration) -> None:
@@ -524,7 +554,7 @@ async def info_game(interaction: Interaction, config: Configuration) -> None:
         select_success = await interface_select_game(interaction, config, process_data)
         if not select_success:
             return
-        game_info =  GameInfo()
+        game_info = GameInfo()
         game_info.game = process_data.game_context.selected_game
         await get_all_game_related_infos(config, game_info)
 
