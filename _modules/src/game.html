@@ -1,0 +1,1046 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.game &#8212; Tales of Survival v0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=683873e3"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/src/game';</script>
+    <script>mermaid.initialize({"theme": "base", "themeVariables": {"primaryColor": "#4CAF50", "primaryTextColor": "#000000", "primaryBorderColor": "#757575", "lineColor": "#B0BEC5", "secondaryColor": "#2196F3", "tertiaryColor": "#2196F3"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tales of Survival v0.2.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../src/index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../src/index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">src.game</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for src.game</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module to handle game creation and management</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">discord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">discord</span><span class="w"> </span><span class="kn">import</span> <span class="n">Interaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.discord_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">send_channel_message</span><span class="p">,</span>
+    <span class="n">update_embed_message</span><span class="p">,</span>
+    <span class="n">interface_select_game</span><span class="p">,</span>
+    <span class="n">delete_channel_messages</span><span class="p">,</span>
+    <span class="n">update_embed_message_color</span><span class="p">,</span>
+    <span class="n">send_game_embed</span><span class="p">,</span>
+    <span class="n">create_dc_message_link</span><span class="p">,</span>
+    <span class="n">send_game_info_embed</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.discord_permissions</span><span class="w"> </span><span class="kn">import</span> <span class="n">check_permissions_storyteller</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ProcessInput</span><span class="p">,</span> <span class="n">IdError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.llm_handler</span><span class="w"> </span><span class="kn">import</span> <span class="n">request_openai</span><span class="p">,</span> <span class="n">OpenAiContext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">StoryType</span><span class="p">,</span> <span class="n">GameStatus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_classes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GAME</span><span class="p">,</span>
+    <span class="n">TALE</span><span class="p">,</span>
+    <span class="n">UserGameCharacterAssociation</span><span class="p">,</span>
+    <span class="n">STORY</span><span class="p">,</span>
+    <span class="n">MESSAGE</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">process_player</span><span class="p">,</span>
+    <span class="n">update_db_objs</span><span class="p">,</span>
+    <span class="n">get_all_running_games</span><span class="p">,</span>
+    <span class="n">get_all_running_user_games</span><span class="p">,</span>
+    <span class="n">get_tale_from_game_id</span><span class="p">,</span>
+    <span class="n">get_games_w_status</span><span class="p">,</span>
+    <span class="n">count_regist_char_from_game</span><span class="p">,</span>
+    <span class="n">get_character_from_game_id</span><span class="p">,</span>
+    <span class="n">get_stories_messages_for_ai</span><span class="p">,</span>
+    <span class="n">channel_id_exist</span><span class="p">,</span>
+    <span class="n">check_only_init_stories</span><span class="p">,</span>
+    <span class="n">delete_init_stories</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_genre</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_genre_double_cond</span><span class="p">,</span> <span class="n">get_all_active_genre</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_game</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameInfo</span><span class="p">,</span> <span class="n">get_all_game_related_infos</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.game_views</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GenreSelectView</span><span class="p">,</span>
+    <span class="n">UserSelectView</span><span class="p">,</span>
+    <span class="n">KeepTellingButtonView</span><span class="p">,</span>
+    <span class="n">NewGameStatusSelectView</span><span class="p">,</span>
+    <span class="n">GameFinishView</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.game_start</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">collect_start_input</span><span class="p">,</span>
+    <span class="n">get_first_phase_prompt</span><span class="p">,</span>
+    <span class="n">get_second_phase_prompt</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.game_telling</span><span class="w"> </span><span class="kn">import</span> <span class="n">telling_event</span><span class="p">,</span> <span class="n">telling_fiction</span>
+
+
+<div class="viewcode-block" id="collect_all_game_contexts">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.collect_all_game_contexts">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">collect_all_game_contexts</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to collect all necessary game contexts from user interactions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Interaction object from Discord</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        process_data (ProcessInput): Input collection object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">user_view</span> <span class="o">=</span> <span class="n">UserSelectView</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+            <span class="s2">&quot;Please select all players for the new story.&quot;</span><span class="p">,</span>
+            <span class="n">view</span><span class="o">=</span><span class="n">user_view</span><span class="p">,</span>
+            <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">user_view</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Player selected.&quot;</span><span class="p">)</span>
+        <span class="n">genres</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_all_active_genre</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">genres</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="s2">&quot;No genres are available. No game can be created. Please contact a mod or admin.&quot;</span><span class="p">,</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All active genre: </span><span class="si">{</span><span class="p">[</span><span class="n">genre</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">genre</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">genres</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">genre_view</span> <span class="o">=</span> <span class="n">GenreSelectView</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">,</span> <span class="n">genres</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="s2">&quot;Please select the genre for the new story.&quot;</span><span class="p">,</span>
+            <span class="n">view</span><span class="o">=</span><span class="n">genre_view</span><span class="p">,</span>
+            <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">genre_view</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot send message, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Timeout error occurred.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="inform_players">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.inform_players">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">inform_players</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">discord</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">Member</span><span class="p">],</span> <span class="n">message_link</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Send a DM to each player to inform them about the new game.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        users (list[discord.member.Member]): All player of the game</span>
+<span class="sd">        message_link (str): Link to the game information message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;Hello #USERNAME, you have been invited to participate in &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;**Tales of Survival**. Check: </span><span class="si">{</span><span class="n">message_link</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+            <span class="n">temp_message</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;#USERNAME&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">user</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">temp_message</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot send message to </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to send message to </span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_game">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.create_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create a new game based on user inputs from Discord interactions.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Intgeraction object from Discord</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">channel_id_exist</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">interaction</span><span class="o">.</span><span class="n">channel_id</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;In this channel is a Tale ongoing and no new Tale can created. &quot;</span>
+                    <span class="s2">&quot;Please select another channel.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessInput</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">collect_all_game_contexts</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">selected_genre</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+                <span class="s2">&quot;No genre can been selected. Game creation will be canceled.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">genre</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_genre_double_cond</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">selected_genre</span>
+        <span class="p">)</span>
+        <span class="n">processed_user_list</span> <span class="o">=</span> <span class="k">await</span> <span class="n">process_player</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">selected_user</span>
+        <span class="p">)</span>
+        <span class="n">tale</span> <span class="o">=</span> <span class="n">TALE</span><span class="p">(</span><span class="n">genre</span><span class="o">=</span><span class="n">genre</span><span class="p">)</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="n">GAME</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">game_name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">game_description</span><span class="p">,</span>
+            <span class="n">start_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">),</span>
+            <span class="n">tale</span><span class="o">=</span><span class="n">tale</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">update_db_objs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="p">[</span><span class="n">game</span><span class="p">])</span>
+        <span class="n">associations</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">UserGameCharacterAssociation</span><span class="p">(</span><span class="n">game_id</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">processed_user_list</span>
+        <span class="p">]</span>
+        <span class="k">await</span> <span class="n">update_db_objs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">associations</span><span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_game_embed</span><span class="p">(</span>
+            <span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">game</span><span class="p">,</span> <span class="n">genre</span><span class="p">,</span> <span class="n">processed_user_list</span>
+        <span class="p">)</span>
+        <span class="n">game</span><span class="o">.</span><span class="n">message_id</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">game</span><span class="o">.</span><span class="n">channel_id</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">id</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Update game informations: message id </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">message_id</span><span class="si">}</span><span class="s2">, channel id </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">update_db_objs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="p">[</span><span class="n">game</span><span class="p">])</span>
+        <span class="n">message_link</span> <span class="o">=</span> <span class="k">await</span> <span class="n">create_dc_message_link</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">interaction</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">inform_players</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">selected_user</span><span class="p">,</span> <span class="n">message_link</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot send message, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Timeout error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Missing key in game data or for DB object.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="keep_telling_schedule">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.keep_telling_schedule">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">keep_telling_schedule</span><span class="p">(</span><span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is the schedule to keep telling a story. It collects all necessary</span>
+<span class="sd">    inputs from the user and write the next part of the story.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Interaction object</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessInput</span><span class="p">()</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">user_context</span><span class="o">.</span><span class="n">user_dc_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">interaction</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">check_permissions_storyteller</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">interaction</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">get_all_running_games</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">get_all_running_user_games</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="n">select_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interface_select_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">select_success</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">tale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tale_from_game_id</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game_id</span>
+        <span class="p">)</span>
+        <span class="n">telling_view</span> <span class="o">=</span> <span class="n">KeepTellingButtonView</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">view</span><span class="o">=</span><span class="n">telling_view</span><span class="p">,</span> <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">telling_view</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Finish keep telling input interaction.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">story_type</span> <span class="ow">is</span> <span class="n">StoryType</span><span class="o">.</span><span class="n">EVENT</span>
+            <span class="ow">and</span> <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">events_available</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">await</span> <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">get_random_event_weighted</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">telling_event</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">,</span> <span class="n">interaction</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">story_type</span> <span class="ow">is</span> <span class="n">StoryType</span><span class="o">.</span><span class="n">FICTION</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">telling_fiction</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">,</span> <span class="n">interaction</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Story type: </span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">story_type</span><span class="si">}</span><span class="s2"> is not defined.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot send message, permission denied.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Timeout error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Missing key in game data or for DB object.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="start_game_schedule">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.start_game_schedule">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_game_schedule</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function the schedule to start a new game. It collects all necessary</span>
+<span class="sd">    inputs from the user, gets the tale and character data from the database,</span>
+<span class="sd">    creates the prompts for the LLM model, sends the requests and stores</span>
+<span class="sd">    the responses in the database.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Interaction object</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game_data (ProcessInput): Game data object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Success status of the game start process</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">collect_start_input</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">game_data</span><span class="p">)</span>
+
+        <span class="n">tale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tale_from_game_id</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">game_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span>
+        <span class="n">game_character</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_character_from_game_id</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">game_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">id</span>
+        <span class="p">)</span>
+        <span class="n">game_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">tale</span> <span class="o">=</span> <span class="n">tale</span>
+        <span class="n">game_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="n">game_character</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_first_phase_prompt</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">game_data</span><span class="p">)</span>
+
+        <span class="n">response_world</span><span class="p">:</span> <span class="n">OpenAiContext</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request_openai</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">messages</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">response_world</span><span class="o">.</span><span class="n">error_free</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The following error occurred during the AI request: </span><span class="si">{</span><span class="n">response_world</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">msg_ids_world</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_channel_message</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span>
+            <span class="n">game_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">,</span>
+            <span class="n">response_world</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">msg_ids_world</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">IdError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The id </span><span class="si">{</span><span class="n">game_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;is not available on the DC server. No stories are being created.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">stories</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">STORY</span><span class="p">(</span><span class="n">request</span><span class="o">=</span><span class="n">story</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">story_type</span><span class="o">=</span><span class="n">StoryType</span><span class="o">.</span><span class="n">INIT</span><span class="p">,</span> <span class="n">tale_id</span><span class="o">=</span><span class="n">tale</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">messages</span>
+        <span class="p">]</span>
+        <span class="n">stories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">STORY</span><span class="p">(</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response_world</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+                <span class="n">story_type</span><span class="o">=</span><span class="n">StoryType</span><span class="o">.</span><span class="n">INIT</span><span class="p">,</span>
+                <span class="n">tale_id</span><span class="o">=</span><span class="n">tale</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">MESSAGE</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">msg_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg_id</span> <span class="ow">in</span> <span class="n">msg_ids_world</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">update_db_objs</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">objs</span><span class="o">=</span><span class="n">stories</span><span class="p">)</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_stories_messages_for_ai</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">tale</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">messages_second_phase</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_second_phase_prompt</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">game_data</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">messages_second_phase</span><span class="p">:</span>
+            <span class="n">stories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">STORY</span><span class="p">(</span>
+                    <span class="n">request</span><span class="o">=</span><span class="n">msg</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">],</span> <span class="n">story_type</span><span class="o">=</span><span class="n">StoryType</span><span class="o">.</span><span class="n">INIT</span><span class="p">,</span> <span class="n">tale_id</span><span class="o">=</span><span class="n">tale</span><span class="o">.</span><span class="n">id</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">messages</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">messages_second_phase</span><span class="p">)</span>
+        <span class="n">response_start</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request_openai</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">messages</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">response_start</span><span class="o">.</span><span class="n">error_free</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The following error occurred during the AI request: </span><span class="si">{</span><span class="n">response_start</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">msg_ids_start</span> <span class="o">=</span> <span class="k">await</span> <span class="n">send_channel_message</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span>
+            <span class="n">game_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">,</span>
+            <span class="n">response_start</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">msg_ids_start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">IdError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The id </span><span class="si">{</span><span class="n">game_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;is not available on the DC server. No stories are being created.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">stories</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">STORY</span><span class="p">(</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response_start</span><span class="o">.</span><span class="n">response</span><span class="p">,</span>
+                <span class="n">story_type</span><span class="o">=</span><span class="n">StoryType</span><span class="o">.</span><span class="n">INIT</span><span class="p">,</span>
+                <span class="n">tale_id</span><span class="o">=</span><span class="n">tale</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">messages</span><span class="o">=</span><span class="p">[</span><span class="n">MESSAGE</span><span class="p">(</span><span class="n">message_id</span><span class="o">=</span><span class="n">msg_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">msg_id</span> <span class="ow">in</span> <span class="n">msg_ids_start</span><span class="p">],</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">update_db_objs</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">objs</span><span class="o">=</span><span class="n">stories</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="n">IdError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ID-Error: </span><span class="si">{</span><span class="n">err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="setup_game">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.setup_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function game status with a select menu to choose the game status. The game status can be</span>
+<span class="sd">    switched based on the current status of the game.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        interaction (Interaction): Interaction object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessInput</span><span class="p">()</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_games_w_status</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span>
+            <span class="p">[</span>
+                <span class="n">GameStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">,</span>
+                <span class="n">GameStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+                <span class="n">GameStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="p">,</span>
+            <span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">input_valid_game</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+                <span class="s2">&quot;No game is available, please contact a Mod.&quot;</span><span class="p">,</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">select_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interface_select_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">select_success</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">game_select_view</span> <span class="o">=</span> <span class="n">NewGameStatusSelectView</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="s2">&quot;Select now the new status for game with id: &quot;</span>
+            <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">view</span><span class="o">=</span><span class="n">game_select_view</span><span class="p">,</span>
+            <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">game_select_view</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">request_game_start</span><span class="p">():</span>
+            <span class="n">counted_participants</span> <span class="o">=</span> <span class="k">await</span> <span class="n">count_regist_char_from_game</span><span class="p">(</span>
+                <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">id</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">counted_participants</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                    <span class="s2">&quot;You have selected that the game with the ID: &quot;</span>
+                    <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game_id</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="o">+</span> <span class="s2">&quot;However, no character has been registered for the game by a user yet.&quot;</span><span class="p">,</span>
+                    <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                <span class="s2">&quot;You have selected that the game with the ID: &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game_id</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;will be started.&quot;</span><span class="p">,</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">status</span> <span class="o">=</span> <span class="k">await</span> <span class="n">start_game_schedule</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">status</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">await</span> <span class="n">update_embed_message</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="p">)</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">new_game_status</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">update_db_objs</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="p">[</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="p">])</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot send message, permission denied.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Timeout error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Missing key in game data or for DB object.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="reset_game">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.reset_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">reset_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function resets a game and generates a new start story.</span>
+<span class="sd">    Only possible if stories in the game with the status INIT.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Discrod interaction</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessInput</span><span class="p">()</span>
+    <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_games_w_status</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span> <span class="p">[</span><span class="n">GameStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="p">,</span> <span class="n">GameStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">select_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interface_select_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">select_success</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">tale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tale_from_game_id</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">id</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">check_only_init_stories</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">tale</span><span class="o">.</span><span class="n">id</span><span class="p">):</span>
+        <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+            <span class="s2">&quot;The story has already been passed on and cannot be reset.&quot;</span><span class="p">,</span>
+            <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span>
+    <span class="n">dc_message_ids</span> <span class="o">=</span> <span class="k">await</span> <span class="n">delete_init_stories</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">tale</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">delete_channel_messages</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="p">,</span> <span class="n">dc_message_ids</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">update_embed_message_color</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="p">,</span> <span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">yellow</span><span class="p">()</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="finish_game">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.finish_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">finish_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function finishes a game and generates a PDF with the story so far.</span>
+<span class="sd">    The game status will be set to finished. It is not possible to keep</span>
+<span class="sd">    telling a story after finishing the game.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Discord interaction object</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessInput</span><span class="p">()</span>
+    <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_games_w_status</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">select_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interface_select_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">select_success</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">game_finish_view</span> <span class="o">=</span> <span class="n">GameFinishView</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+        <span class="s2">&quot;Are you sure you want to finish the game with ID: &quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game_id</span><span class="si">}</span><span class="s2">? &quot;</span>
+        <span class="o">+</span> <span class="s2">&quot;It will not be possible to restart it!&quot;</span><span class="p">,</span>
+        <span class="n">view</span><span class="o">=</span><span class="n">game_finish_view</span><span class="p">,</span>
+        <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">game_finish_view</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="info_game">
+<a class="viewcode-back" href="../../src/game_handling.html#src.game.info_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">info_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function prints information about a game like state, players, etc.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Discrod interaction</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">process_data</span> <span class="o">=</span> <span class="n">ProcessInput</span><span class="p">()</span>
+    <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_games_w_status</span><span class="p">(</span>
+        <span class="n">config</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">CREATED</span><span class="p">,</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">PAUSED</span><span class="p">,</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">,</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">STOPPED</span><span class="p">,</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">FINISHED</span><span class="p">,</span>
+            <span class="n">GameStatus</span><span class="o">.</span><span class="n">FAILURE</span><span class="p">,</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="n">select_success</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interface_select_game</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">select_success</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">game_info</span> <span class="o">=</span> <span class="n">GameInfo</span><span class="p">()</span>
+    <span class="n">game_info</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span>
+    <span class="k">await</span> <span class="n">get_all_game_related_infos</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">game_info</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">send_game_info_embed</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">game_info</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Technik Tueftler.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

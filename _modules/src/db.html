@@ -1,0 +1,1286 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.db &#8212; Tales of Survival v0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=683873e3"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/src/db';</script>
+    <script>mermaid.initialize({"theme": "base", "themeVariables": {"primaryColor": "#4CAF50", "primaryTextColor": "#000000", "primaryBorderColor": "#757575", "lineColor": "#B0BEC5", "secondaryColor": "#2196F3", "tertiaryColor": "#2196F3"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tales of Survival v0.2.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../src/index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../src/index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">src.db</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for src.db</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This File contains the database setup, initialization functions and</span>
+<span class="sd">general database related functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">discord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">exists</span><span class="p">,</span> <span class="n">update</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntegrityError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">selectinload</span><span class="p">,</span> <span class="n">joinedload</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ProcessInput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_classes</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CHARACTER</span><span class="p">,</span>
+    <span class="n">EVENT</span><span class="p">,</span>
+    <span class="n">GAME</span><span class="p">,</span>
+    <span class="n">GENRE</span><span class="p">,</span>
+    <span class="n">TALE</span><span class="p">,</span>
+    <span class="n">USER</span><span class="p">,</span>
+    <span class="n">UserGameCharacterAssociation</span><span class="p">,</span>
+    <span class="n">GameStatus</span><span class="p">,</span>
+    <span class="n">STORY</span><span class="p">,</span>
+    <span class="n">StoryType</span><span class="p">,</span>
+    <span class="n">MESSAGE</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="ImportResult">
+<a class="viewcode-back" href="../../src/db.html#src.db.ImportResult">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImportResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Result class from importing a file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">import_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">text_genre</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">text_character</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="get_unique_event_from_content">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_unique_event_from_content">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_unique_event_from_content</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">chance</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">genre_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EVENT</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to get a unique event based on the event content.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        text (str): Event test</span>
+<span class="sd">        chance (int): Event chance</span>
+<span class="sd">        genre_id (int): Genre id from event</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        EVENT | None: Found genre or None in case of not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">EVENT</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">EVENT</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="n">text</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">EVENT</span><span class="o">.</span><span class="n">chance</span> <span class="o">==</span> <span class="n">chance</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">EVENT</span><span class="o">.</span><span class="n">genre_id</span> <span class="o">==</span> <span class="n">genre_id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="check_exist_unique_character">
+<a class="viewcode-back" href="../../src/db.html#src.db.check_exist_unique_character">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_exist_unique_character</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">character</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function checks whether the character passed is unique.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        genre (dict): New character from yml load</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Transferred character already exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">exists</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">CHARACTER</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="create_character_from_input">
+<a class="viewcode-back" href="../../src/db.html#src.db.create_character_from_input">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_character_from_input</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">ImportResult</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create character from imported file.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        result (ImportResult): Result class from importing a file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">missed_character</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">final_character</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="k">await</span> <span class="n">check_exist_unique_character</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">character</span><span class="p">):</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The following character already exist: </span><span class="si">{</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="n">missed_character</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+                <span class="k">continue</span>
+            <span class="n">temp_character</span> <span class="o">=</span> <span class="n">CHARACTER</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                <span class="n">age</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">],</span>
+                <span class="n">background</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;background&quot;</span><span class="p">],</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">],</span>
+                <span class="n">pos_trait</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;pos_trait&quot;</span><span class="p">],</span>
+                <span class="n">neg_trait</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;neg_trait&quot;</span><span class="p">],</span>
+                <span class="n">summary</span><span class="o">=</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;summary&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="n">final_character</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_character</span><span class="p">)</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The following character is created: </span><span class="si">{</span><span class="n">temp_character</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">write_lock</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">final_character</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">import_number</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">final_character</span><span class="p">)</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">missed_character</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">text_character</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;The following characters already exist with the settings &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;provided: </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missed_character</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">IntegrityError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Error while import character file.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_characters_from_ids">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_characters_from_ids">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_characters_from_ids</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CHARACTER</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get characters from a list of ids.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        ids (list[int]): List with all character ids</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[CHARACTER]: List of characters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">CHARACTER</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">CHARACTER</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">ids</span><span class="p">))))</span>
+            <span class="o">.</span><span class="n">scalars</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_object_by_id">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_object_by_id">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_object_by_id</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">obj_type</span><span class="p">:</span> <span class="n">UserGameCharacterAssociation</span> <span class="o">|</span> <span class="n">CHARACTER</span> <span class="o">|</span> <span class="n">GAME</span><span class="p">,</span>
+    <span class="n">obj_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGameCharacterAssociation</span> <span class="o">|</span> <span class="n">CHARACTER</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get a object from the database by its id.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        obj_type (UserGameCharacterAssociation): Type of the object to get</span>
+<span class="sd">        obj_id (int): Id of the object to get</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">obj_type</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">obj_type</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">obj_id</span><span class="p">))</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="process_player">
+<a class="viewcode-back" href="../../src/db.html#src.db.process_player">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_player</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">user_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">discord</span><span class="o">.</span><span class="n">member</span><span class="o">.</span><span class="n">Member</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">USER</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to process a user list and add them to the database if they are not already there.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        user_list (list[discord.member.Member]): List of users to process</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[User]: processed user list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">processed_user_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">write_lock</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">user_list</span><span class="p">:</span>
+            <span class="n">temp_user</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">USER</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">dc_id</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">temp_user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">temp_user</span> <span class="o">=</span> <span class="n">USER</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dc_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">temp_user</span><span class="p">)</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User </span><span class="si">{</span><span class="n">temp_user</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> added to the database.&quot;</span><span class="p">)</span>
+            <span class="n">processed_user_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_user</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">processed_user_list</span></div>
+
+
+
+<div class="viewcode-block" id="update_db_objs">
+<a class="viewcode-back" href="../../src/db.html#src.db.update_db_objs">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_db_objs</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">objs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">GAME</span> <span class="o">|</span> <span class="n">USER</span> <span class="o">|</span> <span class="n">TALE</span> <span class="o">|</span> <span class="n">GENRE</span><span class="p">,</span> <span class="n">STORY</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to update a game or player object in the database</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        obj (GAME | USER | TALE | GENRE): Object to update in the database</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">write_lock</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add_all</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Updated object in database: </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with ID: </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql update.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="get_available_characters">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_available_characters">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_available_characters</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CHARACTER</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get all characters from the database which are not assigned to a user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">CHARACTER</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">CHARACTER</span><span class="o">.</span><span class="n">alive</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">CHARACTER</span><span class="o">.</span><span class="n">user_id</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No available characters found in the database&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Available characters retrieved from database&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="get_all_owned_characters">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_all_owned_characters">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_owned_characters</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">USER</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CHARACTER</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get all characters from the database which are assigned to a user and</span>
+<span class="sd">    assigned to a not finished game.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        user (USER): User object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">CHARACTER</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CHARACTER</span><span class="o">.</span><span class="n">game_assignments</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">game</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">USER</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">GAME</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+                    <span class="n">CHARACTER</span><span class="o">.</span><span class="n">alive</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">True</span><span class="p">),</span>
+                    <span class="n">CHARACTER</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No available characters found in the database&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="p">[]</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Available characters retrieved from database&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="get_all_open_user_games">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_all_open_user_games">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_open_user_games</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function get all games loaded with user participations from the database from a user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        process_data (ProcessInput): Process input data structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">GAME</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">user_participations</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">dc_id</span> <span class="o">==</span> <span class="n">process_data</span><span class="o">.</span><span class="n">user_context</span><span class="o">.</span><span class="n">user_dc_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">character_id</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="get_all_running_games">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_all_running_games">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_running_games</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get all available games from the database which are not finished.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        process_data (ProcessInput): Game data object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">GAME</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">GameStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No available games found in the database&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="n">result</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="get_tale_from_game_id">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_tale_from_game_id">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_tale_from_game_id</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TALE</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get the tale based on handed over game id.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game_id (int): Game id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        TALE | None: One Tale or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">TALE</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TALE</span><span class="o">.</span><span class="n">game</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                    <span class="n">joinedload</span><span class="p">(</span><span class="n">TALE</span><span class="o">.</span><span class="n">genre</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                        <span class="n">selectinload</span><span class="p">(</span><span class="n">GENRE</span><span class="o">.</span><span class="n">events</span><span class="p">),</span>
+                        <span class="n">selectinload</span><span class="p">(</span><span class="n">GENRE</span><span class="o">.</span><span class="n">inspirational_words</span><span class="p">),</span>
+                    <span class="p">),</span>
+                    <span class="n">joinedload</span><span class="p">(</span><span class="n">TALE</span><span class="o">.</span><span class="n">game</span><span class="p">)</span><span class="o">.</span><span class="n">options</span><span class="p">(</span>
+                        <span class="n">selectinload</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">user_participations</span><span class="p">)</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="get_games_w_status">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_games_w_status">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_games_w_status</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">status</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">GameStatus</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">GAME</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function get all changeable games back. Games that have the status</span>
+<span class="sd">    CREATED, RUNNING or PAUSED can be changed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[Game]: The list if changeable games</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Called with status: </span><span class="si">{</span><span class="n">status</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="n">games</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">GAME</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">status</span><span class="p">))))</span>
+            <span class="o">.</span><span class="n">scalars</span><span class="p">()</span>
+            <span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">games</span></div>
+
+
+
+<div class="viewcode-block" id="get_user_from_dc_id">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_user_from_dc_id">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_user_from_dc_id</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">dc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">USER</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the user object based on handed over discord id.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        dc_id (str): Discord ID of user</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        USER | None: One User or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">USER</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">dc_id</span> <span class="o">==</span> <span class="n">dc_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="get_mapped_ugc_association">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_mapped_ugc_association">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_mapped_ugc_association</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserGameCharacterAssociation</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function get the association object based on handed over game and user id.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game_id (int): Game id</span>
+<span class="sd">        user_id (int): User id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        UserGameCharacterAssociation | None: Linked association object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">game_id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">user_id</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="count_regist_char_from_game">
+<a class="viewcode-back" href="../../src/db.html#src.db.count_regist_char_from_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">count_regist_char_from_game</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function get the number of registered character in a handed over game based on id.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game_id (int): Game id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Count of registered characters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span>
+                    <span class="n">func</span><span class="o">.</span><span class="n">count</span><span class="p">(</span>  <span class="c1"># pylint: disable=not-callable</span>
+                        <span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">id</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">game_id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">character_id</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="n">temp_return</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Counted registered character: </span><span class="si">{</span><span class="n">temp_return</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">temp_return</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+
+
+<div class="viewcode-block" id="get_active_user_from_game">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_active_user_from_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_active_user_from_game</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">USER</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function get all active user based on game ID and if a character is selected in game</span>
+<span class="sd">    association.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game_id (int): Game ID</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[USER] | None: All active user in game or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">USER</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">UserGameCharacterAssociation</span><span class="p">,</span>
+                    <span class="n">USER</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">game_id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">character_id</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">distinct</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="get_character_from_game_id">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_character_from_game_id">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_character_from_game_id</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CHARACTER</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function get all registered characters from a game based on handed over game id.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game_id (int): Game id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[CHARACTER] | None: List of characters or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">CHARACTER</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">UserGameCharacterAssociation</span><span class="p">,</span>
+                    <span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">character_id</span> <span class="o">==</span> <span class="n">CHARACTER</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">game_id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_stories_messages_for_ai">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_stories_messages_for_ai">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_stories_messages_for_ai</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">tale_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function retrieves all stories for a given tale id and formats them</span>
+<span class="sd">    into a list of messages suitable for AI processing.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        tale_id (int): Tale ID to retrieve stories</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[dict]: List of messages formatted for AI</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">STORY</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">tale_id</span> <span class="o">==</span> <span class="n">tale_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">discarded</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">stories</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">stories</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">stories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No stories found for tale id: </span><span class="si">{</span><span class="n">tale_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">stories</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">story</span><span class="o">.</span><span class="n">request</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">story</span><span class="o">.</span><span class="n">request</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">story</span><span class="o">.</span><span class="n">request</span><span class="p">})</span>
+            <span class="k">elif</span> <span class="n">story</span><span class="o">.</span><span class="n">response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">story</span><span class="o">.</span><span class="n">response</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;assistant&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">story</span><span class="o">.</span><span class="n">response</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Story with id </span><span class="si">{</span><span class="n">story</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has no request or response.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">messages</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="channel_id_exist">
+<a class="viewcode-back" href="../../src/db.html#src.db.channel_id_exist">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">channel_id_exist</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function checks if a channel ID exists in a game.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        channel_id (str): Channel ID</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Any game started with same channel ID</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">exists</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">channel_id</span> <span class="o">==</span> <span class="n">channel_id</span><span class="p">))</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="check_only_init_stories">
+<a class="viewcode-back" href="../../src/db.html#src.db.check_only_init_stories">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_only_init_stories</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">tale_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function checks whether there are stories that have a story type other than INIT.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        tale_id (int): Tale id to get all stories</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Identify whether there are only stories that have the type INIT.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">select</span><span class="p">(</span><span class="n">STORY</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">tale_id</span> <span class="o">==</span> <span class="n">tale_id</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">story_type</span> <span class="o">!=</span> <span class="n">StoryType</span><span class="o">.</span><span class="n">INIT</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">discarded</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stories</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="delete_init_stories">
+<a class="viewcode-back" href="../../src/db.html#src.db.delete_init_stories">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_init_stories</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">tale_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function deletes all INIT stories from a tale and returns the Discord</span>
+<span class="sd">    message IDs associated with those stories.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        tale_id (int): Tale ID to delete stories from</span>
+<span class="sd">        game_id (int): Game ID</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[int]: List of Discord message IDs that were associated with the deleted stories</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="n">statement_stories</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">select</span><span class="p">(</span><span class="n">STORY</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">tale_id</span> <span class="o">==</span> <span class="n">tale_id</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">discarded</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">False</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">stories</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement_stories</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="n">story_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">story</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">story</span> <span class="ow">in</span> <span class="n">stories</span><span class="p">]</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Select stories with IDs: </span><span class="si">{</span><span class="n">story_ids</span><span class="si">}</span><span class="s2"> for discarding.&quot;</span><span class="p">)</span>
+        <span class="n">statement_messages</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">MESSAGE</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">MESSAGE</span><span class="o">.</span><span class="n">story_id</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">story_ids</span><span class="p">))</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement_messages</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Select messages with IDs: </span><span class="si">{</span><span class="p">[</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">messages</span><span class="p">]</span><span class="si">}</span><span class="s2"> for deleting.&quot;</span>
+        <span class="p">)</span>
+        <span class="n">dc_message_ids</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">message_id</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span> <span class="k">if</span> <span class="n">message</span><span class="o">.</span><span class="n">message_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">]</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;DC messages IDs to delete: </span><span class="si">{</span><span class="n">dc_message_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span><span class="si">}</span><span class="s2"> messages.&quot;</span><span class="p">)</span>
+
+        <span class="n">statement_messages</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">update</span><span class="p">(</span><span class="n">STORY</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">STORY</span><span class="o">.</span><span class="n">id</span><span class="o">.</span><span class="n">in_</span><span class="p">(</span><span class="n">story_ids</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">discarded</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement_messages</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Discard </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span><span class="si">}</span><span class="s2"> stories.&quot;</span><span class="p">)</span>
+        <span class="n">statement_game</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">GAME</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">game_id</span><span class="p">)</span>
+        <span class="n">game</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement_game</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+        <span class="n">game</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">GameStatus</span><span class="o">.</span><span class="n">CREATED</span>
+        <span class="k">return</span> <span class="n">dc_message_ids</span></div>
+
+
+
+<div class="viewcode-block" id="get_all_running_user_games">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_all_running_user_games">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_all_running_user_games</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function get all running games loaded with user participations from the database from a user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        process_data (ProcessInput): Process input data structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">GAME</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">user_participations</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">GAME</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">GameStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">USER</span><span class="o">.</span><span class="n">dc_id</span> <span class="o">==</span> <span class="n">process_data</span><span class="o">.</span><span class="n">user_context</span><span class="o">.</span><span class="n">user_dc_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">character_id</span><span class="o">.</span><span class="n">isnot</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">available_games</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+            <span class="p">)</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span></div>
+
+
+
+<div class="viewcode-block" id="get_game_id_from_character_id">
+<a class="viewcode-back" href="../../src/db.html#src.db.get_game_id_from_character_id">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_game_id_from_character_id</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">character_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function get the game id based on the handed over character id if the character </span>
+<span class="sd">    is assigned to a game and the game is not finished.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        character_id (int): Character ID</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int | None: Game ID or None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+            <span class="n">statement</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">select</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">game_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">character_id</span> <span class="o">==</span> <span class="n">character_id</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserGameCharacterAssociation</span><span class="o">.</span><span class="n">end_date</span><span class="o">.</span><span class="n">is_</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">statement</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">SQLAlchemyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Error in sql select.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Technik Tueftler.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

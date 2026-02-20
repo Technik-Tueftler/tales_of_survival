@@ -1,0 +1,749 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>constants &#8212; Tales of Survival v0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=683873e3"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'src/constants';</script>
+    <script>mermaid.initialize({"theme": "base", "themeVariables": {"primaryColor": "#4CAF50", "primaryTextColor": "#000000", "primaryBorderColor": "#757575", "lineColor": "#B0BEC5", "secondaryColor": "#2196F3", "tertiaryColor": "#2196F3"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="general" href="discord_general.html" />
+    <link rel="prev" title="configuration" href="configuration.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tales of Survival v0.2.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_architecture.html">Database architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_workflow.html">Discord command workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">constants</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Discord Bot:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="discord_general.html">general</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discord_bot.html">discord_bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discord_utils.html">discord_utils</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Game:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="game_handling.html">game</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_views.html">game_views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_start.html">game_start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_telling.html">game_telling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_utils.html">file_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llm_handler.html">llm_handler</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="db.html">db</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">App</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">constants</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-src.constants">
+<span id="constants"></span><h1>constants<a class="headerlink" href="#module-src.constants" title="Link to this heading">#</a></h1>
+<p>Constants for organizing various fixed values used across the application.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DEFAULT_THUMBNAIL_URL">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_THUMBNAIL_URL</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://raw.githubusercontent.com/Technik-Tueftler/tales_of_survival/refs/heads/main/files/'</span></em><a class="headerlink" href="#src.constants.DEFAULT_THUMBNAIL_URL" title="Link to this definition">#</a></dt>
+<dd><p>Default folder URL for thumbnail images used in embeds.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DEFAULT_TALE_THUMBNAIL">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_TALE_THUMBNAIL</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'icon_tale_small.png'</span></em><a class="headerlink" href="#src.constants.DEFAULT_TALE_THUMBNAIL" title="Link to this definition">#</a></dt>
+<dd><p>Default name for tale thumbnail image used in embeds.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DEFAULT_CHARACTER_THUMBNAIL">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_CHARACTER_THUMBNAIL</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'icon_character_small.png'</span></em><a class="headerlink" href="#src.constants.DEFAULT_CHARACTER_THUMBNAIL" title="Link to this definition">#</a></dt>
+<dd><p>Default name for character thumbnail image used in embeds.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DEFAULT_EVENT_THUMBNAIL">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_EVENT_THUMBNAIL</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'icon_event_small.png'</span></em><a class="headerlink" href="#src.constants.DEFAULT_EVENT_THUMBNAIL" title="Link to this definition">#</a></dt>
+<dd><p>Default name for event thumbnail image used in embeds.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DEFAULT_QUESTION_THUMBNAIL">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_QUESTION_THUMBNAIL</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'icon_question_small.png'</span></em><a class="headerlink" href="#src.constants.DEFAULT_QUESTION_THUMBNAIL" title="Link to this definition">#</a></dt>
+<dd><p>Default name for question thumbnail image used in embeds.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DEFAULT_FINISH_THUMBNAIL">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DEFAULT_FINISH_THUMBNAIL</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'icon_finish_small.png'</span></em><a class="headerlink" href="#src.constants.DEFAULT_FINISH_THUMBNAIL" title="Link to this definition">#</a></dt>
+<dd><p>Default name for finish game thumbnail image used in embeds.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.PROMPT_MAX_WORDS_DESCRIPTION">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">PROMPT_MAX_WORDS_DESCRIPTION</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#src.constants.PROMPT_MAX_WORDS_DESCRIPTION" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of words for describing the world of the tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.PROMPT_MAX_WORDS_START">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">PROMPT_MAX_WORDS_START</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">600</span></em><a class="headerlink" href="#src.constants.PROMPT_MAX_WORDS_START" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of words for the beginning of the tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.PROMPT_MAX_WORDS_EVENT">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">PROMPT_MAX_WORDS_EVENT</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">150</span></em><a class="headerlink" href="#src.constants.PROMPT_MAX_WORDS_EVENT" title="Link to this definition">#</a></dt>
+<dd><p>Maximum words for the prompt for the description.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.PROMPT_MAX_WORDS_FICTION">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">PROMPT_MAX_WORDS_FICTION</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">300</span></em><a class="headerlink" href="#src.constants.PROMPT_MAX_WORDS_FICTION" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of words for an event.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_MAX_CHAR_MESSAGE">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_MAX_CHAR_MESSAGE</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2000</span></em><a class="headerlink" href="#src.constants.DC_MAX_CHAR_MESSAGE" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of characters for a message in Discord.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_DESCRIPTION_MAX_CHAR">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_DESCRIPTION_MAX_CHAR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#src.constants.DC_DESCRIPTION_MAX_CHAR" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of characters for Discord input.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#src.constants.DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of characters for event text in Discord modal input.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#src.constants.DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR" title="Link to this definition">#</a></dt>
+<dd><p>Minimum number of characters for event text in Discord modal input.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></em><a class="headerlink" href="#src.constants.DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR" title="Link to this definition">#</a></dt>
+<dd><p>Maximum number of characters for a word in Discord modal input.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#src.constants.DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR" title="Link to this definition">#</a></dt>
+<dd><p>Minimum number of characters for a word in Discord modal input.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.DC_EMBED_DESCRIPTION">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">DC_EMBED_DESCRIPTION</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A</span> <span class="pre">new</span> <span class="pre">story</span> <span class="pre">is</span> <span class="pre">being</span> <span class="pre">told!'</span></em><a class="headerlink" href="#src.constants.DC_EMBED_DESCRIPTION" title="Link to this definition">#</a></dt>
+<dd><p>Default tale description in game embed.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_1">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Du</span> <span class="pre">bist</span> <span class="pre">ein</span> <span class="pre">Geschichtenerzähler</span> <span class="pre">für</span> <span class="pre">das</span> <span class="pre">Genre</span> <span class="pre">#GenreName.</span> <span class="pre">Schreibe</span> <span class="pre">ausschließlich</span> <span class="pre">in</span> <span class="pre">#GenreLanguage.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_1" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for genre name and language in the first phase of a new tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_2">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">Der</span> <span class="pre">Erzählstil</span> <span class="pre">soll</span> <span class="pre">#GenreStorytellingStyle</span> <span class="pre">sein.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_2" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for storytelling style in the first phase of a new tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_3">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_3</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">Die</span> <span class="pre">Atmosphäre</span> <span class="pre">der</span> <span class="pre">Geschichte</span> <span class="pre">ist</span> <span class="pre">#GenreAtmosphere.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_3" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for atmosphere in the first phase of a new tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_4">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_4</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'</span> <span class="pre">Beschreibe</span> <span class="pre">die</span> <span class="pre">Welt,</span> <span class="pre">in</span> <span class="pre">der</span> <span class="pre">die</span> <span class="pre">Menschen</span> <span class="pre">jetzt</span> <span class="pre">leben</span> <span class="pre">müssen.</span> <span class="pre">Maximal</span> <span class="pre">#MaxWords</span> <span class="pre">Wörter.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_4" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for world description in the first phase of a new tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Die</span> <span class="pre">Geschichte</span> <span class="pre">handelt</span> <span class="pre">von</span> <span class="pre">#NumberCharacters</span> <span class="pre">Charakteren.</span> <span class="pre">Füge</span> <span class="pre">keine</span> <span class="pre">neuen</span> <span class="pre">Charaktere</span> <span class="pre">hinzu,</span> <span class="pre">es</span> <span class="pre">sei</span> <span class="pre">denn,</span> <span class="pre">ein</span> <span class="pre">späterer</span> <span class="pre">Prompt</span> <span class="pre">beschreibt</span> <span class="pre">sie</span> <span class="pre">ausdrücklich.</span> <span class="pre">Hier</span> <span class="pre">sind</span> <span class="pre">die</span> <span class="pre">Charaktere:'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for number of characters in the second phase of a new tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Erzähle</span> <span class="pre">den</span> <span class="pre">Beginn</span> <span class="pre">der</span> <span class="pre">Geschichte</span> <span class="pre">mit</span> <span class="pre">maximal</span> <span class="pre">#MaxWords</span> <span class="pre">Wörtern.</span> <span class="pre">Die</span> <span class="pre">Charaktere</span> <span class="pre">treffen</span> <span class="pre">sich</span> <span class="pre">in</span> <span class="pre">der</span> <span class="pre">Stadt</span> <span class="pre">#City</span> <span class="pre">und</span> <span class="pre">beschließen,</span> <span class="pre">eine</span> <span class="pre">Gemeinschaft</span> <span class="pre">zu</span> <span class="pre">bilden.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for story start in the second phase of a new tale. This is only
+used if no custom prompt is provided by the user.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Die</span> <span class="pre">Geschichte</span> <span class="pre">handelt</span> <span class="pre">von</span> <span class="pre">einem</span> <span class="pre">einzelnen</span> <span class="pre">Protagonisten.</span> <span class="pre">Füge</span> <span class="pre">keine</span> <span class="pre">neuen</span> <span class="pre">Charaktere</span> <span class="pre">hinzu,</span> <span class="pre">es</span> <span class="pre">sei</span> <span class="pre">denn,</span> <span class="pre">ein</span> <span class="pre">späterer</span> <span class="pre">Prompt</span> <span class="pre">beschreibt</span> <span class="pre">sie</span> <span class="pre">ausdrücklich.</span> <span class="pre">Hier</span> <span class="pre">ist</span> <span class="pre">die</span> <span class="pre">Zusammenfassung</span> <span class="pre">des</span> <span class="pre">Protagonisten:</span> <span class="pre">#CharacterSummary.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for single character summary in the second phase of a new tale.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Erzähle</span> <span class="pre">den</span> <span class="pre">Beginn</span> <span class="pre">der</span> <span class="pre">Geschichte</span> <span class="pre">mit</span> <span class="pre">maximal</span> <span class="pre">#MaxWords</span> <span class="pre">Wörtern.</span> <span class="pre">Der</span> <span class="pre">Protagonist</span> <span class="pre">befindet</span> <span class="pre">sich</span> <span class="pre">in</span> <span class="pre">der</span> <span class="pre">Stadt</span> <span class="pre">#City,</span> <span class="pre">wo</span> <span class="pre">er</span> <span class="pre">versucht,</span> <span class="pre">zu</span> <span class="pre">überleben.'</span></em><a class="headerlink" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for story start with single character in the second phase of a new tale.
+This is only used if no custom prompt is provided by the user.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.EVENT_REQUEST_PROMPT">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">EVENT_REQUEST_PROMPT</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Erzähl</span> <span class="pre">den</span> <span class="pre">nächsten</span> <span class="pre">Teil</span> <span class="pre">der</span> <span class="pre">Geschichte</span> <span class="pre">auf</span> <span class="pre">Grundlage</span> <span class="pre">des</span> <span class="pre">folgenden</span> <span class="pre">Ereignisses:</span> <span class="pre">#EventText.</span> <span class="pre">Passe</span> <span class="pre">das</span> <span class="pre">Ereignis</span> <span class="pre">inhaltlich</span> <span class="pre">so</span> <span class="pre">an,</span> <span class="pre">dass</span> <span class="pre">es</span> <span class="pre">zur</span> <span class="pre">aktuellen</span> <span class="pre">Spieleranzahl</span> <span class="pre">passt.</span> <span class="pre">Wenn</span> <span class="pre">nur</span> <span class="pre">ein</span> <span class="pre">Spieler</span> <span class="pre">teilnimmt,</span> <span class="pre">gestalte</span> <span class="pre">das</span> <span class="pre">Ereignis</span> <span class="pre">so,</span> <span class="pre">dass</span> <span class="pre">es</span> <span class="pre">sich</span> <span class="pre">ausschließlich</span> <span class="pre">auf</span> <span class="pre">diesen</span> <span class="pre">Spieler</span> <span class="pre">bezieht.</span> <span class="pre">Der</span> <span class="pre">Text</span> <span class="pre">darf</span> <span class="pre">maximal</span> <span class="pre">#MaxWords</span> <span class="pre">Wörter</span> <span class="pre">umfassen</span> <span class="pre">und</span> <span class="pre">soll</span> <span class="pre">flüssig</span> <span class="pre">an</span> <span class="pre">die</span> <span class="pre">bisherige</span> <span class="pre">Handlung</span> <span class="pre">anschließen.'</span></em><a class="headerlink" href="#src.constants.EVENT_REQUEST_PROMPT" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for event description during story telling phase.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="src.constants.FICTION_REQUEST_PROMPT">
+<span class="sig-prename descclassname"><span class="pre">src.constants.</span></span><span class="sig-name descname"><span class="pre">FICTION_REQUEST_PROMPT</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Schreibe</span> <span class="pre">die</span> <span class="pre">Geschichte</span> <span class="pre">weiter</span> <span class="pre">basierend</span> <span class="pre">auf</span> <span class="pre">dem</span> <span class="pre">folgenden</span> <span class="pre">Input:</span> <span class="pre">#FictionText.</span> <span class="pre">Interpretiere</span> <span class="pre">den</span> <span class="pre">Input</span> <span class="pre">kontextabhängig</span> <span class="pre">–</span> <span class="pre">er</span> <span class="pre">kann</span> <span class="pre">ein</span> <span class="pre">einzelnes</span> <span class="pre">Wort,</span> <span class="pre">ein</span> <span class="pre">Satz</span> <span class="pre">oder</span> <span class="pre">ein</span> <span class="pre">längerer</span> <span class="pre">Text</span> <span class="pre">sein.</span> <span class="pre">Passe</span> <span class="pre">das</span> <span class="pre">Ereignis</span> <span class="pre">bei</span> <span class="pre">Bedarf</span> <span class="pre">an</span> <span class="pre">die</span> <span class="pre">aktuelle</span> <span class="pre">Spieleranzahl</span> <span class="pre">an;</span> <span class="pre">falls</span> <span class="pre">nur</span> <span class="pre">ein</span> <span class="pre">Spieler</span> <span class="pre">vorhanden</span> <span class="pre">ist,</span> <span class="pre">kannst</span> <span class="pre">du</span> <span class="pre">das</span> <span class="pre">Geschehen</span> <span class="pre">auf</span> <span class="pre">diesen</span> <span class="pre">beziehen.</span> <span class="pre">Der</span> <span class="pre">Text</span> <span class="pre">darf</span> <span class="pre">maximal</span> <span class="pre">#MaxWords</span> <span class="pre">Wörter</span> <span class="pre">umfassen.'</span></em><a class="headerlink" href="#src.constants.FICTION_REQUEST_PROMPT" title="Link to this definition">#</a></dt>
+<dd><p>Prompt template for fiction description during story telling phase.</p>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="configuration.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">configuration</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="discord_general.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">general</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DEFAULT_THUMBNAIL_URL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_THUMBNAIL_URL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DEFAULT_TALE_THUMBNAIL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_TALE_THUMBNAIL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DEFAULT_CHARACTER_THUMBNAIL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_CHARACTER_THUMBNAIL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DEFAULT_EVENT_THUMBNAIL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_EVENT_THUMBNAIL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DEFAULT_QUESTION_THUMBNAIL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_QUESTION_THUMBNAIL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DEFAULT_FINISH_THUMBNAIL"><code class="docutils literal notranslate"><span class="pre">DEFAULT_FINISH_THUMBNAIL</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.PROMPT_MAX_WORDS_DESCRIPTION"><code class="docutils literal notranslate"><span class="pre">PROMPT_MAX_WORDS_DESCRIPTION</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.PROMPT_MAX_WORDS_START"><code class="docutils literal notranslate"><span class="pre">PROMPT_MAX_WORDS_START</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.PROMPT_MAX_WORDS_EVENT"><code class="docutils literal notranslate"><span class="pre">PROMPT_MAX_WORDS_EVENT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.PROMPT_MAX_WORDS_FICTION"><code class="docutils literal notranslate"><span class="pre">PROMPT_MAX_WORDS_FICTION</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_MAX_CHAR_MESSAGE"><code class="docutils literal notranslate"><span class="pre">DC_MAX_CHAR_MESSAGE</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_DESCRIPTION_MAX_CHAR"><code class="docutils literal notranslate"><span class="pre">DC_DESCRIPTION_MAX_CHAR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR"><code class="docutils literal notranslate"><span class="pre">DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR"><code class="docutils literal notranslate"><span class="pre">DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR"><code class="docutils literal notranslate"><span class="pre">DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR"><code class="docutils literal notranslate"><span class="pre">DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.DC_EMBED_DESCRIPTION"><code class="docutils literal notranslate"><span class="pre">DC_EMBED_DESCRIPTION</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_1"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_1</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_2"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_3"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_3</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_FIRST_PHASE_PROMPT_PART_4"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_FIRST_PHASE_PROMPT_PART_4</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2"><code class="docutils literal notranslate"><span class="pre">NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.EVENT_REQUEST_PROMPT"><code class="docutils literal notranslate"><span class="pre">EVENT_REQUEST_PROMPT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.constants.FICTION_REQUEST_PROMPT"><code class="docutils literal notranslate"><span class="pre">FICTION_REQUEST_PROMPT</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/constants.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Technik Tueftler.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

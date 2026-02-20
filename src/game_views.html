@@ -1,0 +1,815 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>game_views &#8212; Tales of Survival v0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=683873e3"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'src/game_views';</script>
+    <script>mermaid.initialize({"theme": "base", "themeVariables": {"primaryColor": "#4CAF50", "primaryTextColor": "#000000", "primaryBorderColor": "#757575", "lineColor": "#B0BEC5", "secondaryColor": "#2196F3", "tertiaryColor": "#2196F3"}})</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="game_start" href="game_start.html" />
+    <link rel="prev" title="game" href="game_handling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tales of Survival v0.2.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Content:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="database_architecture.html">Database architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_workflow.html">Discord command workflow</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants.html">constants</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Discord Bot:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="discord_general.html">general</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discord_bot.html">discord_bot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discord_utils.html">discord_utils</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Game:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="game_handling.html">game</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">game_views</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_start.html">game_start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="game_telling.html">game_telling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_utils.html">file_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="llm_handler.html">llm_handler</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Database:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="db.html">db</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">App</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">game_views</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-src.game_views">
+<span id="game-views"></span><h1>game_views<a class="headerlink" href="#module-src.game_views" title="Link to this heading">#</a></h1>
+<p>This module contains all view for game creation and general game handling.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.GameSelect">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">GameSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameSelect" title="Link to this definition">#</a></dt>
+<dd><p>Select class to select a game to set new character.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.GameSelect.callback">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameSelect.callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameSelect.callback" title="Link to this definition">#</a></dt>
+<dd><p><a href="#id1"><span class="problematic" id="id2">|coro|</span></a></p>
+<p>The callback associated with this UI item.</p>
+<p>This can be overridden by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>interaction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code>) – The interaction that triggered this UI item.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.GameSelectView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">GameSelectView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameSelectView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameSelectView" title="Link to this definition">#</a></dt>
+<dd><p>View class to select a genre for a new game.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.GenreSelect">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">GenreSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genres</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GenreSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GenreSelect" title="Link to this definition">#</a></dt>
+<dd><p>Select class to select a genre for a new game.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.GenreSelect.callback">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GenreSelect.callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GenreSelect.callback" title="Link to this definition">#</a></dt>
+<dd><p><a href="#id3"><span class="problematic" id="id4">|coro|</span></a></p>
+<p>The callback associated with this UI item.</p>
+<p>This can be overridden by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>interaction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code>) – The interaction that triggered this UI item.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.GenreSelectView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">GenreSelectView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genres</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GenreSelectView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GenreSelectView" title="Link to this definition">#</a></dt>
+<dd><p>View class to select a genre for a new game.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.GameInfoModal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">GameInfoModal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameInfoModal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameInfoModal" title="Link to this definition">#</a></dt>
+<dd><p>Modal class to enter general game information.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.GameInfoModal.on_submit">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameInfoModal.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameInfoModal.on_submit" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when the modal is submitted.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.UserSelectView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">UserSelectView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#UserSelectView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.UserSelectView" title="Link to this definition">#</a></dt>
+<dd><p>View class to select user for a new game.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.UserSelectView.user_select">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">select</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#UserSelectView.user_select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.UserSelectView.user_select" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when a user is selected.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.StoryFictionModal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">StoryFictionModal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StoryFictionModal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StoryFictionModal" title="Link to this definition">#</a></dt>
+<dd><p>Modal class to enter additional text for the story.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.StoryFictionModal.on_submit">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StoryFictionModal.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StoryFictionModal.on_submit" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when the modal is submitted.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.KeepTellingButtonView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">KeepTellingButtonView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#KeepTellingButtonView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.KeepTellingButtonView" title="Link to this definition">#</a></dt>
+<dd><p>This view generates buttons for the user to select the next story part
+to continue the story.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.KeepTellingButtonView.button_callback_f">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_callback_f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#KeepTellingButtonView.button_callback_f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.KeepTellingButtonView.button_callback_f" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when the fiction button is clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.KeepTellingButtonView.button_callback_e">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_callback_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#KeepTellingButtonView.button_callback_e"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.KeepTellingButtonView.button_callback_e" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when the event button is clicked.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.NewGameStatusSelectView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">NewGameStatusSelectView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#NewGameStatusSelectView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.NewGameStatusSelectView" title="Link to this definition">#</a></dt>
+<dd><p>StatusSelectView class to create a view for the user to select the
+target status of the selected game</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.NewGameStatusSelect">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">NewGameStatusSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#NewGameStatusSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.NewGameStatusSelect" title="Link to this definition">#</a></dt>
+<dd><p>StatusSelect class to create a input menu to select the target status for the game.
+Here the input is built dynamically with the possible status of a game based on
+current status.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.NewGameStatusSelect.callback">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#NewGameStatusSelect.callback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.NewGameStatusSelect.callback" title="Link to this definition">#</a></dt>
+<dd><p><a href="#id5"><span class="problematic" id="id6">|coro|</span></a></p>
+<p>The callback associated with this UI item.</p>
+<p>This can be overridden by subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>interaction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code>) – The interaction that triggered this UI item.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.StartTaleButtonView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">StartTaleButtonView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StartTaleButtonView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StartTaleButtonView" title="Link to this definition">#</a></dt>
+<dd><p>This view generates buttons for the user to select the tale type
+to start the story. It is only used during game switch status from
+CREATED to RUNNING.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.StartTaleButtonView.button_callback_sz">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_callback_sz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StartTaleButtonView.button_callback_sz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StartTaleButtonView.button_callback_sz" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when button for standard zombie tale with more then 1 player is clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.StartTaleButtonView.button_callback_ow">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_callback_ow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StartTaleButtonView.button_callback_ow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StartTaleButtonView.button_callback_ow" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when button for own tale with more then 1 player is clicked.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.OwnTaleStartModal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">OwnTaleStartModal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#OwnTaleStartModal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.OwnTaleStartModal" title="Link to this definition">#</a></dt>
+<dd><p>Modal class to enter additional text for the story.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.OwnTaleStartModal.on_submit">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#OwnTaleStartModal.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.OwnTaleStartModal.on_submit" title="Link to this definition">#</a></dt>
+<dd><p><a href="#id7"><span class="problematic" id="id8">|coro|</span></a></p>
+<p>Called when the modal is submitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>interaction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code>) – The interaction that submitted this modal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.StZombieTaleStartModal">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">StZombieTaleStartModal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_view</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StZombieTaleStartModal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StZombieTaleStartModal" title="Link to this definition">#</a></dt>
+<dd><p>Modal class to enter additional text for the story.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.StZombieTaleStartModal.on_submit">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_submit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#StZombieTaleStartModal.on_submit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.StZombieTaleStartModal.on_submit" title="Link to this definition">#</a></dt>
+<dd><p><a href="#id9"><span class="problematic" id="id10">|coro|</span></a></p>
+<p>Called when the modal is submitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>interaction</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interaction</span></code>) – The interaction that submitted this modal.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.game_views.GameFinishView">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.game_views.</span></span><span class="sig-name descname"><span class="pre">GameFinishView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">process_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameFinishView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameFinishView" title="Link to this definition">#</a></dt>
+<dd><p>View class to confirm and process the finish of a game.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.GameFinishView.button_callback_y">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_callback_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameFinishView.button_callback_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameFinishView.button_callback_y" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when the yes button is clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.game_views.GameFinishView.button_callback_n">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_callback_n</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/game_views.html#GameFinishView.button_callback_n"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.game_views.GameFinishView.button_callback_n" title="Link to this definition">#</a></dt>
+<dd><p>Callback function when the no button is clicked.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="game_handling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">game</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="game_start.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">game_start</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameSelect"><code class="docutils literal notranslate"><span class="pre">GameSelect</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameSelect.callback"><code class="docutils literal notranslate"><span class="pre">GameSelect.callback()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameSelectView"><code class="docutils literal notranslate"><span class="pre">GameSelectView</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GenreSelect"><code class="docutils literal notranslate"><span class="pre">GenreSelect</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GenreSelect.callback"><code class="docutils literal notranslate"><span class="pre">GenreSelect.callback()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GenreSelectView"><code class="docutils literal notranslate"><span class="pre">GenreSelectView</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameInfoModal"><code class="docutils literal notranslate"><span class="pre">GameInfoModal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameInfoModal.on_submit"><code class="docutils literal notranslate"><span class="pre">GameInfoModal.on_submit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.UserSelectView"><code class="docutils literal notranslate"><span class="pre">UserSelectView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.UserSelectView.user_select"><code class="docutils literal notranslate"><span class="pre">UserSelectView.user_select()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StoryFictionModal"><code class="docutils literal notranslate"><span class="pre">StoryFictionModal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StoryFictionModal.on_submit"><code class="docutils literal notranslate"><span class="pre">StoryFictionModal.on_submit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.KeepTellingButtonView"><code class="docutils literal notranslate"><span class="pre">KeepTellingButtonView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.KeepTellingButtonView.button_callback_f"><code class="docutils literal notranslate"><span class="pre">KeepTellingButtonView.button_callback_f()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.KeepTellingButtonView.button_callback_e"><code class="docutils literal notranslate"><span class="pre">KeepTellingButtonView.button_callback_e()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.NewGameStatusSelectView"><code class="docutils literal notranslate"><span class="pre">NewGameStatusSelectView</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.NewGameStatusSelect"><code class="docutils literal notranslate"><span class="pre">NewGameStatusSelect</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.NewGameStatusSelect.callback"><code class="docutils literal notranslate"><span class="pre">NewGameStatusSelect.callback()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StartTaleButtonView"><code class="docutils literal notranslate"><span class="pre">StartTaleButtonView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StartTaleButtonView.button_callback_sz"><code class="docutils literal notranslate"><span class="pre">StartTaleButtonView.button_callback_sz()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StartTaleButtonView.button_callback_ow"><code class="docutils literal notranslate"><span class="pre">StartTaleButtonView.button_callback_ow()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.OwnTaleStartModal"><code class="docutils literal notranslate"><span class="pre">OwnTaleStartModal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.OwnTaleStartModal.on_submit"><code class="docutils literal notranslate"><span class="pre">OwnTaleStartModal.on_submit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StZombieTaleStartModal"><code class="docutils literal notranslate"><span class="pre">StZombieTaleStartModal</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.StZombieTaleStartModal.on_submit"><code class="docutils literal notranslate"><span class="pre">StZombieTaleStartModal.on_submit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameFinishView"><code class="docutils literal notranslate"><span class="pre">GameFinishView</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameFinishView.button_callback_y"><code class="docutils literal notranslate"><span class="pre">GameFinishView.button_callback_y()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#src.game_views.GameFinishView.button_callback_n"><code class="docutils literal notranslate"><span class="pre">GameFinishView.button_callback_n()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/src/game_views.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Technik Tueftler.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

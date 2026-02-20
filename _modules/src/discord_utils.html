@@ -1,0 +1,1032 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.discord_utils &#8212; Tales of Survival v0.2.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=683873e3"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/src/discord_utils';</script>
+    <script>mermaid.initialize({"theme": "base", "themeVariables": {"primaryColor": "#4CAF50", "primaryTextColor": "#000000", "primaryBorderColor": "#757575", "lineColor": "#B0BEC5", "secondaryColor": "#2196F3", "tertiaryColor": "#2196F3"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Tales of Survival v0.2.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../src/index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../src/index.html">
+    App
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../generic/index.html">
+    TeTue Generic
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../help/index.html">
+    Help
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/Technik-Tueftler/tales_of_survival" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.twitch.tv/technik_tueftler" title="Twitch" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-twitch fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Twitch</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://www.youtube.com/@technik_tueftler" title="Youtube" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-youtube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Youtube</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">src.discord_utils</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for src.discord_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains utility functions for interacting with Discord.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib.parse</span><span class="w"> </span><span class="kn">import</span> <span class="n">urljoin</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">discord</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">discord</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextChannel</span><span class="p">,</span> <span class="n">Embed</span><span class="p">,</span> <span class="n">Interaction</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">ProcessInput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.constants</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DC_MAX_CHAR_MESSAGE</span><span class="p">,</span>
+    <span class="n">DC_EMBED_DESCRIPTION</span><span class="p">,</span>
+    <span class="n">DEFAULT_CHARACTER_THUMBNAIL</span><span class="p">,</span>
+    <span class="n">DEFAULT_THUMBNAIL_URL</span><span class="p">,</span>
+    <span class="n">DEFAULT_TALE_THUMBNAIL</span><span class="p">,</span>
+    <span class="n">DEFAULT_EVENT_THUMBNAIL</span><span class="p">,</span>
+    <span class="n">DEFAULT_QUESTION_THUMBNAIL</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_active_user_from_game</span><span class="p">,</span> <span class="n">get_object_by_id</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_game</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameInfo</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.db_classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">GAME</span><span class="p">,</span> <span class="n">USER</span><span class="p">,</span> <span class="n">CHARACTER</span><span class="p">,</span> <span class="n">GENRE</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.game_views</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameSelectView</span>
+
+
+<div class="viewcode-block" id="split_text">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.split_text">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">split_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_len</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DC_MAX_CHAR_MESSAGE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function split a long text into smaller parts based on a maximum length.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): Text to split</span>
+<span class="sd">        max_len (int, optional): Character threshold . Defaults to DC_MAX_CHAR_MESSAGE.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list[str]: Plitted text parts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text_parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_len</span><span class="p">:</span>
+        <span class="n">split_at</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">max_len</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">split_at</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">split_at</span> <span class="o">=</span> <span class="n">max_len</span>
+        <span class="n">text_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">[:</span><span class="n">split_at</span><span class="p">])</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">split_at</span><span class="p">:]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+        <span class="n">text_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">text_parts</span></div>
+
+
+
+<div class="viewcode-block" id="send_channel_message">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.send_channel_message">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_channel_message</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">channel_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function send a message to a specific Discord channel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        channel_id (int): Channel ID to send the message to</span>
+<span class="sd">        message (str): Message to send</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="k">await</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">fetch_channel</span><span class="p">(</span><span class="n">channel_id</span><span class="p">)</span>
+
+        <span class="n">msg_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">text_part</span> <span class="ow">in</span> <span class="n">message</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">text_part</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">msg_parts</span> <span class="o">=</span> <span class="k">await</span> <span class="n">split_text</span><span class="p">(</span><span class="n">text_part</span><span class="p">,</span> <span class="n">DC_MAX_CHAR_MESSAGE</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">msg_part</span> <span class="ow">in</span> <span class="n">msg_parts</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">msg_part</span><span class="p">)</span>
+                <span class="n">msg_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sended messages: </span><span class="si">{</span><span class="n">msg_ids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">msg_ids</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel ID </span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No permission to write to channel </span><span class="si">{</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;HTTP-Error during send message&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The message is missing the content key.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+
+
+<div class="viewcode-block" id="delete_channel_messages">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.delete_channel_messages">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_channel_messages</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game</span><span class="p">:</span> <span class="n">GAME</span><span class="p">,</span> <span class="n">dc_message_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to delete messages in a Discord channel based on message IDs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game (GAME): Game object with all required information</span>
+<span class="sd">        dc_message_ids (list[int]): List of Discord message IDs to delete</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">TextChannel</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="k">await</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">fetch_channel</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="n">delete_messages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">dc_msg</span> <span class="ow">in</span> <span class="n">dc_message_ids</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channel</span><span class="o">.</span><span class="n">fetch_message</span><span class="p">(</span><span class="n">dc_msg</span><span class="p">)</span>
+            <span class="n">delete_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">channel</span><span class="o">.</span><span class="n">delete_messages</span><span class="p">(</span><span class="n">delete_messages</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Deleted DC message ID: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">delete_messages</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel ID </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No permission to write to channel </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;HTTP-Error during delete messages&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The message is missing the content key.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Type-Error during delete messages&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="create_dc_message_link">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.create_dc_message_link">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_dc_message_link</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">discord</span><span class="o">.</span><span class="n">Message</span><span class="p">,</span> <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to create a link to a specific Discord message.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        message (discord.Message): General message object to collect ids</span>
+<span class="sd">        interaction (Interaction): Last interaction to collect guild id</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Message link in the format</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">message_link</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;https://discord.com/channels/</span><span class="si">{</span><span class="n">interaction</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Create message link: </span><span class="si">{</span><span class="n">message_link</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">message_link</span></div>
+
+
+
+<div class="viewcode-block" id="update_embed_message_color">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.update_embed_message_color">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_embed_message_color</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game</span><span class="p">:</span> <span class="n">GAME</span><span class="p">,</span> <span class="n">discord_color</span><span class="p">:</span> <span class="n">discord</span><span class="o">.</span><span class="n">colour</span><span class="o">.</span><span class="n">Colour</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function updates the color of a game embed message.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game (GAME): Game object to udpate the embed message</span>
+<span class="sd">        discord_color (discord.colour.Colour): New color for the embed message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">USER</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_active_user_from_game</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;All active user in game &lt;id&gt;: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. &lt;user&gt;: </span><span class="si">{</span><span class="p">[</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">users</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">TextChannel</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="k">await</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">fetch_channel</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="n">embed_message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channel</span><span class="o">.</span><span class="n">fetch_message</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">message_id</span><span class="p">)</span>
+        <span class="n">embed</span><span class="p">:</span> <span class="n">Embed</span> <span class="o">=</span> <span class="n">embed_message</span><span class="o">.</span><span class="n">embeds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">discord_color</span>
+        <span class="k">await</span> <span class="n">embed_message</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="n">embed</span><span class="o">=</span><span class="n">embed</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel ID </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No permission to write to channel </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;HTTP-Error during update embed message&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The message is missing the content key.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Type-Error during update embed message&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="update_embed_message">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.update_embed_message">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">update_embed_message</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">game</span><span class="p">:</span> <span class="n">GAME</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function updates a game embed with the start information and current players.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game (GAME): Game object to udpate the embed message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Start with update game embed.&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">USER</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_active_user_from_game</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;All active user in game &lt;id&gt;: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">. &lt;user&gt;: </span><span class="si">{</span><span class="p">[</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">users</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">channel</span><span class="p">:</span> <span class="n">TextChannel</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="k">await</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">fetch_channel</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="p">)</span>
+        <span class="n">embed_message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channel</span><span class="o">.</span><span class="n">fetch_message</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">message_id</span><span class="p">)</span>
+        <span class="n">embed</span><span class="p">:</span> <span class="n">Embed</span> <span class="o">=</span> <span class="n">embed_message</span><span class="o">.</span><span class="n">embeds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">embed</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;DC channel and embed loaded.&quot;</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">game</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">description</span> <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="n">DC_EMBED_DESCRIPTION</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">green</span><span class="p">()</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;General Embed fields updated.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">field</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;The Players:&quot;</span><span class="p">,</span> <span class="s2">&quot;The Player:&quot;</span><span class="p">):</span>
+                <span class="n">field_name</span> <span class="o">=</span> <span class="s2">&quot;The Players:&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">users</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;The Player:&quot;</span>
+                <span class="n">player</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&lt;@</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">dc_id</span><span class="si">}</span><span class="s2">&gt;&quot;</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">])</span>
+                <span class="n">embed</span><span class="o">.</span><span class="n">set_field_at</span><span class="p">(</span>
+                    <span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">player</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="n">field</span><span class="o">.</span><span class="n">inline</span>
+                <span class="p">)</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;Embed field &lt;Player&gt; upddated.&quot;</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">await</span> <span class="n">embed_message</span><span class="o">.</span><span class="n">edit</span><span class="p">(</span><span class="n">embed</span><span class="o">=</span><span class="n">embed</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">NotFound</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Channel ID </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No permission to write to channel </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;HTTP-Error during update embed message&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The message is missing the content key.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Type-Error during update embed message&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="interface_select_game">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.interface_select_game">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">interface_select_game</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span> <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is a general interface to select a game for the player.</span>
+<span class="sd">    The required input is a list of games which is saved in process data.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Discord interaction</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        process_data (ProcessInput): Process data with required list of games</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: Selection was successful and a game was selected and saved in the process data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">input_valid_game</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+                <span class="s2">&quot;No game is available for this command, please contact a Mod.&quot;</span><span class="p">,</span>
+                <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">select_view</span> <span class="o">=</span> <span class="n">GameSelectView</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span>
+            <span class="s2">&quot;Which game would you like to select?&quot;</span><span class="p">,</span>
+            <span class="n">view</span><span class="o">=</span><span class="n">select_view</span><span class="p">,</span>
+            <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="n">select_view</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_object_by_id</span><span class="p">(</span>
+            <span class="n">config</span><span class="p">,</span> <span class="n">GAME</span><span class="p">,</span> <span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game_id</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Cannot send message, permission denied.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Timeout error occurred.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Missing key in game data or for DB object.&quot;</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_character_embed">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.send_character_embed">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_character_embed</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">character</span><span class="p">:</span> <span class="n">CHARACTER</span><span class="p">,</span>
+    <span class="n">owned_characters_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">game_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to send an embed message with character information.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Discord interaction object</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        character (CHARACTER): Character object with all information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Thumbnail URL: </span><span class="si">{</span><span class="n">urljoin</span><span class="p">(</span><span class="n">DEFAULT_THUMBNAIL_URL</span><span class="p">,</span><span class="w"> </span><span class="n">DEFAULT_CHARACTER_THUMBNAIL</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">char_alive</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">embed</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">Embed</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">background</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">dark_blue</span><span class="p">()</span> <span class="k">if</span> <span class="n">char_alive</span> <span class="k">else</span> <span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">dark_red</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Description&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Pos-Trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">pos_trait</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Neg-Trait&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">character</span><span class="o">.</span><span class="n">neg_trait</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">owned_characters_info</span><span class="p">:</span>
+            <span class="n">alive_info</span> <span class="o">=</span> <span class="s2">&quot;Alive&quot;</span> <span class="k">if</span> <span class="n">character</span><span class="o">.</span><span class="n">alive</span> <span class="k">else</span> <span class="s2">&quot;Dead&quot;</span>
+            <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Status&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">alive_info</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Game-ID&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">game_id</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">set_thumbnail</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">DEFAULT_THUMBNAIL_URL</span><span class="p">,</span> <span class="n">DEFAULT_CHARACTER_THUMBNAIL</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">embed</span><span class="o">=</span><span class="n">embed</span><span class="p">,</span> <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot send message, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_game_embed">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.send_game_embed">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_game_embed</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">game</span><span class="p">:</span> <span class="n">GAME</span><span class="p">,</span>
+    <span class="n">genre</span><span class="p">:</span> <span class="n">GENRE</span><span class="p">,</span>
+    <span class="n">users</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">USER</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">discord</span><span class="o">.</span><span class="n">Message</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Functions create and send a Discord message with game information to a channel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Interaction object from Discord</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game (GAME): Game object</span>
+<span class="sd">        genre (GENRE): Genre object from game</span>
+<span class="sd">        users (list[USER]): All player of the game</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        discord.Message: Discord message object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">game_description</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">game</span><span class="o">.</span><span class="n">description</span> <span class="k">if</span> <span class="n">game</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="n">DC_EMBED_DESCRIPTION</span>
+        <span class="p">)</span>
+        <span class="n">embed</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">Embed</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">game</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">game_description</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">yellow</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Genre&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">genre</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Language&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">genre</span><span class="o">.</span><span class="n">language</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Style&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">genre</span><span class="o">.</span><span class="n">storytelling_style</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Atmosphere&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">genre</span><span class="o">.</span><span class="n">atmosphere</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;The Players:&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;&lt;@</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">dc_id</span><span class="si">}</span><span class="s2">&gt;&quot;</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">]),</span>
+            <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">embed</span><span class="o">.</span><span class="n">set_thumbnail</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">DEFAULT_THUMBNAIL_URL</span><span class="p">,</span> <span class="n">DEFAULT_TALE_THUMBNAIL</span><span class="p">))</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">set_footer</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Game-ID: </span><span class="si">{</span><span class="n">game</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">, Genre-ID: </span><span class="si">{</span><span class="n">genre</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">embed</span><span class="o">=</span><span class="n">embed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot send message, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_public_event_ephemeral">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.send_public_event_ephemeral">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_public_event_ephemeral</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span> <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    General function to send an event message as an ephemeral message in the tale channel</span>
+<span class="sd">    if no public channel is configured or available.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Dicord interaction object</span>
+<span class="sd">        process_data (ProcessInput): Data with all required information for message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">event_message</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;An event has been triggered:</span><span class="se">\n</span><span class="s2">Event: &quot;</span>
+        <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">event_message</span><span class="p">,</span> <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_public_event_embed">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.send_public_event_embed">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_public_event_embed</span><span class="p">(</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span>
+    <span class="n">process_data</span><span class="p">:</span> <span class="n">ProcessInput</span><span class="p">,</span>
+    <span class="n">message_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to send an embed message with event information to a public configured channel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        interaction (Interaction): Discord interaction object</span>
+<span class="sd">        process_data (ProcessInput): Data with all required information for message</span>
+<span class="sd">        message_id (int): Message ID of the original tale message to link the event to</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">dc</span><span class="o">.</span><span class="n">public_event_channel_id</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">send_public_event_ephemeral</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;Public event channel does not configured. Event message &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;is send ephemeral in tale channel.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">channel</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">get_channel</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">dc</span><span class="o">.</span><span class="n">public_event_channel_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="k">await</span> <span class="n">config</span><span class="o">.</span><span class="n">dc_bot</span><span class="o">.</span><span class="n">fetch_channel</span><span class="p">(</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">dc</span><span class="o">.</span><span class="n">public_event_channel_id</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">send_public_event_ephemeral</span><span class="p">(</span><span class="n">interaction</span><span class="p">,</span> <span class="n">process_data</span><span class="p">)</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Public event channel does not exist. Event message &quot;</span>
+                <span class="o">+</span> <span class="s2">&quot;is send ephemeral in tale channel.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">message_link</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;https://discord.com/channels/</span><span class="si">{</span><span class="n">interaction</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">process_data</span><span class="o">.</span><span class="n">game_context</span><span class="o">.</span><span class="n">selected_game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">message_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Create message link: </span><span class="si">{</span><span class="n">message_link</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">embed</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">Embed</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Public Event&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">purple</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Game&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">message_link</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Chance&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">process_data</span><span class="o">.</span><span class="n">story_context</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">chance</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">set_thumbnail</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">DEFAULT_THUMBNAIL_URL</span><span class="p">,</span> <span class="n">DEFAULT_EVENT_THUMBNAIL</span><span class="p">))</span>
+
+        <span class="k">await</span> <span class="n">channel</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">embed</span><span class="o">=</span><span class="n">embed</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot send message, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="send_game_info_embed">
+<a class="viewcode-back" href="../../src/discord_utils.html#src.discord_utils.send_game_info_embed">[docs]</a>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_game_info_embed</span><span class="p">(</span>
+    <span class="n">interaction</span><span class="p">:</span> <span class="n">Interaction</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Configuration</span><span class="p">,</span>
+    <span class="n">game_info</span><span class="p">:</span> <span class="n">GameInfo</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Functions create and send a Discord message with game information to a channel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interaction (Interaction): Interaction object from Discord</span>
+<span class="sd">        config (Configuration): App configuration</span>
+<span class="sd">        game (GAME): Game object</span>
+<span class="sd">        genre (GENRE): Genre object from game</span>
+<span class="sd">        users (list[USER]): All player of the game</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        discord.Message: Discord message object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">embed</span> <span class="o">=</span> <span class="n">discord</span><span class="o">.</span><span class="n">Embed</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">game_info</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">game_info</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">discord</span><span class="o">.</span><span class="n">Color</span><span class="o">.</span><span class="n">purple</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">message_link</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;https://discord.com/channels/</span><span class="si">{</span><span class="n">interaction</span><span class="o">.</span><span class="n">guild</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">game_info</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">channel_id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">game_info</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">message_id</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Tale&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">message_link</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Told stories&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">game_info</span><span class="o">.</span><span class="n">num_stories</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">add_field</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;The Player as character:&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="sa">f</span><span class="s2">&quot;&lt;@</span><span class="si">{</span><span class="n">user</span><span class="o">.</span><span class="n">dc_id</span><span class="si">}</span><span class="s2">&gt; as </span><span class="si">{</span><span class="n">character</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="k">for</span> <span class="n">user</span><span class="p">,</span> <span class="n">character</span> <span class="ow">in</span> <span class="n">game_info</span><span class="o">.</span><span class="n">user_char_list</span>
+                <span class="p">]</span>
+            <span class="p">),</span>
+            <span class="n">inline</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">embed</span><span class="o">.</span><span class="n">set_thumbnail</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">urljoin</span><span class="p">(</span><span class="n">DEFAULT_THUMBNAIL_URL</span><span class="p">,</span> <span class="n">DEFAULT_QUESTION_THUMBNAIL</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">interaction</span><span class="o">.</span><span class="n">followup</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">embed</span><span class="o">=</span><span class="n">embed</span><span class="p">,</span> <span class="n">ephemeral</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">message</span>
+
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">Forbidden</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Cannot send message, permission denied.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">discord</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">:</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to send message.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">opt</span><span class="p">(</span><span class="n">exception</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">())</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;General error occurred.&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Technik Tueftler.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
