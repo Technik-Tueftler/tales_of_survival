@@ -13,9 +13,12 @@ from .discord_utils import (
     interface_select_game,
     delete_channel_messages,
     update_embed_message_color,
-    send_game_embed
+    send_game_embed,
+    create_dc_message_link,
+    send_game_info_embed,
 )
-from .configuration import Configuration, ProcessInput
+from .discord_permissions import check_permissions_storyteller
+from .configuration import Configuration, ProcessInput, IdError
 from .llm_handler import request_openai, OpenAiContext
 from .db_classes import StoryType, GameStatus
 from .db_classes import (
@@ -26,11 +29,10 @@ from .db_classes import (
     MESSAGE,
 )
 from .db import (
-    get_all_active_genre,
-    get_genre_double_cond,
     process_player,
     update_db_objs,
     get_all_running_games,
+    get_all_running_user_games,
     get_tale_from_game_id,
     get_games_w_status,
     count_regist_char_from_game,
@@ -40,11 +42,14 @@ from .db import (
     check_only_init_stories,
     delete_init_stories,
 )
+from .db_genre import get_genre_double_cond, get_all_active_genre
+from .db_game import GameInfo, get_all_game_related_infos
 from .game_views import (
     GenreSelectView,
     UserSelectView,
     KeepTellingButtonView,
     NewGameStatusSelectView,
+    GameFinishView,
 )
 from .game_start import (
     collect_start_input,
@@ -125,28 +130,6 @@ async def inform_players(
         config.logger.opt(exception=sys.exc_info()).error(
             f"Failed to send message to {user.name}."
         )
-
-
-async def create_dc_message_link(
-    config: Configuration, message: discord.Message, interaction: Interaction
-) -> str:
-    """
-    Function to create a link to a specific Discord message.
-
-    Args:
-        config (Configuration): App configuration
-        message (discord.Message): General message object to collect ids
-        interaction (Interaction): Last interaction to collect guild id
-
-    Returns:
-        str: Message link in the format
-    """
-    message_link = (
-        f"https://discord.com/channels/{interaction.guild.id}"
-        f"/{message.channel.id}/{message.id}"
-    )
-    config.logger.debug(f"Create message link: {message_link}")
-    return message_link
 
 
 async def create_game(interaction: Interaction, config: Configuration):
@@ -232,7 +215,11 @@ async def keep_telling_schedule(interaction: Interaction, config: Configuration)
     """
     try:
         process_data = ProcessInput()
-        await get_all_running_games(config, process_data)
+        process_data.user_context.user_dc_id = str(interaction.user.id)
+        if await check_permissions_storyteller(config, interaction):
+            await get_all_running_games(config, process_data)
+        else:
+            await get_all_running_user_games(config, process_data)
         select_success = await interface_select_game(interaction, config, process_data)
         if not select_success:
             return
@@ -292,73 +279,97 @@ async def start_game_schedule(
     Returns:
         bool: Success status of the game start process
     """
-    await collect_start_input(interaction, config, game_data)
+    try:
+        await collect_start_input(interaction, config, game_data)
 
-    tale = await get_tale_from_game_id(config, game_data.game_context.selected_game.id)
-    game_character = await get_character_from_game_id(
-        config, game_data.game_context.selected_game.id
-    )
-    game_data.story_context.tale = tale
-    game_data.story_context.character = game_character
-
-    messages = await get_first_phase_prompt(config, game_data)
-
-    response_world: OpenAiContext = await request_openai(config, messages)
-    if not await response_world.error_free():
-        await interaction.followup.send(
-            f"The following error occurred during the AI request: {response_world.error}",
-            ephemeral=True,
+        tale = await get_tale_from_game_id(
+            config, game_data.game_context.selected_game.id
         )
-        return False
-    msg_ids_world = await send_channel_message(
-        config, game_data.game_context.selected_game.channel_id, response_world.response
-    )
-    stories = [
-        STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
-        for story in messages
-    ]
-    stories.append(
-        STORY(
-            response=response_world.response,
-            story_type=StoryType.INIT,
-            tale_id=tale.id,
-            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
+        game_character = await get_character_from_game_id(
+            config, game_data.game_context.selected_game.id
         )
-    )
-    await update_db_objs(config=config, objs=stories)
+        game_data.story_context.tale = tale
+        game_data.story_context.character = game_character
 
-    messages = await get_stories_messages_for_ai(config, tale.id)
-    stories = []
+        messages = await get_first_phase_prompt(config, game_data)
 
-    messages_second_phase = await get_second_phase_prompt(config, game_data)
+        response_world: OpenAiContext = await request_openai(config, messages)
+        if not await response_world.error_free():
+            await interaction.followup.send(
+                f"The following error occurred during the AI request: {response_world.error}",
+                ephemeral=True,
+            )
+            return False
+        msg_ids_world = await send_channel_message(
+            config,
+            game_data.game_context.selected_game.channel_id,
+            response_world.response,
+        )
 
-    for msg in messages_second_phase:
+        if not msg_ids_world:
+            raise IdError(
+                f"The id {game_data.game_context.selected_game.channel_id} "
+                + "is not available on the DC server. No stories are being created."
+            )
+
+        stories = [
+            STORY(request=story["content"], story_type=StoryType.INIT, tale_id=tale.id)
+            for story in messages
+        ]
         stories.append(
-            STORY(request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id)
+            STORY(
+                response=response_world.response,
+                story_type=StoryType.INIT,
+                tale_id=tale.id,
+                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_world],
+            )
         )
+        await update_db_objs(config=config, objs=stories)
 
-    messages.extend(messages_second_phase)
-    response_start = await request_openai(config, messages)
-    if not await response_start.error_free():
-        await interaction.followup.send(
-            f"The following error occurred during the AI request: {response_start.error}",
-            ephemeral=True,
+        messages = await get_stories_messages_for_ai(config, tale.id)
+        stories = []
+
+        messages_second_phase = await get_second_phase_prompt(config, game_data)
+
+        for msg in messages_second_phase:
+            stories.append(
+                STORY(
+                    request=msg["content"], story_type=StoryType.INIT, tale_id=tale.id
+                )
+            )
+
+        messages.extend(messages_second_phase)
+        response_start = await request_openai(config, messages)
+        if not await response_start.error_free():
+            await interaction.followup.send(
+                f"The following error occurred during the AI request: {response_start.error}",
+                ephemeral=True,
+            )
+            return False
+        msg_ids_start = await send_channel_message(
+            config,
+            game_data.game_context.selected_game.channel_id,
+            response_start.response,
         )
+        if not msg_ids_start:
+            raise IdError(
+                f"The id {game_data.game_context.selected_game.channel_id} "
+                + "is not available on the DC server. No stories are being created."
+            )
+
+        stories.append(
+            STORY(
+                response=response_start.response,
+                story_type=StoryType.INIT,
+                tale_id=tale.id,
+                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
+            )
+        )
+        await update_db_objs(config=config, objs=stories)
+        return True
+    except IdError as err:
+        config.logger.error(f"ID-Error: {err}")
         return False
-    msg_ids_start = await send_channel_message(
-        config, game_data.game_context.selected_game.channel_id, response_start.response
-    )
-
-    stories.append(
-        STORY(
-            response=response_start.response,
-            story_type=StoryType.INIT,
-            tale_id=tale.id,
-            messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_start],
-        )
-    )
-    await update_db_objs(config=config, objs=stories)
-    return True
 
 
 async def setup_game(interaction: Interaction, config: Configuration) -> None:
@@ -417,12 +428,12 @@ async def setup_game(interaction: Interaction, config: Configuration) -> None:
             )
             status = await start_game_schedule(interaction, config, process_data)
             if not status:
-                return False
+                return
+            await update_embed_message(config, process_data.game_context.selected_game)
         process_data.game_context.selected_game.status = (
             process_data.game_context.new_game_status
         )
         await update_db_objs(config, [process_data.game_context.selected_game])
-        await update_embed_message(config, process_data.game_context.selected_game)
 
     except discord.Forbidden:
         config.logger.opt(exception=sys.exc_info()).error(
@@ -476,3 +487,62 @@ async def reset_game(interaction: Interaction, config: Configuration) -> None:
     await update_embed_message_color(
         config, process_data.game_context.selected_game, discord.Color.yellow()
     )
+
+
+async def finish_game(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function finishes a game and generates a PDF with the story so far.
+    The game status will be set to finished. It is not possible to keep
+    telling a story after finishing the game.
+    Args:
+        interaction (Interaction): Discord interaction object
+        config (Configuration): App configuration
+    """
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config,
+        [
+            GameStatus.STOPPED,
+        ],
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return
+    game_finish_view = GameFinishView(config, process_data)
+    await interaction.followup.send(
+        "Are you sure you want to finish the game with ID: "
+        + f"{process_data.game_context.selected_game_id}? "
+        + "It will not be possible to restart it!",
+        view=game_finish_view,
+        ephemeral=True,
+    )
+    await game_finish_view.wait()
+
+
+async def info_game(interaction: Interaction, config: Configuration) -> None:
+    """
+    This function prints information about a game like state, players, etc.
+
+    Args:
+        interaction (Interaction): Discrod interaction
+        config (Configuration): App configuration
+    """
+    process_data = ProcessInput()
+    process_data.game_context.available_games = await get_games_w_status(
+        config,
+        [
+            GameStatus.CREATED,
+            GameStatus.PAUSED,
+            GameStatus.RUNNING,
+            GameStatus.STOPPED,
+            GameStatus.FINISHED,
+            GameStatus.FAILURE,
+        ],
+    )
+    select_success = await interface_select_game(interaction, config, process_data)
+    if not select_success:
+        return
+    game_info = GameInfo()
+    game_info.game = process_data.game_context.selected_game
+    await get_all_game_related_infos(config, game_info)
+    await send_game_info_embed(interaction, config, game_info)

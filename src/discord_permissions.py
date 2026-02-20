@@ -34,3 +34,30 @@ async def check_permissions_historian(
         f"User: {interaction.user.id} has no permission to execute historian command."
     )
     return False
+
+async def check_permissions_storyteller(
+    config: Configuration, interaction: Interaction
+) -> bool:
+    """
+    Check if the user has storyteller permission role in Discord. This check is without
+    sending a message to the user if the permission is not present because of follow-up
+    processing and checks.
+
+    Args:
+        config (Configuration): App configuration
+        interaction (Interaction): Discord interaction object
+
+    Returns:
+        bool: User has the storyteller permission
+    """
+    user_roles_ids = [role.id for role in interaction.user.roles]
+    config.logger.trace(f"Check storyteller permissions for user roles: {user_roles_ids}")
+    if config.env.dc.storyteller_role_id in user_roles_ids:
+        config.logger.trace(
+            f"User: {interaction.user.id} has permission to execute storyteller command."
+        )
+        return True
+    config.logger.trace(
+        f"User: {interaction.user.id} has no permission to execute storyteller command."
+    )
+    return False

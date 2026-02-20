@@ -7,29 +7,19 @@ DEFAULT_THUMBNAIL_URL: str = (
 )
 """Default folder URL for thumbnail images used in embeds."""
 
-DEFAULT_TALE_THUMBNAIL: str = (
-    "icon_tale_small.png"
-)
+DEFAULT_TALE_THUMBNAIL: str = "icon_tale_small.png"
 """Default name for tale thumbnail image used in embeds."""
 
-DEFAULT_CHARACTER_THUMBNAIL: str = (
-    "icon_character_small.png"
-)
+DEFAULT_CHARACTER_THUMBNAIL: str = "icon_character_small.png"
 """Default name for character thumbnail image used in embeds."""
 
-DEFAULT_EVENT_THUMBNAIL: str = (
-    "icon_event_small.png"
-)
+DEFAULT_EVENT_THUMBNAIL: str = "icon_event_small.png"
 """Default name for event thumbnail image used in embeds."""
 
-DEFAULT_QUESTION_THUMBNAIL: str = (
-    "icon_question_small.png"
-)
+DEFAULT_QUESTION_THUMBNAIL: str = "icon_question_small.png"
 """Default name for question thumbnail image used in embeds."""
 
-DEFAULT_FINISH_THUMBNAIL: str = (
-    "icon_finish_small.png"
-)
+DEFAULT_FINISH_THUMBNAIL: str = "icon_finish_small.png"
 """Default name for finish game thumbnail image used in embeds."""
 
 PROMPT_MAX_WORDS_DESCRIPTION: int = 200
@@ -50,69 +40,87 @@ DC_MAX_CHAR_MESSAGE: int = 2000
 DC_DESCRIPTION_MAX_CHAR: int = 100
 """Maximum number of characters for Discord input."""
 
+DC_MODAL_INPUT_EVENT_TEXT_MAX_CHAR: int = 200
+"""Maximum number of characters for event text in Discord modal input."""
+
+DC_MODAL_INPUT_EVENT_TEXT_MIN_CHAR: int = 20
+"""Minimum number of characters for event text in Discord modal input."""
+
+DC_MODAL_INPUT_WORD_TEXT_MAX_CHAR: int = 20
+"""Maximum number of characters for a word in Discord modal input."""
+
+DC_MODAL_INPUT_WORD_TEXT_MIN_CHAR: int = 1
+"""Minimum number of characters for a word in Discord modal input."""
+
 DC_EMBED_DESCRIPTION: str = "A new story is being told!"
 """Default tale description in game embed."""
 
 NEW_TALE_FIRST_PHASE_PROMPT_PART_1: str = (
-    "Du bist ein Geschichtenerzähler für ein/e #GenreName. "
-    + "Die Antworten nur in #GenreLanguage."
+    "Du bist ein Geschichtenerzähler für das Genre #GenreName. "
+    "Schreibe ausschließlich in #GenreLanguage."
 )
 """Prompt template for genre name and language in the first phase of a new tale."""
 
 NEW_TALE_FIRST_PHASE_PROMPT_PART_2: str = (
-    " Der Erzählstil sollte: #GenreStorytellingStyle sein."
+    " Der Erzählstil soll #GenreStorytellingStyle sein."
 )
 """Prompt template for storytelling style in the first phase of a new tale."""
 
 NEW_TALE_FIRST_PHASE_PROMPT_PART_3: str = (
-    " Die Atmosphäre der Geschichte ist: GenreAtmosphere."
+    " Die Atmosphäre der Geschichte ist #GenreAtmosphere."
 )
 """Prompt template for atmosphere in the first phase of a new tale."""
 
 NEW_TALE_FIRST_PHASE_PROMPT_PART_4: str = (
-    "Beschreibe mir die Welt in der die Menschen jetzt "
-    + "leben müssen mit maximal #MaxWords Wörter)"
+    " Beschreibe die Welt, in der die Menschen jetzt leben müssen. "
+    "Maximal #MaxWords Wörter."
 )
 """Prompt template for world description in the first phase of a new tale."""
 
 NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_1: str = (
-    "Es sind die nachfolgenden Charaktere (Anzahl: #NumberCharacters) in der Geschichte. "
-    + "Achte darauf, dass du keine neuen Charaktere hinzufügst, außer es wird ausdrücklich "
-    + "in einem neuen prompt beschrieben."
+    "Die Geschichte handelt von #NumberCharacters Charakteren. "
+    "Füge keine neuen Charaktere hinzu, es sei denn, ein späterer Prompt beschreibt "
+    "sie ausdrücklich. Hier sind die Charaktere:"
 )
 """Prompt template for number of characters in the second phase of a new tale."""
 
 NEW_TALE_SECOND_PHASE_PROMPT_MULTI_PART_2: str = (
-    "Erzähl mir den Start der Geschichte (maximal #MaxWords Wörter) bei der sich "
-    + "die Charaktere in einer Stadt namens #City treffen und beschließen eine "
-    + "Gemeinschaft zu bilden."
+    "Erzähle den Beginn der Geschichte mit maximal #MaxWords Wörtern. "
+    "Die Charaktere treffen sich in der Stadt #City und beschließen, "
+    "eine Gemeinschaft zu bilden."
 )
 """Prompt template for story start in the second phase of a new tale. This is only 
 used if no custom prompt is provided by the user."""
 
 NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_1: str = (
-    "In der Geschichte geht es um einen Protagonisten. Achte darauf, dass du keine "
-    + "neuen Charaktere hinzufügst, außer es wird ausdrücklich in einem neuen prompt beschrieben."
-    + "Um den folgende Charaktere geht es in der Geschichte: #CharacterSummary"
+    "Die Geschichte handelt von einem einzelnen Protagonisten. Füge keine "
+    "neuen Charaktere hinzu, es sei denn, ein späterer Prompt beschreibt sie ausdrücklich. "
+    "Hier ist die Zusammenfassung des Protagonisten: #CharacterSummary."
 )
 """Prompt template for single character summary in the second phase of a new tale."""
 
 NEW_TALE_SECOND_PHASE_PROMPT_SINGLE_PART_2: str = (
-    "Erzähl mir den Start der Geschichte (maximal #MaxWords Wörter) bei der sich der "
-    "Charakter in einer Stadt namens #City aufhält und dort versucht zu überleben."
+    "Erzähle den Beginn der Geschichte mit maximal #MaxWords Wörtern. "
+    "Der Protagonist befindet sich in der Stadt #City, wo er versucht, zu überleben."
 )
 """Prompt template for story start with single character in the second phase of a new tale.
 This is only used if no custom prompt is provided by the user."""
 
 EVENT_REQUEST_PROMPT: str = (
-    "Erzähl mir einen neuen Teil der Geschichte basierend auf dem folgenden Ereignis: "
-    + "#EventText mit maximal #MaxWords Wörtern. Achte darauf, dass das Ereignis so "
-    + "angepasst wird, dass es für ein Spieler ist, wenn nur ein Charakter in der Geschichte ist."
+    "Erzähl den nächsten Teil der Geschichte auf Grundlage des folgenden Ereignisses: "
+    + "#EventText. Passe das Ereignis inhaltlich so an, dass es zur aktuellen "
+    + "Spieleranzahl passt. Wenn nur ein Spieler teilnimmt, gestalte das Ereignis so, "
+    + "dass es sich ausschließlich auf diesen Spieler bezieht. Der Text darf maximal "
+    + "#MaxWords Wörter umfassen und soll flüssig an die bisherige Handlung anschließen."
 )
 """Prompt template for event description during story telling phase."""
 
 FICTION_REQUEST_PROMPT: str = (
     "Schreibe die Geschichte weiter basierend auf dem folgenden Input: "
-    + "#FictionText mit maximal #MaxWords Wörtern."
+    + "#FictionText. Interpretiere den Input kontextabhängig – er kann "
+    + "ein einzelnes Wort, ein Satz oder ein längerer Text sein. Passe "
+    + "das Ereignis bei Bedarf an die aktuelle Spieleranzahl an; falls "
+    + "nur ein Spieler vorhanden ist, kannst du das Geschehen auf diesen "
+    + "beziehen. Der Text darf maximal #MaxWords Wörter umfassen."
 )
 """Prompt template for fiction description during story telling phase."""

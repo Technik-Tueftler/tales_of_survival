@@ -513,3 +513,61 @@ class StZombieTaleStartModal(
             content="Input completed",
         )
         self.parent_view.stop()
+
+
+class GameFinishView(discord.ui.View):
+    """
+        View class to confirm and process the finish of a game.
+    """
+    def __init__(self, config: Configuration, process_data: ProcessInput):
+        super().__init__()
+        self.process_data = process_data
+        self.config = config
+
+    @discord.ui.button(
+        label="Yes, finish the game",
+        style=discord.ButtonStyle.red,
+        emoji="✅",
+    )
+    async def button_callback_y(
+        self, interaction: discord.interactions.Interaction, _: discord.ui.button
+    ):
+        """
+        Callback function when the yes button is clicked.
+        """
+        self.process_data.game_context.finish.finish_confirmed = True
+        for item in self.children:
+            item.disabled = True
+        await interaction.response.edit_message(
+            content="You finish the game with the ID "
+            + f"{self.process_data.game_context.selected_game_id}.",
+            view=self,
+        )
+        self.config.logger.debug(
+            f"Game with ID {self.process_data.game_context.selected_game_id} finished by user"
+        )
+        self.stop()
+
+    @discord.ui.button(
+        label="No, continue the game",
+        style=discord.ButtonStyle.green,
+        emoji="❌",
+    )
+    async def button_callback_n(
+        self, interaction: discord.interactions.Interaction, _: discord.ui.button
+    ):
+        """
+        Callback function when the no button is clicked.
+        """
+        self.process_data.game_context.finish.finish_confirmed = False
+        for item in self.children:
+            item.disabled = True
+        await interaction.response.edit_message(
+            content="You have canceled the process. No game will be finished.",
+            view=self,
+        )
+        self.config.logger.debug(
+            "The user responded “no” to the prompt to exit game "
+            + f"{self.process_data.game_context.selected_game_id}"
+        )
+        self.stop()

@@ -263,6 +263,9 @@ class USER(Base):
         back_populates="user"
     ) # N:M
 
+    def __repr__(self) -> str:
+        return f"User(id={self.id}, name={self.name})"
+
 
 class CHARACTER(Base):
     """

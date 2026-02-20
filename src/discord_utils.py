@@ -13,9 +13,12 @@ from .constants import (
     DC_EMBED_DESCRIPTION,
     DEFAULT_CHARACTER_THUMBNAIL,
     DEFAULT_THUMBNAIL_URL,
-    DEFAULT_TALE_THUMBNAIL
+    DEFAULT_TALE_THUMBNAIL,
+    DEFAULT_EVENT_THUMBNAIL,
+    DEFAULT_QUESTION_THUMBNAIL,
 )
 from .db import get_active_user_from_game, get_object_by_id
+from .db_game import GameInfo
 from .db_classes import GAME, USER, CHARACTER, GENRE
 from .game_views import GameSelectView
 
@@ -121,6 +124,28 @@ async def delete_channel_messages(
         config.logger.opt(exception=sys.exc_info()).error(
             "Type-Error during delete messages"
         )
+
+
+async def create_dc_message_link(
+    config: Configuration, message: discord.Message, interaction: Interaction
+) -> str:
+    """
+    Function to create a link to a specific Discord message.
+
+    Args:
+        config (Configuration): App configuration
+        message (discord.Message): General message object to collect ids
+        interaction (Interaction): Last interaction to collect guild id
+
+    Returns:
+        str: Message link in the format
+    """
+    message_link = (
+        f"https://discord.com/channels/{interaction.guild.id}"
+        f"/{message.channel.id}/{message.id}"
+    )
+    config.logger.debug(f"Create message link: {message_link}")
+    return message_link
 
 
 async def update_embed_message_color(
@@ -242,7 +267,7 @@ async def interface_select_game(
 
         select_view = GameSelectView(config, process_data)
         await interaction.response.send_message(
-            "Which game would you like to change the status of?",
+            "Which game would you like to select?",
             view=select_view,
             ephemeral=True,
         )
@@ -271,6 +296,8 @@ async def send_character_embed(
     interaction: Interaction,
     config: Configuration,
     character: CHARACTER,
+    owned_characters_info: bool = False,
+    game_id: int | None = None,
 ) -> None:
     """
     Function to send an embed message with character information.
@@ -279,24 +306,28 @@ async def send_character_embed(
         interaction (Interaction): Discord interaction object
         config (Configuration): App configuration
         character (CHARACTER): Character object with all information
-
-    Returns:
-        _type_: _description_
     """
     try:
-        print(urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL))
+        config.logger.trace(
+            f"Thumbnail URL: {urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)}"
+        )
+        char_alive = True
         embed = discord.Embed(
             title=character.name,
             description=character.background,
-            color=discord.Color.dark_blue(),
+            color=discord.Color.dark_blue() if char_alive else discord.Color.dark_red(),
         )
         embed.add_field(name="Description", value=character.description, inline=False)
         embed.add_field(name="Pos-Trait", value=character.pos_trait, inline=True)
         embed.add_field(name="Neg-Trait", value=character.neg_trait, inline=True)
+        if owned_characters_info:
+            alive_info = "Alive" if character.alive else "Dead"
+            embed.add_field(name="", value="", inline=False)
+            embed.add_field(name="Status", value=alive_info, inline=True)
+            embed.add_field(name="Game-ID", value=game_id, inline=True)
         embed.set_thumbnail(
             url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_CHARACTER_THUMBNAIL)
         )
-
         message = await interaction.followup.send(embed=embed, ephemeral=True)
         return message
     except discord.Forbidden:
@@ -305,6 +336,7 @@ async def send_character_embed(
         config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
     except (TypeError, ValueError):
         config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+
 
 async def send_game_embed(
     interaction: Interaction,
@@ -345,13 +377,146 @@ async def send_game_embed(
             inline=False,
         )
 
-        embed.set_thumbnail(
-            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL)
-        )
+        embed.set_thumbnail(url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_TALE_THUMBNAIL))
         embed.set_footer(text=f"Game-ID: {game.id}, Genre-ID: {genre.id}")
 
         message = await interaction.followup.send(embed=embed)
         return message
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+
+
+async def send_public_event_ephemeral(
+    interaction: Interaction, process_data: ProcessInput
+) -> None:
+    """
+    General function to send an event message as an ephemeral message in the tale channel
+    if no public channel is configured or available.
+
+    Args:
+        interaction (Interaction): Dicord interaction object
+        process_data (ProcessInput): Data with all required information for message
+    """
+    event_message = (
+        "An event has been triggered:\nEvent: "
+        + f"{process_data.story_context.event.text}"
+    )
+    await interaction.followup.send(event_message, ephemeral=True)
+
+
+async def send_public_event_embed(
+    config: Configuration,
+    interaction: Interaction,
+    process_data: ProcessInput,
+    message_id: int,
+):
+    """
+    Function to send an embed message with event information to a public configured channel.
+
+    Args:
+        config (Configuration): App configuration
+        interaction (Interaction): Discord interaction object
+        process_data (ProcessInput): Data with all required information for message
+        message_id (int): Message ID of the original tale message to link the event to
+    """
+    try:
+        if config.env.dc.public_event_channel_id == 0:
+            await send_public_event_ephemeral(interaction, process_data)
+            config.logger.debug(
+                "Public event channel does not configured. Event message "
+                + "is send ephemeral in tale channel."
+            )
+            return
+
+        channel = config.dc_bot.get_channel(config.env.dc.public_event_channel_id)
+        if channel is None:
+            channel = await config.dc_bot.fetch_channel(
+                config.env.dc.public_event_channel_id
+            )
+        if channel is None:
+            await send_public_event_ephemeral(interaction, process_data)
+            config.logger.warning(
+                "Public event channel does not exist. Event message "
+                + "is send ephemeral in tale channel."
+            )
+            return
+
+        message_link = (
+            f"https://discord.com/channels/{interaction.guild.id}"
+            f"/{process_data.game_context.selected_game.channel_id}/{message_id}"
+        )
+        config.logger.debug(f"Create message link: {message_link}")
+        embed = discord.Embed(
+            title="Public Event",
+            description=process_data.story_context.event.text,
+            color=discord.Color.purple(),
+        )
+        embed.add_field(name="Game", value=message_link, inline=False)
+        embed.add_field(
+            name="Chance", value=process_data.story_context.event.chance, inline=True
+        )
+        embed.set_thumbnail(url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_EVENT_THUMBNAIL))
+
+        await channel.send(embed=embed)
+
+    except discord.Forbidden:
+        config.logger.error("Cannot send message, permission denied.")
+    except discord.HTTPException:
+        config.logger.opt(exception=sys.exc_info()).error("Failed to send message.")
+    except (TypeError, ValueError):
+        config.logger.opt(exception=sys.exc_info()).error("General error occurred.")
+
+
+async def send_game_info_embed(
+    interaction: Interaction,
+    config: Configuration,
+    game_info: GameInfo,
+) -> None:
+    """
+    Functions create and send a Discord message with game information to a channel.
+
+    Args:
+        interaction (Interaction): Interaction object from Discord
+        config (Configuration): App configuration
+        game (GAME): Game object
+        genre (GENRE): Genre object from game
+        users (list[USER]): All player of the game
+
+    Returns:
+        discord.Message: Discord message object
+    """
+    try:
+        embed = discord.Embed(
+            title=game_info.game.name,
+            description=game_info.game.description,
+            color=discord.Color.purple(),
+        )
+        message_link = (
+            f"https://discord.com/channels/{interaction.guild.id}"
+            f"/{game_info.game.channel_id}/{game_info.game.message_id}"
+        )
+        embed.add_field(name="Tale", value=message_link, inline=False)
+        embed.add_field(name="Told stories", value=game_info.num_stories, inline=False)
+        embed.add_field(
+            name="The Player as character:",
+            value="\n".join(
+                [
+                    f"<@{user.dc_id}> as {character.name}"
+                    for user, character in game_info.user_char_list
+                ]
+            ),
+            inline=False,
+        )
+        embed.set_thumbnail(
+            url=urljoin(DEFAULT_THUMBNAIL_URL, DEFAULT_QUESTION_THUMBNAIL)
+        )
+        message = await interaction.followup.send(embed=embed, ephemeral=True)
+        return message
+
     except discord.Forbidden:
         config.logger.error("Cannot send message, permission denied.")
     except discord.HTTPException:

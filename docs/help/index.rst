@@ -19,4 +19,13 @@ Help
    :caption: Commands
 
    cmds_overview
-   cmds_administration
+   cmds_game
+   cmd_genre
+   cmds_character
+   cmds_content
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Content
+
+   create_content_character

@@ -32,6 +32,12 @@ load_dotenv("default.env")
 load_dotenv("files/.env", override=True)
 
 
+class IdError(Exception):
+    """
+    Exception to log ID errors.
+    """
+
+
 class DelimitedTemplate(Template):
     """This class allow the creation of a template with a user defined separator.
     The package is there to define templates for texts and then substitute them
@@ -122,6 +128,7 @@ class GameContext:
         self.selected_game: GAME = None
         self.new_game_status: GameStatus = None
         self.start: GameStartContext = GameStartContext()
+        self.finish: GameFinishContext = GameFinishContext()
 
     async def input_valid_game(self) -> bool:
         """
@@ -239,6 +246,17 @@ class GameStartContext:
         self.selected_user: List[discord.member.Member] = []
 
 
+class GameFinishContext:
+    """
+    Class to specify the game finish context and input data
+    for processing.
+    """
+    def __init__(self):
+        self.finish_confirmed: bool = False
+        self.finish_prompt: str = ""
+        self.create_chapter: bool = False
+
+
 class ProcessInput:
     """
     Combined class to hold all context and input data for processing.
@@ -260,6 +278,7 @@ class DcConfiguration:
     historian_role_id: int = environ.var(0, converter=int)
     storyteller_role_id: int = environ.var(0, converter=int)
     everyone_role_id: int = environ.var(0, converter=int)
+    public_event_channel_id: int = environ.var(0, converter=int)
 
 
 @environ.config(prefix="TT")
