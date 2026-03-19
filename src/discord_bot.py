@@ -13,9 +13,9 @@ from .game import (
     keep_telling_schedule,
     setup_game,
     reset_game,
-    finish_game,
     info_game,
 )
+from .game_finish import finish_game
 from .character import select_character, show_character, show_own_character
 from .file_utils import import_data
 from .genre import deactivate_genre, activate_genre, update_genre_with_content
