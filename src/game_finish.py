@@ -14,6 +14,7 @@ from .db import (
 )
 from .game_views import (
     GameFinishView,
+    StoryFinishView,
 )
 
 
@@ -46,5 +47,13 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
     )
     await game_finish_view.wait()
 
-    if process_data.game_context.finish.finish_confirmed:
-        print("Finish game")
+    if not process_data.game_context.finish.finish_confirmed:
+        return
+    print("Finish game")
+    try:
+        story_output_view = StoryFinishView(config, process_data)
+        await interaction.followup.send(view=story_output_view, ephemeral=True)
+        await story_output_view.wait()
+        print("Finished game")
+    except Exception as err:
+        print(err)

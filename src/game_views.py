@@ -7,7 +7,7 @@ import discord
 from .db_classes import GENRE, StoryType, GameStatus, StartCondition
 from .configuration import Configuration, ProcessInput
 from .file_utils import limit_text
-from .constants import DC_DESCRIPTION_MAX_CHAR
+from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE
 
 
 class GameSelect(discord.ui.Select):
@@ -44,8 +44,7 @@ class GameSelect(discord.ui.Select):
         label = selected_option[0].label
         self.disabled = True
         await interaction.response.edit_message(
-            content=f"You have chosen the game {label}",
-            view=self.view
+            content=f"You have chosen the game {label}", view=self.view
         )
         self.view.stop()
 
@@ -174,6 +173,49 @@ class UserSelectView(discord.ui.View):
             content="You have chosen the player for the new game.",
         )
         self.stop()
+
+
+class StoryFinishModal(
+    discord.ui.Modal, title="Additional input for finishing the story:"
+):
+    """
+    Modal class to enter additional text for finishing the story.
+    """
+
+    def __init__(
+        self,
+        parent_view: discord.ui.View,
+        process_data: ProcessInput,
+        config: Configuration,
+    ):
+        super().__init__()
+        self.process_data = process_data
+        self.parent_view = parent_view
+        self.config = config
+        self.finish_prompt_input = discord.ui.TextInput(
+            label="Final story part",
+            placeholder="Enter a final story part to finish the story.",
+            required=False,
+            min_length=1,
+            max_length=DC_MAX_CHAR_MESSAGE,
+            style=discord.TextStyle.paragraph,
+        )
+        self.add_item(self.finish_prompt_input)
+
+    async def on_submit(  # pylint: disable=arguments-differ
+        self, interaction: discord.Interaction
+    ):
+        self.process_data.game_context.finish.finish_prompt = (
+            self.finish_prompt_input.value
+        )
+        self.config.logger.debug(
+            f"Finish prompt for game with ID {self.process_data.game_context.selected_game_id}: "
+            + f"{self.finish_prompt_input.value}"
+        )
+        await interaction.response.edit_message(
+            content="Input completed",
+        )
+        self.parent_view.stop()
 
 
 class StoryFictionModal(discord.ui.Modal, title="Additional text to expand the story"):
@@ -356,6 +398,7 @@ class StartTaleButtonView(discord.ui.View):
     to start the story. It is only used during game switch status from
     CREATED to RUNNING.
     """
+
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
@@ -392,9 +435,7 @@ class StartTaleButtonView(discord.ui.View):
         Callback function when button for own tale with more then 1 player is clicked.
         """
         self.process_data.story_context.start.condition = StartCondition.OWN
-        self.config.logger.trace(
-            f"Start tale type selected: {StartCondition.OWN.text}"
-        )
+        self.config.logger.trace(f"Start tale type selected: {StartCondition.OWN.text}")
         event_view = OwnTaleStartModal(self, self.process_data, self.config)
         await button.response.send_modal(event_view)
         await event_view.wait()
@@ -517,8 +558,9 @@ class StZombieTaleStartModal(
 
 class GameFinishView(discord.ui.View):
     """
-        View class to confirm and process the finish of a game.
+    View class to confirm and process the finish of a game.
     """
+
     def __init__(self, config: Configuration, process_data: ProcessInput):
         super().__init__()
         self.process_data = process_data
@@ -536,6 +578,9 @@ class GameFinishView(discord.ui.View):
         Callback function when the yes button is clicked.
         """
         self.process_data.game_context.finish.finish_confirmed = True
+        self.config.logger.trace(
+            f"Finishing game with ID: {self.process_data.game_context.selected_game_id}"
+        )
         for item in self.children:
             item.disabled = True
         await interaction.response.edit_message(
@@ -570,4 +615,79 @@ class GameFinishView(discord.ui.View):
             "The user responded “no” to the prompt to exit game "
             + f"{self.process_data.game_context.selected_game_id}"
         )
+        self.stop()
+
+
+class StoryFinishView(discord.ui.View):
+    """
+    View class to collect all necessary input to print the final story.
+    """
+
+    def __init__(self, config: Configuration, process_data: ProcessInput):
+        super().__init__()
+        self.process_data = process_data
+        self.config = config
+
+    @discord.ui.button(
+        label="Player final prompt and create chapters",
+        style=discord.ButtonStyle.primary,
+        emoji="📝",
+    )
+    async def button_callback_mc(
+        self, button: discord.ui.button, _: discord.interactions.Interaction
+    ):
+        """
+        Callback function when the button is clicked.
+        """
+        self.process_data.game_context.finish.create_chapter = True
+        self.config.logger.trace("Create player final prompt with chapters.")
+        # Open modal to enter additional text for finishing the story
+        self.stop()
+
+    @discord.ui.button(
+        label="AI final prompt and create chapters",
+        style=discord.ButtonStyle.secondary,
+        emoji="🤖",
+    )
+    async def button_callback_ac(
+        self, button: discord.ui.button, _: discord.interactions.Interaction
+    ):
+        """
+        Callback function when button is clicked.
+        """
+        self.process_data.game_context.finish.create_chapter = True
+        self.config.logger.trace("Create AI final prompt with chapters.")
+        # Open modal to enter additional text for finishing the story
+        self.stop()
+
+    @discord.ui.button(
+        label="Player final prompt and no chapters",
+        style=discord.ButtonStyle.primary,
+        emoji="📝",
+    )
+    async def button_callback_m(
+        self, button: discord.ui.button, _: discord.interactions.Interaction
+    ):
+        """
+        Callback function when the button is clicked.
+        """
+        self.process_data.game_context.finish.create_chapter = False
+        self.config.logger.trace("Create player final prompt no chapters.")
+        # Open modal to enter additional text for finishing the story
+        self.stop()
+
+    @discord.ui.button(
+        label="AI final prompt and no chapters",
+        style=discord.ButtonStyle.secondary,
+        emoji="🤖",
+    )
+    async def button_callback_a(
+        self, button: discord.ui.button, _: discord.interactions.Interaction
+    ):
+        """
+        Callback function when button is clicked.
+        """
+        self.process_data.game_context.finish.create_chapter = False
+        self.config.logger.trace("Create AI final prompt no chapters.")
+        # Open modal to enter additional text for finishing the story
         self.stop()
