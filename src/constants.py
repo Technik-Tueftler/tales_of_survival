@@ -28,6 +28,9 @@ PROMPT_MAX_WORDS_DESCRIPTION: int = 200
 PROMPT_MAX_WORDS_START: int = 600
 """Maximum number of words for the beginning of the tale."""
 
+PROMPT_MAX_WORDS_END: int = 800
+"""Maximum number of words for the end of the tale."""
+
 PROMPT_MAX_WORDS_EVENT: int = 150
 """Maximum words for the prompt for the description."""
 
@@ -124,3 +127,31 @@ FICTION_REQUEST_PROMPT: str = (
     + "beziehen. Der Text darf maximal #MaxWords Wörter umfassen."
 )
 """Prompt template for fiction description during story telling phase."""
+
+FINAL_REQUEST_PROMPT_USER: str = (
+    "Schließe die Geschichte jetzt ab, basierend auf dem folgenden finalen Input: #FinalText. "
+    "Interpretiere den Input kontextabhängig – er kann ein einzelnes Wort, ein Satz oder ein "
+    "längerer Text sein – und behandle den vom User vorgegebenen Inhalt als absolute Priorität. "
+    "Der Text darf außerdem enthalten, welche Stimmung das Ende haben soll (z.B. hoffnungsvoll, "
+    "bittersüß, düster oder offen). Behandle diese Stimmungs‑Vorgabe als Neben‑Richtlinie, die "
+    "nur dann greift, wenn sie nicht im Widerspruch zum eigentlichen Inhalt des Inputs steht."
+    "Passe das Finale technisch an die aktuelle Spieleranzahl an; falls nur ein Spieler vorhanden "
+    "ist, kannst du den Ausgang auf diese Person konzentrieren. Das finale Kapitel darf "
+    "maximal #MaxWords Wörter umfassen und soll den bisherigen Handlungsstrang konsistent "
+    "fortsetzen, ohne neue Hauptkonflikte zu beginnen.Forme den Schluss so, dass der Wille des "
+    "Users im Text inhaltlich und stimmungsmäßig klar im Vordergrund steht, auch wenn dies "
+    "leichte Abweichungen vom bisherigen Stil oder Ton bedeutet."
+)
+"""Prompt template for final story based on user input."""
+
+FINAL_REQUEST_PROMPT: str = (
+    "Schließe die Geschichte jetzt ab, basierend auf dem bisherigen Verlauf und dem aktuellen "
+    "Kontext der Handlung. Gestalte das Finale so, dass alle bisherigen Hauptkonflikte gelöst "
+    "oder klar eingeordnet werden, ohne neue zentrale Konflikte zu beginnen. Passe den Ausgang "
+    "an die aktuelle Spieleranzahl an; falls nur ein Spieler vorhanden ist, kannst du den Fokus "
+    "auf diese Person legen. Das finale Kapitel darf maximal #MaxWords Wörter umfassen und soll "
+    "den bisherigen Stil und die Stimmung der Geschichte konsistent fortsetzen. Entscheide je "
+    "nach Ton der bisherigen Handlung, ob das Ende eher hoffnungsvoll, bittersüß oder offen "
+    "ausfällt, aber forme es zu einem klaren narrativen Abschluss."
+)
+"""Prompt template for final story."""

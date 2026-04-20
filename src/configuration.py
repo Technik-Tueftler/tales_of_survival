@@ -253,8 +253,9 @@ class GameFinishContext:
     """
     def __init__(self):
         self.finish_confirmed: bool = False
+        self.chapter_requested: bool = False
+        self.ai_prompt_requested: bool = False
         self.finish_prompt: str = ""
-        self.create_chapter: bool = False
 
 
 class ProcessInput:

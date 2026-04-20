@@ -54,6 +54,7 @@ class StoryType(Enum):
     INIT = 0, "🛠️", "init"
     EVENT = 1, "📣", "event"
     FICTION = 2, "📕", "fiction"
+    FINAL = 3, "🏁", "final"
 
     def __init__(self, value, icon, text):
         self._value_ = value
