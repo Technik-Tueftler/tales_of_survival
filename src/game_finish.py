@@ -6,11 +6,13 @@ and generating the final story.
 from discord import Interaction
 from .discord_utils import (
     interface_select_game,
+    send_channel_message,
 )
 from .configuration import Configuration, ProcessInput, DelimitedTemplate, IdError
-from .db_classes import GameStatus, STORY, StoryType
+from .db_classes import GAME, GameStatus, STORY, StoryType, MESSAGE
 from .db import (
     get_games_w_status,
+    get_object_by_id,
     get_stories_messages_for_ai,
     update_db_objs,
     get_tale_from_game_id,
@@ -21,7 +23,98 @@ from .constants import (
     FINAL_REQUEST_PROMPT,
     FINAL_REQUEST_PROMPT_USER,
     PROMPT_MAX_WORDS_END,
+    CHAPTER_SECTION_PROMPT,
 )
+
+
+async def telling_story_end(
+    config: Configuration, process_data: ProcessInput, interaction: Interaction
+):
+    """
+    This function handles the end of the story with the final prompt and
+    generates the final story output.
+
+    Args:
+        config (Configuration): App configuration
+        process_data (ProcessInput): Process game data
+        interaction (Interaction): Discord interaction object
+    """
+    try:
+        config.logger.debug(
+            "Generating final story part for tale id: "
+            + f"{process_data.story_context.tale.id}"
+        )
+        commit_stories = []
+        messages = await get_stories_messages_for_ai(
+            config, process_data.story_context.tale.id
+        )
+        if process_data.game_context.finish.ai_prompt_requested:
+            final_story_prompt = DelimitedTemplate(FINAL_REQUEST_PROMPT).substitute(
+                MaxWords=PROMPT_MAX_WORDS_END
+            )
+        else:
+            final_story_prompt = DelimitedTemplate(
+                FINAL_REQUEST_PROMPT_USER
+            ).substitute(
+                FinalText=process_data.game_context.finish.finish_prompt,
+                MaxWords=PROMPT_MAX_WORDS_END,
+            )
+
+        messages.append({"role": "user", "content": final_story_prompt})
+        commit_stories.append(
+            STORY(
+                request=final_story_prompt,
+                story_type=StoryType.FINAL,
+                tale_id=process_data.story_context.tale.id,
+            )
+        )
+        config.logger.trace(
+            f"Final story request send response for tale id: {process_data.story_context.tale.id}"
+        )
+        response_final_story = await request_openai(config, messages)
+        if not await response_final_story.error_free():
+            await interaction.followup.send(
+                f"The following error occurred during the AI request: {response_final_story.error}",
+                ephemeral=True,
+            )
+            return
+        config.logger.trace(f"Final response: {response_final_story.response}")
+
+        msg_ids_fiction = await send_channel_message(
+            config,
+            process_data.game_context.selected_game.channel_id,
+            response_final_story.response,
+        )
+        if not msg_ids_fiction:
+            raise IdError(
+                f"The id {process_data.game_context.selected_game.channel_id} "
+                + "is not available on the DC server. No stories are being created."
+            )
+
+        commit_stories.append(
+            STORY(
+                response=response_final_story.response,
+                story_type=StoryType.FINAL,
+                tale_id=process_data.story_context.tale.id,
+                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_fiction],
+            )
+        )
+        await update_db_objs(config, commit_stories)
+    except IdError as err:
+        config.logger.error(f"ID-Error: {err}")
+
+
+async def chapter_creation(config: Configuration, process_data: ProcessInput):
+    """
+    This funktion creates chapter for the story if the user requested it in the story finish view.
+
+    Args:
+        config (Configuration): App configuration
+        process_data (ProcessInput): Process game data
+    """
+    messages = await get_stories_messages_for_ai(
+        config, process_data.story_context.tale.id
+    )
 
 
 async def finish_game(interaction: Interaction, config: Configuration) -> None:
@@ -80,86 +173,13 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
                 ephemeral=True,
             )
             await final_prompt_view.wait()
-            process_data.story_context.tale = await get_tale_from_game_id(
-                config, process_data.game_context.selected_game_id
-            )
+        process_data.game_context.selected_game = await get_object_by_id(
+            config, GAME, process_data.game_context.selected_game_id
+        )
+        process_data.story_context.tale = await get_tale_from_game_id(
+            config, process_data.game_context.selected_game_id
+        )
+        await telling_story_end(config, process_data, interaction)
 
     except Exception as err:
         print(err)
-
-
-async def telling_story_end(
-    config: Configuration, process_data: ProcessInput, interaction: Interaction
-):
-    """
-    This function handles the end of the story with the final prompt and
-    generates the final story output.
-
-    Args:
-        config (Configuration): App configuration
-        process_data (ProcessInput): Process game data
-        interaction (Interaction): Discord interaction object
-    """
-    try:
-        config.logger.debug(
-            "Generating final story part for tale id: "
-            + f"{process_data.story_context.tale.id}"
-        )
-        commit_stories = []
-        messages = await get_stories_messages_for_ai(
-            config, process_data.story_context.tale.id
-        )
-        if process_data.game_context.finish.ai_prompt_requested:
-            final_story_prompt = DelimitedTemplate(FINAL_REQUEST_PROMPT).substitute(
-                MaxWords=PROMPT_MAX_WORDS_END
-            )
-        else:
-            final_story_prompt = DelimitedTemplate(
-                FINAL_REQUEST_PROMPT_USER
-            ).substitute(
-                UserPrompt=process_data.game_context.finish.finish_prompt,
-                MaxWords=PROMPT_MAX_WORDS_END,
-            )
-
-        messages.append({"role": "user", "content": final_story_prompt})
-        commit_stories.append(
-            STORY(
-                request=final_story_prompt,
-                story_type=StoryType.FINAL,
-                tale_id=process_data.story_context.tale.id,
-            )
-        )
-        config.logger.trace(
-            f"Final story request send response for tale id: {process_data.story_context.tale.id}"
-        )
-        response_fiction = await request_openai(config, messages)
-        if not await response_fiction.error_free():
-            await interaction.followup.send(
-                f"The following error occurred during the AI request: {response_fiction.error}",
-                ephemeral=True,
-            )
-            return
-        config.logger.trace(f"Final response: {response_fiction.response}")
-
-        msg_ids_fiction = await send_channel_message(
-            config,
-            process_data.game_context.selected_game.channel_id,
-            response_fiction.response,
-        )
-        if not msg_ids_fiction:
-            raise IdError(
-                f"The id {process_data.game_context.selected_game.channel_id} "
-                + "is not available on the DC server. No stories are being created."
-            )
-
-        commit_stories.append(
-            STORY(
-                response=response_fiction.response,
-                story_type=StoryType.FICTION,
-                tale_id=process_data.story_context.tale.id,
-                messages=[MESSAGE(message_id=msg_id) for msg_id in msg_ids_fiction],
-            )
-        )
-        await update_db_objs(config, commit_stories)
-    except IdError as err:
-        config.logger.error(f"ID-Error: {err}")

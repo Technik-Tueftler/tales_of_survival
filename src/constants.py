@@ -155,3 +155,23 @@ FINAL_REQUEST_PROMPT: str = (
     "ausfällt, aber forme es zu einem klaren narrativen Abschluss."
 )
 """Prompt template for final story."""
+
+CHAPTER_SECTION_PROMPT: str = (
+    "Du erhältst gleich einen langen Story-Text. Deine Aufgabe ist es, den Text in sinnvolle "
+    "Kapitel zu unterteilen und an passenden Stellen Kapitelüberschriften einzufügen. Bitte "
+    "beachte dabei: \n"
+    "- Füge nur Kapitelüberschriften ein, wenn es inhaltlich sinnvoll ist.\n"
+    "- Verwende für Kapitelüberschriften immer genau dieses Format: # Kapitelname\n"
+    "- Schreibe keine zusätzlichen Erklärungen, Kommentare oder Einleitungen.\n"
+    "- Gib ausschließlich den bearbeiteten Story-Text zurück.\n"
+    "- Der eigentliche Text der Geschichte darf inhaltlich nicht verändert werden, "
+    "außer dort, wo Kapitelüberschriften ergänzt werden.\n"
+    "- Achte darauf, dass die Kapitel logisch aufeinander folgen und die Geschichte "
+    "gut lesbar bleibt."
+    "- Die Ausgabe soll so formatiert sein, dass sie später direkt für eine "
+    "PDF-Erstellung mit Python verarbeitet werden kann."
+    "- Wenn der Text bereits Absätze enthält, nutze diese bei der Kapitelaufteilung mit."
+    "- Wenn keine klare Kapitelstruktur möglich ist, teile die Geschichte trotzdem in "
+    "mehrere sinnvolle Abschnitte mit passenden Überschriften auf."
+)
+"""Prompt to create chapter for the final story."""
