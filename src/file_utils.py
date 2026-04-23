@@ -7,14 +7,60 @@ from pathlib import Path
 import aiofiles
 import yaml
 from discord import HTTPException, Interaction
+from fpdf import FPDF
+from fpdf.enums import XPos as XP, YPos as YP
 
 from .configuration import Configuration
-from .db import (
-    ImportResult,
-    create_character_from_input
-)
+from .db import ImportResult, create_character_from_input
 from .db_genre import create_genre_from_input
 from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE
+
+
+class StoryPDF(FPDF):
+    def __init__(self, title: str = ""):
+        super().__init__()
+        self.title = title
+        self.set_auto_page_break(auto=True, margin=15)
+
+    def header(self):
+        if self.page_no() > 1:
+            self.set_font("helvetica", "B", 12)
+            self.set_text_color(0)
+            self.cell(0, 10, self.title, align="C", new_x=XP.LMARGIN, new_y=YP.NEXT)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("helvetica", "I", 8)
+        self.set_text_color(128)
+        self.cell(0, 10, f"Page {self.page_no()}", align="C")
+
+    def add_title_page(self, game_title: str):
+        self.add_page()
+        self.set_font("helvetica", "B", 24)
+        self.set_xy(0, 100)
+        self.cell(
+            0,
+            10,
+            game_title,
+            align="C",
+            new_x="LMARGIN",
+            new_y="NEXT",
+        )
+
+    def add_story_text(self, text_lines: list[str]):
+        self.add_page()
+        self.set_font("helvetica", size=12)
+
+        for line in text_lines:
+            line = line.strip()
+
+            if line.startswith("# "):
+                chapter = line[2:].strip()
+                self.set_font("helvetica", "B", 16)
+                self.cell(0, 10, chapter, new_x="LMARGIN", new_y="NEXT")
+                self.set_font("helvetica", size=12)
+            else:
+                self.multi_cell(0, 6, line, new_x=XP.LMARGIN, new_y=YP.NEXT)
 
 
 async def load_yaml(config: Configuration, result: ImportResult) -> dict:
@@ -127,3 +173,19 @@ def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
         str: Limited text
     """
     return text[:limit]
+
+
+async def create_story_pdf(
+    output_filename: str,
+    game_title: str,
+    story_text: str,
+    interaction: Interaction
+):
+    pdf = StoryPDF(game_title)
+    pdf.add_title_page(game_title)
+
+    lines = story_text.strip().splitlines()
+    pdf.add_story_text(lines)
+
+    pdf.output(output_filename)
+    print(f"PDF gespeichert als: {output_filename}")
