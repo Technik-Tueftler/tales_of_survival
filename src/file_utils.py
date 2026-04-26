@@ -4,39 +4,47 @@ This file contains all functions and definitions required for document handling.
 
 import sys
 from pathlib import Path
+from datetime import datetime
 import aiofiles
 import yaml
 from discord import HTTPException, Interaction
 from fpdf import FPDF
 from fpdf.enums import XPos as XP, YPos as YP
-
 from .configuration import Configuration
 from .db import ImportResult, create_character_from_input
 from .db_genre import create_genre_from_input
-from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE
+from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE, DEFFAULT_FONT_PATH_REGULAR, DEFFAULT_FONT_PATH_BOLD, DEFFAULT_FONT_PATH_ITALIC
 
 
 class StoryPDF(FPDF):
+    """
+    Class to create a PDF document for the final story output, including header,
+    footer, title page and story text formatting.
+    """
+
     def __init__(self, title: str = ""):
         super().__init__()
         self.title = title
+        self.add_font("NotoSans", "", str(Path(DEFFAULT_FONT_PATH_REGULAR)))
+        self.add_font("NotoSans", "B", str(Path(DEFFAULT_FONT_PATH_BOLD)))
+        self.add_font("NotoSans", "I", str(Path(DEFFAULT_FONT_PATH_ITALIC)))
         self.set_auto_page_break(auto=True, margin=15)
 
     def header(self):
         if self.page_no() > 1:
-            self.set_font("helvetica", "B", 12)
+            self.set_font("NotoSans", "B", 12)
             self.set_text_color(0)
             self.cell(0, 10, self.title, align="C", new_x=XP.LMARGIN, new_y=YP.NEXT)
 
     def footer(self):
         self.set_y(-15)
-        self.set_font("helvetica", "I", 8)
+        self.set_font("NotoSans", "I", 8)
         self.set_text_color(128)
         self.cell(0, 10, f"Page {self.page_no()}", align="C")
 
     def add_title_page(self, game_title: str):
         self.add_page()
-        self.set_font("helvetica", "B", 24)
+        self.set_font("NotoSans", "B", 24)
         self.set_xy(0, 100)
         self.cell(
             0,
@@ -49,16 +57,16 @@ class StoryPDF(FPDF):
 
     def add_story_text(self, text_lines: list[str]):
         self.add_page()
-        self.set_font("helvetica", size=12)
+        self.set_font("NotoSans", size=12)
 
         for line in text_lines:
             line = line.strip()
 
             if line.startswith("# "):
                 chapter = line[2:].strip()
-                self.set_font("helvetica", "B", 16)
+                self.set_font("NotoSans", "B", 16)
                 self.cell(0, 10, chapter, new_x="LMARGIN", new_y="NEXT")
-                self.set_font("helvetica", size=12)
+                self.set_font("NotoSans", size=12)
             else:
                 self.multi_cell(0, 6, line, new_x=XP.LMARGIN, new_y=YP.NEXT)
 
@@ -176,16 +184,33 @@ def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
 
 
 async def create_story_pdf(
-    output_filename: str,
+    config: Configuration,
+    interaction: Interaction,
+    directory: str,
     game_title: str,
     story_text: str,
-    interaction: Interaction
 ):
-    pdf = StoryPDF(game_title)
-    pdf.add_title_page(game_title)
+    try:
+        path = Path(directory)
+        if not path.exists():
+            config.logger.error(f"Directory {directory} does not exist.")
+            await interaction.followup.send(
+                (f"Directory {directory} does not exist."), ephemeral=True
+            )
+            return
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        filename = f"{date_str}_{game_title}.pdf"
+        file_path = path / filename
 
-    lines = story_text.strip().splitlines()
-    pdf.add_story_text(lines)
+        pdf = StoryPDF(game_title)
+        pdf.add_title_page(game_title)
 
-    pdf.output(output_filename)
-    print(f"PDF gespeichert als: {output_filename}")
+        lines = story_text.strip().splitlines()
+        pdf.add_story_text(lines)
+        pdf.output(file_path)
+        config.logger.info(f"PDF created successfully at {file_path}")
+        await interaction.followup.send(
+            (f"Story as PDF saved: {file_path}"), ephemeral=True
+        )
+    except Exception as err:
+        print(f"Error in pdf creation: {err}")

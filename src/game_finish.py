@@ -18,7 +18,8 @@ from .db import (
     get_tale_from_game_id,
 )
 from .game_views import GameFinishView, StoryFinishView, FinalPromptView
-from .llm_handler import request_openai
+from .llm_handler import request_openai, OpenAiContext
+from .file_utils import create_story_pdf
 from .constants import (
     FINAL_REQUEST_PROMPT,
     FINAL_REQUEST_PROMPT_USER,
@@ -102,19 +103,35 @@ async def telling_story_end(
         await update_db_objs(config, commit_stories)
     except IdError as err:
         config.logger.error(f"ID-Error: {err}")
+    except Exception as err:
+        print(f"Error in telling_story_end: {err}")
 
 
-async def chapter_creation(config: Configuration, process_data: ProcessInput):
+async def chapter_creation(
+    interaction: Interaction, config: Configuration, final_story: str
+) -> OpenAiContext:
     """
     This funktion creates chapter for the story if the user requested it in the story finish view.
 
     Args:
+        interaction (Interaction): Discord interaction object
         config (Configuration): App configuration
-        process_data (ProcessInput): Process game data
+        story (str): The story text for which to create chapters
     """
-    messages = await get_stories_messages_for_ai(
-        config, process_data.story_context.tale.id
-    )
+    messages = [
+        {"role": "user", "content": CHAPTER_SECTION_PROMPT},
+        {"role": "user", "content": final_story},
+    ]
+    print(final_story)
+    final_story_with_capter: OpenAiContext = await request_openai(config, messages)
+    if not await final_story_with_capter.error_free():
+        await interaction.followup.send(
+            f"The following error occurred during the AI request: {final_story_with_capter.error}",
+            ephemeral=True,
+        )
+        return final_story_with_capter
+    config.logger.trace("Final story with chapter are generated.")
+    return final_story_with_capter
 
 
 async def finish_game(interaction: Interaction, config: Configuration) -> None:
@@ -179,7 +196,33 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
         process_data.story_context.tale = await get_tale_from_game_id(
             config, process_data.game_context.selected_game_id
         )
-        await telling_story_end(config, process_data, interaction)
+        # await telling_story_end(config, process_data, interaction) #TODO: einschalten
+        story_messages = await get_stories_messages_for_ai(
+            config, process_data.story_context.tale.id
+        )
+        filtered_story_messages = list(
+            filter(lambda message: message["role"] == "assistant", story_messages)
+        )
+        config.logger.trace(
+            f"List of messages filtered with role assistant: {len(filtered_story_messages)}"
+        )
+        final_story = "\n".join(
+            message["content"] for message in filtered_story_messages
+        )
+        final_formated_story: OpenAiContext = (
+            await chapter_creation(interaction, config, final_story)
+            if process_data.game_context.finish.chapter_requested
+            else None
+        )
+        if final_formated_story is not None and not await final_formated_story.error_free():
+            return
 
+        await create_story_pdf(
+            config,
+            interaction,
+            "files",
+            process_data.game_context.selected_game.name,
+            final_formated_story.response or final_story,
+        )
     except Exception as err:
         print(err)

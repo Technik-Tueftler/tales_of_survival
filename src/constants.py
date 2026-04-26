@@ -167,11 +167,20 @@ CHAPTER_SECTION_PROMPT: str = (
     "- Der eigentliche Text der Geschichte darf inhaltlich nicht verändert werden, "
     "außer dort, wo Kapitelüberschriften ergänzt werden.\n"
     "- Achte darauf, dass die Kapitel logisch aufeinander folgen und die Geschichte "
-    "gut lesbar bleibt."
+    "gut lesbar bleibt.\n"
     "- Die Ausgabe soll so formatiert sein, dass sie später direkt für eine "
-    "PDF-Erstellung mit Python verarbeitet werden kann."
-    "- Wenn der Text bereits Absätze enthält, nutze diese bei der Kapitelaufteilung mit."
+    "PDF-Erstellung mit Python verarbeitet werden kann.\n"
+    "- Wenn der Text bereits Absätze enthält, nutze diese bei der Kapitelaufteilung mit.\n"
     "- Wenn keine klare Kapitelstruktur möglich ist, teile die Geschichte trotzdem in "
-    "mehrere sinnvolle Abschnitte mit passenden Überschriften auf."
+    "mehrere sinnvolle Abschnitte mit passenden Überschriften auf.\n"
 )
 """Prompt to create chapter for the final story."""
+
+DEFFAULT_FONT_PATH_REGULAR: str = "fonts/NotoSans-Regular.ttf"
+"""Default regular font path for PDF generation."""
+
+DEFFAULT_FONT_PATH_BOLD: str = "fonts/NotoSans-Bold.ttf"
+"""Default bold font path for PDF generation."""
+
+DEFFAULT_FONT_PATH_ITALIC: str = "fonts/NotoSans-Italic.ttf"
+"""Default italic font path for PDF generation."""

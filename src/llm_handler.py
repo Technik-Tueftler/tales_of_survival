@@ -12,7 +12,8 @@ from openai import (
     InternalServerError,
 )
 from .configuration import Configuration
-
+import pprint
+from pathlib import Path
 
 class OpenAiContext:
     """
@@ -40,9 +41,12 @@ async def request_openai(config: Configuration, messages: list) -> OpenAiContext
         OpenAiContext: The OpenAI response context
     """
     try:
+        with open("analyse.txt", "w", encoding="utf-8") as f:
+            pprint.pprint(messages, stream=f, indent=2, width=80, sort_dicts=False)
         client = OpenAI(
             base_url=config.env.base_url,
             api_key=config.env.api_key,
+            timeout=300.0,
         )
 
         response = client.chat.completions.create(
@@ -64,3 +68,5 @@ async def request_openai(config: Configuration, messages: list) -> OpenAiContext
     except OpenAIError:
         config.logger.opt(exception=sys.exc_info()).error("OpenAI error.")
         return OpenAiContext(response="", error="OpenAI error")
+    except Exception as err:
+        print(err)
