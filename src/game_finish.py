@@ -103,8 +103,6 @@ async def telling_story_end(
         await update_db_objs(config, commit_stories)
     except IdError as err:
         config.logger.error(f"ID-Error: {err}")
-    except Exception as err:
-        print(f"Error in telling_story_end: {err}")
 
 
 async def chapter_creation(
@@ -165,64 +163,62 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
 
     if not process_data.game_context.finish.finish_confirmed:
         return
-    try:
-        story_output_view = StoryFinishView(config, process_data)
+    story_output_view = StoryFinishView(config, process_data)
+    await interaction.followup.send(
+        (
+            "Select the parameters for the last part of the "
+            "story and the formatting of the output file."
+        ),
+        view=story_output_view,
+        ephemeral=True,
+    )
+    await story_output_view.wait()
+    if not process_data.game_context.finish.ai_prompt_requested:
+        final_prompt_view = FinalPromptView(config, process_data)
         await interaction.followup.send(
-            (
-                "Select the parameters for the last part of the "
-                "story and the formatting of the output file."
+            content=(
+                "Writing Guidelines:\n"
+                "1. Choose an open ending or wrap up the story.\n"
+                "2. Think about all the characters.\n"
+                "3. Describe the circumstances in which the story ends.\n"
+                "4. Should it have a happy or sad ending?\n"
             ),
-            view=story_output_view,
+            view=final_prompt_view,
             ephemeral=True,
         )
-        await story_output_view.wait()
-        if not process_data.game_context.finish.ai_prompt_requested:
-            final_prompt_view = FinalPromptView(config, process_data)
-            await interaction.followup.send(
-                content=(
-                    "Writing Guidelines:\n"
-                    "1. Choose an open ending or wrap up the story.\n"
-                    "2. Think about all the characters.\n"
-                    "3. Describe the circumstances in which the story ends.\n"
-                    "4. Should it have a happy or sad ending?\n"
-                ),
-                view=final_prompt_view,
-                ephemeral=True,
-            )
-            await final_prompt_view.wait()
-        process_data.game_context.selected_game = await get_object_by_id(
-            config, GAME, process_data.game_context.selected_game_id
-        )
-        process_data.story_context.tale = await get_tale_from_game_id(
-            config, process_data.game_context.selected_game_id
-        )
-        # await telling_story_end(config, process_data, interaction) #TODO: einschalten
-        story_messages = await get_stories_messages_for_ai(
-            config, process_data.story_context.tale.id
-        )
-        filtered_story_messages = list(
-            filter(lambda message: message["role"] == "assistant", story_messages)
-        )
-        config.logger.trace(
-            f"List of messages filtered with role assistant: {len(filtered_story_messages)}"
-        )
-        final_story = "\n".join(
-            message["content"] for message in filtered_story_messages
-        )
-        final_formated_story: OpenAiContext = (
-            await chapter_creation(interaction, config, final_story)
-            if process_data.game_context.finish.chapter_requested
-            else None
-        )
-        if final_formated_story is not None and not await final_formated_story.error_free():
-            return
+        await final_prompt_view.wait()
+    process_data.game_context.selected_game = await get_object_by_id(
+        config, GAME, process_data.game_context.selected_game_id
+    )
+    process_data.story_context.tale = await get_tale_from_game_id(
+        config, process_data.game_context.selected_game_id
+    )
+    # await telling_story_end(config, process_data, interaction) #TODO: einschalten
+    story_messages = await get_stories_messages_for_ai(
+        config, process_data.story_context.tale.id
+    )
+    filtered_story_messages = list(
+        filter(lambda message: message["role"] == "assistant", story_messages)
+    )
+    config.logger.trace(
+        f"List of messages filtered with role assistant: {len(filtered_story_messages)}"
+    )
+    final_story = "\n".join(
+        message["content"] for message in filtered_story_messages
+    )
+    final_formated_story: OpenAiContext = (
+        await chapter_creation(interaction, config, final_story)
+        if process_data.game_context.finish.chapter_requested
+        else None
+    )
+    if final_formated_story is not None and not await final_formated_story.error_free():
+        return
 
-        await create_story_pdf(
-            config,
-            interaction,
-            "files",
-            process_data.game_context.selected_game.name,
-            final_formated_story.response or final_story,
-        )
-    except Exception as err:
-        print(err)
+    await create_story_pdf(
+        config,
+        interaction,
+        process_data.game_context.selected_game.name,
+        final_formated_story.response or final_story,
+    )
+    #TODO: PDF posten?
+    #TODO: Game beenden und Status auf finish setzen.

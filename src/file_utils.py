@@ -5,15 +5,23 @@ This file contains all functions and definitions required for document handling.
 import sys
 from pathlib import Path
 from datetime import datetime
+import asyncio
 import aiofiles
 import yaml
 from discord import HTTPException, Interaction
 from fpdf import FPDF
 from fpdf.enums import XPos as XP, YPos as YP
+from fpdf import FPDFException
 from .configuration import Configuration
 from .db import ImportResult, create_character_from_input
 from .db_genre import create_genre_from_input
-from .constants import DC_DESCRIPTION_MAX_CHAR, DC_MAX_CHAR_MESSAGE, DEFFAULT_FONT_PATH_REGULAR, DEFFAULT_FONT_PATH_BOLD, DEFFAULT_FONT_PATH_ITALIC
+from .constants import (
+    DC_DESCRIPTION_MAX_CHAR,
+    DC_MAX_CHAR_MESSAGE,
+    DEFFAULT_FONT_PATH_REGULAR,
+    DEFFAULT_FONT_PATH_BOLD,
+    DEFFAULT_FONT_PATH_ITALIC,
+)
 
 
 class StoryPDF(FPDF):
@@ -43,6 +51,7 @@ class StoryPDF(FPDF):
         self.cell(0, 10, f"Page {self.page_no()}", align="C")
 
     def add_title_page(self, game_title: str):
+        """Adds a title page to the PDF with the game title centered on the page."""
         self.add_page()
         self.set_font("NotoSans", "B", 24)
         self.set_xy(0, 100)
@@ -56,6 +65,7 @@ class StoryPDF(FPDF):
         )
 
     def add_story_text(self, text_lines: list[str]):
+        """Adds the story text to the PDF, formatting chapters and regular text appropriately."""
         self.add_page()
         self.set_font("NotoSans", size=12)
 
@@ -186,16 +196,27 @@ def limit_text(text: str, limit: int = DC_DESCRIPTION_MAX_CHAR) -> str:
 async def create_story_pdf(
     config: Configuration,
     interaction: Interaction,
-    directory: str,
     game_title: str,
     story_text: str,
 ):
+    """
+    This function creates a PDF document for the final story output, including header,
+    footer, title page and story text formatting. The PDF is saved in the specified
+    directory with a filename based on the game title and current date.
+
+    Args:
+        config (Configuration): App configuration
+        interaction (Interaction): Discord interaction object
+        directory (str): _description_
+        game_title (str): _description_
+        story_text (str): _description_
+    """
     try:
-        path = Path(directory)
+        path = Path("files")
         if not path.exists():
-            config.logger.error(f"Directory {directory} does not exist.")
+            config.logger.error(f"Directory {path} does not exist.")
             await interaction.followup.send(
-                (f"Directory {directory} does not exist."), ephemeral=True
+                (f"Directory {path} does not exist."), ephemeral=True
             )
             return
         date_str = datetime.now().strftime("%Y-%m-%d")
@@ -212,5 +233,22 @@ async def create_story_pdf(
         await interaction.followup.send(
             (f"Story as PDF saved: {file_path}"), ephemeral=True
         )
-    except Exception as err:
-        print(f"Error in pdf creation: {err}")
+    except PermissionError:
+        config.logger.error(f"No permission to write to {path}")
+        await interaction.followup.send("No permission to save PDF!", ephemeral=True)
+
+    except FPDFException as err:
+        config.logger.error(f"FPDF error: {err}")
+        await interaction.followup.send(
+            "PDF creation failed (font/text error)!", ephemeral=True
+        )
+
+    except HTTPException as err:
+        config.logger.error(f"Discord followup error: {err}")
+
+    except FileNotFoundError:
+        config.logger.error("Font file or path not found")
+        await interaction.followup.send("Missing font file!", ephemeral=True)
+
+    except asyncio.TimeoutError:
+        config.logger.error("Discord interaction timeout")
