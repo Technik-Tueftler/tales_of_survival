@@ -13,6 +13,7 @@ from .db_classes import (
     CHARACTER,
     GAME,
     USER,
+    StoryType,
     UserGameCharacterAssociation,
     STORY,
 )
@@ -26,7 +27,9 @@ class GameInfo:
     def __init__(self):
         self.game: GAME = None
         self.num_stories: int = 0
-        self.user_char_list: List[tuple[USER, CHARACTER]] = []
+        self.num_events: int = 0
+        self.user_alive_char_list: List[tuple[USER, CHARACTER]] = []
+        self.user_dead_char_list: List[tuple[USER, CHARACTER]] = []
 
 
 async def get_all_game_related_infos(
@@ -59,7 +62,7 @@ async def get_all_game_related_infos(
             result_user = (
                 (await session.execute(statement_user))
             ).all()
-            game_info.user_char_list = [tuple(row) for row in result_user]
+            game_info.user_alive_char_list = [tuple(row) for row in result_user]
 
             statement = (
                 select(
@@ -73,6 +76,85 @@ async def get_all_game_related_infos(
             )
             temp_return = (await session.execute(statement)).scalar_one_or_none()
             config.logger.trace(f"Number of stories told: {temp_return}")
+            game_info.num_stories = temp_return if temp_return is not None else 0
+
+    except (AttributeError, SQLAlchemyError, TypeError):
+        config.logger.opt(exception=sys.exc_info()).error("Error in sql select.")
+        return
+
+
+async def get_all_final_game_related_infos(
+    config: Configuration, game_info: GameInfo
+) -> None:
+    try:
+        async with config.session() as session, session.begin():
+            statement_alive_char = (
+                select(USER, CHARACTER)
+                .join(
+                    UserGameCharacterAssociation,
+                    USER.id == UserGameCharacterAssociation.user_id,
+                )
+                .join(
+                    CHARACTER, CHARACTER.id == UserGameCharacterAssociation.character_id
+                )
+                .where(
+                    UserGameCharacterAssociation.game_id
+                    == game_info.game.id
+                )
+                .where(UserGameCharacterAssociation.end_date.is_(None))
+            )
+            result_dead_char = (
+                (await session.execute(statement_alive_char))
+            ).all()
+            game_info.user_alive_char_list = [tuple(row) for row in result_dead_char]
+
+            statement_dead_char = (
+                select(USER, CHARACTER)
+                .join(
+                    UserGameCharacterAssociation,
+                    USER.id == UserGameCharacterAssociation.user_id,
+                )
+                .join(
+                    CHARACTER, CHARACTER.id == UserGameCharacterAssociation.character_id
+                )
+                .where(
+                    UserGameCharacterAssociation.game_id
+                    == game_info.game.id
+                )
+                .where(UserGameCharacterAssociation.end_date.isnot(None))
+            )
+            result_dead_char = (
+                (await session.execute(statement_dead_char))
+            ).all()
+            game_info.user_dead_char_list = [tuple(row) for row in result_dead_char]
+
+            statement = (
+                select(
+                    func.count(  # pylint: disable=not-callable
+                        STORY.id
+                    )
+                )
+                .where(STORY.tale_id == game_info.game.tale_id)
+                .where(STORY.response.isnot(None))
+                .where(STORY.discarded.is_(False))
+                .where(STORY.story_type == StoryType.EVENT)
+            )
+            temp_return = (await session.execute(statement)).scalar_one_or_none()
+            config.logger.trace(f"Number of events: {temp_return}")
+            game_info.num_events = temp_return if temp_return is not None else 0
+
+            statement = (
+                select(
+                    func.count(  # pylint: disable=not-callable
+                        STORY.id
+                    )
+                )
+                .where(STORY.tale_id == game_info.game.tale_id)
+                .where(STORY.response.isnot(None))
+                .where(STORY.discarded.is_(False))
+            )
+            temp_return = (await session.execute(statement)).scalar_one_or_none()
+            config.logger.trace(f"Number of stories: {temp_return}")
             game_info.num_stories = temp_return if temp_return is not None else 0
 
     except (AttributeError, SQLAlchemyError, TypeError):

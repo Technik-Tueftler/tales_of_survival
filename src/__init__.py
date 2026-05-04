@@ -14,6 +14,7 @@ from .discord_bot import *
 from .tetue_generic import __gen_version__
 from .tetue_generic.generic_requests import *
 from .tetue_generic.watcher import *
+from .validation import *
 
 __version__ = "v0.2.0"
 __repository__ = "https://github.com/Technik-Tueftler/tales_of_survival"

@@ -17,6 +17,7 @@ from .db import (
     update_db_objs,
     get_tale_from_game_id,
 )
+from .db_game import GameInfo, get_all_final_game_related_infos
 from .game_views import GameFinishView, StoryFinishView, FinalPromptView
 from .llm_handler import request_openai, OpenAiContext
 from .file_utils import create_story_pdf
@@ -193,7 +194,7 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
     process_data.story_context.tale = await get_tale_from_game_id(
         config, process_data.game_context.selected_game_id
     )
-    # await telling_story_end(config, process_data, interaction) #TODO: einschalten
+    await telling_story_end(config, process_data, interaction)
     story_messages = await get_stories_messages_for_ai(
         config, process_data.story_context.tale.id
     )
@@ -214,11 +215,15 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
     if final_formated_story is not None and not await final_formated_story.error_free():
         return
 
+    game_info = GameInfo()
+    game_info.game = process_data.game_context.selected_game
+    await get_all_final_game_related_infos(config, game_info)
+    #TODO: In die Titelseite noch die Infos packen
     await create_story_pdf(
         config,
         interaction,
         process_data.game_context.selected_game.name,
         final_formated_story.response or final_story,
     )
-    #TODO: PDF posten?
+
     #TODO: Game beenden und Status auf finish setzen.

@@ -506,7 +506,7 @@ async def send_game_info_embed(
             value="\n".join(
                 [
                     f"<@{user.dc_id}> as {character.name}"
-                    for user, character in game_info.user_char_list
+                    for user, character in game_info.user_alive_char_list
                 ]
             ),
             inline=False,
