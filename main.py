@@ -14,6 +14,8 @@ async def main():
     await src.sync_db(config.engine)
     src.init_logging(config)
     config.logger.info(f"Start application in version: {src.__version__}")
+    if not src.validation.scheduler_general_checks(config):
+        return
     discord_bot = src.DiscordBot(config)
     tasks = [discord_bot.start()]
     await asyncio.gather(*tasks)
