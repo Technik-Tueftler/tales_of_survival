@@ -8,7 +8,7 @@ from datetime import datetime
 import asyncio
 import aiofiles
 import yaml
-from discord import HTTPException, Interaction
+from discord import HTTPException, Interaction, File
 from fpdf import FPDF
 from fpdf.enums import XPos as XP, YPos as YP
 from fpdf import FPDFException
@@ -198,7 +198,7 @@ async def create_story_pdf(
     interaction: Interaction,
     game_title: str,
     story_text: str,
-):
+) -> bool:
     """
     This function creates a PDF document for the final story output, including header,
     footer, title page and story text formatting. The PDF is saved in the specified
@@ -207,18 +207,14 @@ async def create_story_pdf(
     Args:
         config (Configuration): App configuration
         interaction (Interaction): Discord interaction object
-        directory (str): _description_
-        game_title (str): _description_
-        story_text (str): _description_
+        game_title (str): Title of the game
+        story_text (str): The complete story text to be included in the PDF
+
+    Returns:
+        bool: PDF creation success status
     """
     try:
         path = Path("files")
-        if not path.exists():
-            config.logger.error(f"Directory {path} does not exist.")
-            await interaction.followup.send(
-                (f"Directory {path} does not exist."), ephemeral=True
-            )
-            return
         date_str = datetime.now().strftime("%Y-%m-%d")
         filename = f"{date_str}_{game_title}.pdf"
         file_path = path / filename
@@ -230,25 +226,30 @@ async def create_story_pdf(
         pdf.add_story_text(lines)
         pdf.output(file_path)
         config.logger.info(f"PDF created successfully at {file_path}")
-        await interaction.followup.send(
-            (f"Story as PDF saved: {file_path}"), ephemeral=True
-        )
+        await interaction.followup.send("Story generated.", file=File(file_path))
+        return True
+
     except PermissionError:
         config.logger.error(f"No permission to write to {path}")
         await interaction.followup.send("No permission to save PDF!", ephemeral=True)
+        return False
 
     except FPDFException as err:
         config.logger.error(f"FPDF error: {err}")
         await interaction.followup.send(
             "PDF creation failed (font/text error)!", ephemeral=True
         )
+        return False
 
     except HTTPException as err:
         config.logger.error(f"Discord followup error: {err}")
+        return False
 
     except FileNotFoundError:
         config.logger.error("Font file or path not found")
         await interaction.followup.send("Missing font file!", ephemeral=True)
+        return False
 
     except asyncio.TimeoutError:
         config.logger.error("Discord interaction timeout")
+        return False

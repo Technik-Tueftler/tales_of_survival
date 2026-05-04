@@ -219,11 +219,13 @@ async def finish_game(interaction: Interaction, config: Configuration) -> None:
     game_info.game = process_data.game_context.selected_game
     await get_all_final_game_related_infos(config, game_info)
     #TODO: In die Titelseite noch die Infos packen
-    await create_story_pdf(
+    status = await create_story_pdf(
         config,
         interaction,
         process_data.game_context.selected_game.name,
         final_formated_story.response or final_story,
     )
-
+    if not status:
+        config.logger.error("Story PDF creation failed, game status is not set to finished.")
+        return
     #TODO: Game beenden und Status auf finish setzen.
